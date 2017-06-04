@@ -1,0 +1,78 @@
+<style>
+  .nav-tabs > li a {
+    background-color:#2F71AB;
+    color:#fff;
+    text-align: center;
+  }
+
+  .nav-tabs > li {
+    width: 50%;
+  }
+
+  li {
+    list-style-type: none;
+  }
+
+  .nav-tabs > li.active > a,
+  .nav-tabs > li.active > a:focus,
+  .nav-tabs > li.active > a:hover{
+    background-color:#fff;
+    color:#000;
+  }
+
+  .nav-tabs > li > a:hover{
+    background-color: #ddd !important;
+    color:#000;
+  }
+
+  .tab-pane {
+    width:100%;
+    background-color:#fff;
+    padding:5px;
+  }
+</style>
+
+<script type="text/javascript" src="user_ui.js"></script>
+
+<div id="notifications">
+  <% if @wallet.errors.full_messages.any? %>
+      <div class="alert alert-danger">
+        <%= @wallet.errors.full_messages.first %>
+      </div>
+  <% else %>
+      <div class="alert alert-warning">Important: Remember to backup your credentials. They cannot be recovered once they are lost!</div>
+  <% end %>
+</div>
+
+<li>
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#accountTab" role="tab" data-toggle="tab">Log in</a></li>
+    <li><a href="#seedTab" role="tab" data-toggle="tab">Use seed</a></li>
+  </ul>
+</li>
+
+<div class="tab-content">
+  <div class="tab-pane active" id="accountTab">
+    <div id="loginTab">
+      <div class="form-group string required wallet_username">
+        <label class="control-label string required" for="wallet_username"><abbr title="required">*</abbr> Username</label>
+        <input class="form-control string required" required="required" aria-required="true" type="text" name="wallet[username]" id="wallet_username" />
+      </div>
+      <div class="form-group password required wallet_password">
+        <label class="control-label password required" for="wallet_password"><abbr title="required">*</abbr> Password</label>
+        <input class="form-control password required" required="required" aria-required="true" type="password" name="wallet[password]" id="wallet_password" />
+      </div>
+      <input type="submit" name="signin" value="Open wallet" class="btn btn-default btn" data-disable-with="Open wallet" onclick="login()" />
+      <input class="btn btn-default btn btn-primary" type="submit" id="signup" value="Sign up" data-disable-with="Sign up" onclick="signup()"  />
+    </div>
+  </div>
+  <div class="tab-pane" id="seedTab">
+    <div id="new_wallet" >
+      <div class="form-group string required wallet_seed">
+        <label class="control-label string required" for="wallet_seed"><abbr title="required">*</abbr>Seed</label>
+        <input class="form-control string required" required="required" aria-required="true" type="text" name="wallet[seed]" id="wallet_seed" />
+      </div>
+      <input type="submit" id="openWithSeed" value="Submit" class="btn btn-default btn" data-disable-with="Submit" onclick="openWithSeed()"/>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+<script>
+    // Clipboard
+
+    $('.btn').tooltip({
+        trigger: 'click',
+        placement: 'bottom'
+    });
+
+    function setTooltip(btn, message) {
+        $(btn).tooltip('hide')
+            .attr('data-original-title', message)
+            .tooltip('show');
+    }
+
+    function hideTooltip(btn) {
+        setTimeout(function() {
+            $(btn).tooltip('hide');
+        }, 1000);
+    }
+
+    var clipboard = new Clipboard('.btn');
+
+    clipboard.on('success', function(e) {
+        setTooltip(e.trigger, 'Copied!');
+        hideTooltip(e.trigger);
+    });
+
+    clipboard.on('error', function(e) {
+        setTooltip(e.trigger, 'Failed!');
+        hideTooltip(e.trigger);
+    });
+
+    // Clipboard end
+
+    $(document).ready(function() {
+        $(document).find('#wallet-data').hide();
+
+        $("#loading").spin({
+            color: '#000',
+        });
+
+        // TODO: Use intarval to do this every n secounds whiel the user in in index
+        loadWalletData(onGetWalletDataFinished);
+    });
+</script>
+
+
+
+
+<div id="loading" ></div>
+
+<div id="wallet-data">
+  <div class="panel panel-primary">
+    <div class="panel-heading"><h1>Your wallet: <span id="wallet_balance_summary"></span></h1></div>
+    <div class="panel-body">
+      <h2>Seed</h2>
+      <div class="input-group">
+        <input id="seed_box" class="form-control" value=<%=cookies[:seed]%> readonly>
+
+        <span class="input-group-btn">
+          <button class="btn" style="background-color: #dddddd" data-clipboard-target="#seed_box">
+            <%= image_tag('clippy.svg', size: '16') %>
+          </button>
+        </span>
+      </div>
+
+      <h2>Address</h2>
+      <div class="input-group">
+        <input id="address_box" class="form-control" readonly>
+
+        <span class="input-group-btn">
+          <button class="btn" style="background-color: #dddddd" data-clipboard-target="#address_box">
+            <%= image_tag('clippy.svg', size: '16') %>
+          </button>
+        </span>
+      </div>
+
+    <h2>Full balance</h2>
+      <div class="input-group">
+        <div id="wallet_balance"></div>
+        <span class="input-group-btn">
+          <button class="btn btn-primary" onclick="openSendWindow()">Make transfer</button>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="wallet-transactions">
+    <h1>Most recent transfers</h1>
+    <h2>In</h2>
+
+    <h2>Out</h2>
+
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="sendModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Make transaction</h4>
+      </div>
+      <div class="modal-body">
+        <%= render 'send_form' %>
+      </div>
+      <div class="modal-footer">
+        <%= link_to 'Close', wallets_show_path, type: 'button', clas: 'btn' %>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

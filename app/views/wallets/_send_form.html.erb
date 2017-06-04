@@ -1,0 +1,13 @@
+<div id="notifications"></div>
+
+<div>
+  <div class="form-group string required send_address">
+    <label class="control-label string required" for="send_address"><abbr title="required">*</abbr> Send to</label>
+    <input class="form-control string required" required="required" aria-required="true" type="text" id="send_address" />
+  </div>
+  <div class="form-group password required amount">
+    <label class="control-label number required" for="amount"><abbr title="required">*</abbr> Amount</label>
+    <input class="form-control number required" required="required" aria-required="true" type="number" id="amount" />
+  </div>
+  <input type="submit" name="send" value="Make transaction" class="btn btn-primary btn" data-disable-with="Make transaction" onclick="onSendClick()" />
+</div>
