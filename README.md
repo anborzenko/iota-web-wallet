@@ -1,24 +1,19 @@
-# README
+# IOTA web wallet
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A web wallet for the blockless distributed ledger IOTA. See iotatoken.com for more information about the project.
 
-Things you may want to cover:
+The wallet runs on top of Ruby on Rails.
 
-* Ruby version
+## Prerequisites:
+1) Ruby 3.2
+2) Rails 5.1.1
 
-* System dependencies
+Other versions may work, but have not been tested.
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Instructions
+Execute the following commands to setup and run the wallet
+```
+bundle
+rake db:migrate 
+rails s
+```
