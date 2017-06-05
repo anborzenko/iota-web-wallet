@@ -18,7 +18,7 @@
         }, 1000);
     }
 
-    var clipboard = new Clipboard('.btn');
+    let clipboard = new Clipboard('.btn');
 
     clipboard.on('success', function(e) {
         setTooltip(e.trigger, 'Copied!');
@@ -32,20 +32,21 @@
 
     // Clipboard end
 
-    $(document).ready(function() {
-        $(document).find('#wallet-data').hide();
+    $(document).on('turbolinks:load', function() {
+        // Because turbolinks breaks the normal jquery behaviour, this will fire for all pages after the wallet has been visited
+        if (window.location.href.indexOf('wallets/show') === -1){
+            return;
+        }
 
+        // If this is the correct document, fetch the wallet data
+        $(document).find('#wallet-data').hide();
         $("#loading").spin({
             color: '#000',
         });
 
-        // TODO: Use intarval to do this every n secounds whiel the user in in index
         loadWalletData(onGetWalletDataFinished);
     });
 </script>
-
-
-
 
 <div id="loading" ></div>
 
@@ -87,11 +88,7 @@
   </div>
 
   <div id="wallet-transactions">
-    <h1>Most recent transfers</h1>
-    <h2>In</h2>
-
-    <h2>Out</h2>
-
+    <%= render 'transaction_list' %>
   </div>
 </div>
 

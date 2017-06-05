@@ -1,13 +1,20 @@
-<div id="notifications"></div>
+<div id="send-notifications"></div>
 
 <div>
   <div class="form-group string required send_address">
     <label class="control-label string required" for="send_address"><abbr title="required">*</abbr> Send to</label>
     <input class="form-control string required" required="required" aria-required="true" type="text" id="send_address" />
   </div>
-  <div class="form-group password required amount">
+  <div class="form-group number required amount">
     <label class="control-label number required" for="amount"><abbr title="required">*</abbr> Amount</label>
     <input class="form-control number required" required="required" aria-required="true" type="number" id="amount" />
+    <a href="javascript:moveBalanceToSendAmount();" class="form-text text-muted" id="send_balance"></a>
   </div>
-  <input type="submit" name="send" value="Make transaction" class="btn btn-primary btn" data-disable-with="Make transaction" onclick="onSendClick()" />
+  <div class="form-group string message">
+    <label class="control-label string" for="message"> Message (optional)</label>
+    <textarea class="form-control string" cols="2" id="message"></textarea>
+  </div>
+  <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="send_button">
+    <span class="ladda-label" data-disable-with="Make transaction" onclick="onSendClick()">Make transaction</span>
+  </button>
 </div>

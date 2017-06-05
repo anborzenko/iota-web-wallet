@@ -18,3 +18,5 @@
 
 .byebug_history
 .idea/
+db/development.sqlite3
+db/schema.rb

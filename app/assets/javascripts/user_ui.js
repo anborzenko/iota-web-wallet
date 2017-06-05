@@ -9,7 +9,7 @@ function openWithSeed() {
         return;
     }
 
-    cacheSeed('seed', seed);
+    saveSeed(seed);
     document.location.href = 'show';
 }
 
@@ -30,7 +30,7 @@ function signup() {
         dataType: "JSON",
         success: function (response) {
             if (response.success){
-                cacheSeed('seed', seed);
+                saveSeed(seed);
                 document.location.href = 'show';
             }else{
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
@@ -54,7 +54,7 @@ function login () {
                 let seed;
                 try{
                     seed = decrypt(password, response.encrypted_seed);
-                    cacheSeed(seed);
+                    saveSeed(seed);
                     document.location.href = 'show';
                 }catch(err){
                     document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
@@ -67,14 +67,18 @@ function login () {
 }
 
 function signout(){
-    alert('dws');
     deleteSeed();
     window.location = '/';
 }
 
 function validateUserInput(username, password){
-    if (username.length === 0 || password.length === 0){// TODO: Restrict password length more
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Username and password cannot be empty</div>";
+    let minPasswordLength = 8;
+
+    if (password.length < minPasswordLength){
+        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Password must be at least " + minPasswordLength + " characters long</div>";
+        throw('Invalid input');
+    }else if (username.length === 0){
+        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Username cannot be empty</div>";
         throw('Invalid input');
     }else{
         document.getElementById('notifications').innerHTML = "<div class='alert alert-warning'>Important: Remember to backup your credentials. They cannot be recovered once they are lost!</div>";

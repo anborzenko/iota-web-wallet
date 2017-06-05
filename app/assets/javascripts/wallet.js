@@ -3,36 +3,45 @@
  */
 
 
-var iota = new IOTA({
+let iota = new IOTA({
     'provider': 'http://mainnet.necropaz.com:14500'
 });
+
+function addChecksum(data){
+    return iota.utils.addChecksum(data);
+}
 
 function validateSeed(seed){
     return iota.valid.isTrytes(seed);
 }
 
+function validateAddress(address){
+    return iota.valid.isAddress(address);
+}
+
+function categorizeTransactions(transactions, addresses){
+    return iota.utils.categorizeTransfers(transactions, addresses);
+}
+
 function loadWalletData(callback){
-    var seed = getSeed();
-    iota.api.getAccountData(seed, callback);
+    iota.api.getAccountData(getSeed(), callback);
 }
 
-function sendIotas(to_address, amount){
-
+function getMessage(transaction){
+    let m = iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
+    return '"' + m + '"';
 }
 
-function generateAddress(){
-    console.log("Generating an address");
+function sendIotas(to_address, amount, message, callback){
+    let transfer = [{
+        'address': to_address,
+        'value': amount,
+        'message': iota.utils.toTrytes(message)
+    }];
 
-    var seed = getSeed();
-    iota.api.getNewAddress(seed, {'checksum': true}, function(e,address) {
-        if (!e) {
-            alert('Address: ' + address);
-            console.log("NEW ADDRESS GENERATED: ", address)
-        }else{
-            alert('Address failed: ' + e);
-            console.log("Error generating address: ", e)
-        }
-    });
+    let depth = 4;
+    let minWeightMagnitude = 13;
+    iota.api.sendTransfer(getSeed(), depth, minWeightMagnitude, transfer, callback);
 }
 
 function generateRandomSeed(){
@@ -55,29 +64,24 @@ function decrypt(key, data){
     return sjcl.decrypt(key, data);
 }
 
-function cacheSeed(cvalue) {
-    document.cookie = 'seed=' + cvalue + ';path=/';
+function saveSeed(cvalue) {
+    localStorage.setItem("seed", cvalue);
 }
 
 function getSeed() {
-    const cname = 'seed';
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
+    let seed = localStorage.getItem('seed');
+    if (seed !== null){
+        return seed;
     }
 
-    // TODO: Force redirect to login and raise an exception
-    return "";
+    window.location = '/wallets/login';
+    throw('Seed not found');
+}
+
+function isLoggedIn(){
+    return (localStorage.getItem('seed') !== null);
 }
 
 function deleteSeed() {
-    document.cookie = 'seed=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    localStorage.removeItem('seed');
 }

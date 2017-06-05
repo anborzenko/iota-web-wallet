@@ -5,3 +5,33 @@
   height: 200px;
   position: relative;
 }
+
+table
+{
+  width:100%;
+  text-overflow: ellipsis;
+}
+
+.clickable tr:hover {
+  background-color: lightyellow;
+  cursor: pointer;
+}
+
+.modal-body {
+  width:100%;
+  word-wrap: break-word;
+}
+
+.transaction-table {
+  width:100%;
+  table-layout:fixed;
+  overflow-y: scroll;
+}
+
+.transaction-table td {
+  word-wrap: break-word;
+}
+
+.modal-wide {
+  width: 90vh;
+}

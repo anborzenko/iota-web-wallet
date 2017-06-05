@@ -12,9 +12,11 @@
 //
 //= require rails-ujs
 //= require turbolinks
-//= require_tree .
 //= require jquery
 //= require bootstrap-sprockets
 //= require clipboard
 //= require spin
 //= require jquery.spin
+//= require "ladda"
+//= require "ladda.jquery"
+//= require_tree .

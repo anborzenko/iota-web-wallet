@@ -3,8 +3,6 @@ class CreateWallets < ActiveRecord::Migration[5.1]
     create_table :wallets do |t|
       t.string :username
       t.string :encrypted_seed
-      t.string :seed
-      t.string :password
 
       t.timestamps
     end
