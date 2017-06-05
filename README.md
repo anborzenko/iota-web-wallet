@@ -20,7 +20,7 @@ rails s
 ```
 
 ## macOS Instructions (requires Homebrew)
-# Install dependencies:
+Install dependencies:
 Copied from https://gorails.com/setup/osx/10.12-sierra
 1) Install Ruby (rbenv and ruby-build)
 ```
@@ -53,7 +53,7 @@ ln -sfv /usr/local/opt/mysql/*plist ~/Library/LaunchAgents
 launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
 ```
 
-# Install iota-web-wallet
+Install iota-web-wallet
 ```
 # Clone the repository and navigate to the bin directory
 git clone https://github.com/rajivshah3/iota-web-wallet.git
