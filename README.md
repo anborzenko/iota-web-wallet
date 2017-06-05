@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/rajivshah3/iota-web-wallet.svg?branch=master)](https://travis-ci.org/rajivshah3/iota-web-wallet)
-
 # IOTA web wallet
 
 A web wallet for the blockless distributed ledger IOTA. See iotatoken.com for more information about the project.
