@@ -12,8 +12,11 @@ Other versions may work, but have not been tested.
 
 ## Instructions
 Execute the following commands to setup and run the wallet
-```
+``
 bundle
 rake db:migrate 
 rails s
-```
+``
+
+## macOS Instructions
+
