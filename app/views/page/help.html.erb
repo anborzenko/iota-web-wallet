@@ -1,10 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-Help
-</body>
-</html>
+<h1>FAQ</h1>
+<div class="container">
+  <div class="panel-group" id="accordion">
+    <div class="faqHeader">General</div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse1">Do I need an account?</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">
+          No. You can access your wallet using an account, or only with your seed.
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse2">I lost my password. What do I do?</a>
+        </h4>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        <div class="panel-body">
+          We don't store your password, and will not be able to retrieve it. If you still have your seed, you can use it
+          to access your account.
+        </div>
+      </div>
+    </div>
+
+    <div class="faqHeader">Security</div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse3">Is this secure?</a>
+        </h4>
+      </div>
+      <div id="collapse3" class="panel-collapse collapse">
+        <div class="panel-body">
+          No sensitive information ever leaves your client. If you register an account your seed immediately gets
+          encrypted before it is transferred to our server. That means we will never be able to restore your seed if you
+          loose it or your log in credentials.
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse4">What happens if I loose my seed?</a>
+        </h4>
+      </div>
+      <div id="collapse4" class="panel-collapse collapse">
+        <div class="panel-body">
+          <p>If you loose your seed and do not have a account, your iotas are gone.</p>
+          <p>It is always advised that you keep a backup of your seed somewhere safe</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse5">Is my seed safe with you?</a>
+        </h4>
+      </div>
+      <div id="collapse5" class="panel-collapse collapse">
+        <div class="panel-body">
+          We never get access to your seed. Every action that require a seed is made locally on your device.
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse6">What happens if you go down?</a>
+        </h4>
+      </div>
+      <div id="collapse6" class="panel-collapse collapse">
+        <div class="panel-body">
+          Then you will still be able to access your IOTA account if you have your seed. You can for example use the desktop wallet.
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse7">What happens if you get hacked?</a>
+        </h4>
+      </div>
+      <div id="collapse7" class="panel-collapse collapse">
+        <div class="panel-body">
+          We don't store any sensitive information on our servers. If our site gets hacked the hackers will get access
+          to your username and a encrypted version of your seed. As long as you don't give them your password,
+          they wil not be able to access your IOTA account. By the way: We don't store your password either, so don't loose it.
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse8">How can I be sure you're not scamming?</a>
+        </h4>
+      </div>
+      <div id="collapse8" class="panel-collapse collapse">
+        <div class="panel-body">
+          This is a open source project, which means that you can see exactly what we do by heading over to your <a href="https://github.com/danilind/iota-web-wallet">github repo</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h1>Support</h1>
+<p>Still having questions? Get in touch: </p>
+<ul>
+  <li><a href="https://github.com/danilind/iota-web-wallet">Github</a></li>
+  <li>Email: *TODO*</li>
+</ul>
+
+<style>
+  .faqHeader {
+    font-size: 27px;
+    margin: 20px;
+  }
+</style>

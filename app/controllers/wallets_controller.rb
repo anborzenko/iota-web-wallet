@@ -26,10 +26,6 @@ class WalletsController < ApplicationController
     end
   end
 
-  def update
-
-  end
-
   private
 
   def create_wallet(wallet_params)

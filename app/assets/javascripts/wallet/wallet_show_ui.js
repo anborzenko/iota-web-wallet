@@ -9,6 +9,7 @@ let walletData;
 
 function onGetWalletDataFinished(e, accountData) {
     $("#loading").spin(false); // Hide the spinner
+    $(document).find('#loading').hide();
 
     if (e){
         document.getElementById('loading').innerHTML = "<div class='alert alert-danger'>Could not load your wallet. " + e.message + "</div>";
@@ -16,7 +17,6 @@ function onGetWalletDataFinished(e, accountData) {
     }
     walletData = accountData;
 
-    $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
     populateWalletInfo(walletData);
     populateTransactions(walletData);

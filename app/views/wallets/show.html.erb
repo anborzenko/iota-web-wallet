@@ -34,17 +34,16 @@
 
     $(document).on('turbolinks:load', function() {
         // Because turbolinks breaks the normal jquery behaviour, this will fire for all pages after the wallet has been visited
+        // Only want to proceed it the current page is wallet/show
         if (window.location.href.indexOf('wallets/show') === -1){
             return;
         }
 
-        // If this is the correct document, fetch the wallet data
-        $(document).find('#wallet-data').hide();
-        $("#loading").spin({
-            color: '#000',
-        });
-
         loadWalletData(onGetWalletDataFinished);
+          $(document).find('#wallet-data').hide();
+          $("#loading").spin({
+              color: '#000',
+          });
     });
 </script>
 
