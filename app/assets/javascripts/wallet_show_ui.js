@@ -18,8 +18,8 @@ function onGetWalletDataFinished(e, accountData) {
 
     $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
-    populateTransactions(walletData);
     populateWalletInfo(walletData);
+    populateTransactions(walletData);
 }
 
 function openSendWindow(){
@@ -60,6 +60,7 @@ function onSendFinished(e, response){
 }
 
 function populateWalletInfo(data){
+    $("#seed_box").val(getSeed());
     document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(data.balance);
     document.getElementById("wallet_balance").innerHTML = '<b>' + data.balance + '</b> IOTAs';
     $('#address_box').val(addChecksum(data.latestAddress));
