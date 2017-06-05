@@ -1,0 +1,41 @@
+<style>
+  .jumbotron {
+    background-color: transparent;
+  }
+  .jumbotron h1 {
+    font-size: 2.9em;
+  }
+</style>
+
+<section class="jumbotron text-center">
+  <div class="container">
+    <h1>IOTA web wallet</h1>
+    <p>A secure, available and user friendly wallet for IOTA</p>
+    <p>
+      <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary" %>
+      <%= link_to "New user", wallets_login_path, :class=>"btn btn-default" %>
+    </p>
+  </div>
+</section>
+
+TODO: Replay and generate new address
+TODO: Information and help all around
+TODO: If not user is signed in:
+
+<div class="row">
+  <div class="col-md-4">
+    <h2>Secure</h2>
+    <p>We don't store any sensitive information about you. In fact, your seed and password never even leaves your client.
+      This means your wallet is completely safe with our services</p>
+  </div>
+  <div class="col-md-4">
+    <h2>Easy to use</h2>
+    <p>No need to install anything. The wallet is an easy way of using the IOTA token without the hassle of running a desktop app</p>
+    <p><%= link_to "Learn more", page_help_path, :class=>"btn btn-default" %></p>
+  </div>
+  <div class="col-md-4">
+    <h2>Learn more</h2>
+    <p>Want to learn more about IOTA? Visit the official <a href="https://iota.org">iota home page</a> or check out the
+      <a href="https://blog.iota.org/">iota blog</a> for the latest news </p>
+  </div>
+</div>
