@@ -3,7 +3,7 @@
  */
 
 
-let iota = new IOTA({
+var iota = new IOTA({
     'provider': 'http://mainnet.necropaz.com:14500'
 });
 
@@ -28,15 +28,15 @@ function loadWalletData(callback){
 }
 
 function getMessage(transaction){
-    let m = iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
+    var m = iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
     return '"' + m + '"';
 }
 
 function sendIotas(to_address, amount, message, callback){
-    let depth = 4;
-    let minWeightMagnitude = 13;
+    var depth = 4;
+    var minWeightMagnitude = 13;
 
-    let transfer = [{
+    var transfer = [{
         'address': to_address,
         'value': amount,
         'message': iota.utils.toTrytes(message)
@@ -59,10 +59,10 @@ TODO: Information and help all around
 */
 function generateRandomSeed(){
     const seedLength = 81;
-    let seed = "";
+    var seed = "";
     const possibleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ9";
 
-    for( let i=0; i < seedLength; i++ ) {
+    for( var i=0; i < seedLength; i++ ) {
         seed += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
     }
 
@@ -82,7 +82,7 @@ function saveSeed(cvalue) {
 }
 
 function getSeed() {
-    let seed = localStorage.getItem('seed');
+    var seed = localStorage.getItem('seed');
     if (seed !== null){
         return seed;
     }

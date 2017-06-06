@@ -2,7 +2,7 @@
  * Created by Daniel on 04.06.2017.
  */
 
-let walletData;
+var walletData;
 
 // TODO: Attach the address when the user interacts with the input or button
 // TODO: Periodically update the wallet information
@@ -32,11 +32,11 @@ function moveBalanceToSendAmount(){
 }
 
 function onSendClick(){
-    let to_address = $('#send_address').val();
-    let amount = parseInt($('#amount').val());
-    let message = $('#message').val();
+    var to_address = $('#send_address').val();
+    var amount = parseInt($('#amount').val());
+    var message = $('#message').val();
 
-    let n_div = document.getElementById('send-notifications');
+    var n_div = document.getElementById('send-notifications');
     n_div.innerHTML = "";
     if (to_address.length < 1 || !validateAddress(to_address)){
         n_div.innerHTML = "<div class='alert alert-danger'>Invalid address</div>";
@@ -44,7 +44,7 @@ function onSendClick(){
         n_div.innerHTML = "<div class='alert alert-danger'>Invalid amount</div>";
     }else if (confirm('Please confirm sending ' + amount + ' IOTAs to ' + to_address)){
         sendIotas(to_address, amount, message, onSendFinished);
-        let l = Ladda.create( document.querySelector( '#send_button' ) );
+        var l = Ladda.create( document.querySelector( '#send_button' ) );
         l.start();
     }
 }
@@ -67,11 +67,11 @@ function populateWalletInfo(data){
 }
 
 function convertIotaValuesToHtml(value){
-    let units = ['i', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi'];
+    var units = ['i', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi'];
     value = value.toString();
     const minNumBeforeDecimal = 1;
 
-    let i = Math.floor((value.length - minNumBeforeDecimal) / 3);
+    var i = Math.floor((value.length - minNumBeforeDecimal) / 3);
     if (i >= units.length){
         i = units.length-1;
     }

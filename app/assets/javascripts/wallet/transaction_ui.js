@@ -4,16 +4,16 @@
 
 function populateTransactions(data){
     try {
-        let cTransfers = categorizeTransactions(data.transfers, data.addresses);
-        let tflat = [];
-        for (let i = 0; i < cTransfers.sent.length; i++){
-            let transfer = cTransfers.sent[i][0];
+        var cTransfers = categorizeTransactions(data.transfers, data.addresses);
+        var tflat = [];
+        for (var i = 0; i < cTransfers.sent.length; i++){
+            var transfer = cTransfers.sent[i][0];
             transfer.direction = 'out';
             tflat.push(transfer);
         }
 
-        for (let i = 0; i < cTransfers.received.length; i++){
-            let transfer = cTransfers.received[i][0];
+        for (var i = 0; i < cTransfers.received.length; i++){
+            var transfer = cTransfers.received[i][0];
             transfer.direction = 'in';
             tflat.push(transfer);
         }
@@ -36,20 +36,20 @@ function populateTransactions(data){
 
 function transactionsToHtmlTable(table, transactions){
     table.innerHTML = "";
-    let today = new Date().toDateString();
+    var today = new Date().toDateString();
 
-    for (let i = 0; i < transactions.length; i++){
-        let transfer = transactions[i];
+    for (var i = 0; i < transactions.length; i++){
+        var transfer = transactions[i];
 
-        let row = table.insertRow(-1);
+        var row = table.insertRow(-1);
         row.classList.add('clickable-row');
         row.setAttribute('bundle', transfer.bundle);
-        let direction = row.insertCell(0);
-        let date = row.insertCell(1);
-        let value = row.insertCell(2);
-        let status = row.insertCell(3);
+        var direction = row.insertCell(0);
+        var date = row.insertCell(1);
+        var value = row.insertCell(2);
+        var status = row.insertCell(3);
 
-        let d = new Date(transfer.timestamp*1000);
+        var d = new Date(transfer.timestamp*1000);
         direction.innerHTML = transfer.direction === 'in' ?
             "<span class='glyphicon glyphicon-chevron-right' style='color:#008000' title='Received'></span>" :
             "<span class='glyphicon glyphicon-chevron-left' style='color:#FF0000' title='Sent'></span>";
@@ -63,9 +63,9 @@ function transactionsToHtmlTable(table, transactions){
 function openTransactionWindow(bundle) {
     $('#transactionModal').modal('show');
 
-    let b;
-    for (let i = 0; i < walletData.transfers.length; i++){
-        let transfer = walletData.transfers[i][0];
+    var b;
+    for (var i = 0; i < walletData.transfers.length; i++){
+        var transfer = walletData.transfers[i][0];
         if (transfer.bundle === bundle){
             b = walletData.transfers[i];
             break;
@@ -77,7 +77,7 @@ function openTransactionWindow(bundle) {
         return;
     }
 
-    let tail = b[0];
+    var tail = b[0];
     document.getElementById('bundle_div').innerHTML = tail.bundle;
     document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + tail.value + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
@@ -89,10 +89,10 @@ function openTransactionWindow(bundle) {
 function bundleToHtmlTable(table, bundle){
     table.innerHTML = "";
     bundle.forEach(function(t){
-        let row = table.insertRow(-1);
-        let value = row.insertCell(0);
-        let address = row.insertCell(1);
-        let hash = row.insertCell(2);
+        var row = table.insertRow(-1);
+        var value = row.insertCell(0);
+        var address = row.insertCell(1);
+        var hash = row.insertCell(2);
 
         value.innerHTML = t.value + ' IOTAs';
         address.innerHTML = t.address;

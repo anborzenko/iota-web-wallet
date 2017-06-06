@@ -16,12 +16,12 @@ function openWithSeed() {
 function signup() {
     // TODO: Make the button spin
 
-    let username = $('#wallet_username').val();
-    let password = $('#wallet_password').val();
+    var username = $('#wallet_username').val();
+    var password = $('#wallet_password').val();
     validateUserInput(username, password);
 
-    let seed = generateRandomSeed();
-    let encryptedSeed = encrypt(password, seed);
+    var seed = generateRandomSeed();
+    var encryptedSeed = encrypt(password, seed);
 
     $.ajax({
         type: "GET",
@@ -40,8 +40,8 @@ function signup() {
 }
 
 function login () {
-    let username = $('#wallet_username').val();
-    let password = $('#wallet_password').val();
+    var username = $('#wallet_username').val();
+    var password = $('#wallet_password').val();
     validateUserInput(username, password);
 
     $.ajax({
@@ -51,7 +51,7 @@ function login () {
         dataType: "JSON",
         success: function (response) {
             if (response.success){
-                let seed;
+                var seed;
                 try{
                     seed = decrypt(password, response.encrypted_seed);
                     saveSeed(seed);
@@ -72,7 +72,7 @@ function signout(){
 }
 
 function validateUserInput(username, password){
-    let minPasswordLength = 8;
+    var minPasswordLength = 8;
 
     if (password.length < minPasswordLength){
         document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Password must be at least " + minPasswordLength + " characters long</div>";
