@@ -7,20 +7,29 @@
   }
 </style>
 
+<script>
+    $(document).ready(function() {
+        if (isLoggedIn()){
+            $('#sign_in').hide();
+        }else{
+            $('#open_wallet').hide();
+        }
+    });
+</script>
+
 <section class="jumbotron text-center">
   <div class="container">
     <h1>IOTA web wallet</h1>
     <p>A secure, available and user friendly wallet for IOTA</p>
-    <p>
+    <div id="sign_in">
       <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary" %>
       <%= link_to "New user", wallets_login_path, :class=>"btn btn-default" %>
-    </p>
+    </div>
+    <div id="open_wallet">
+      <%= link_to "Open wallet", wallets_show_path, :class=>"btn btn-primary" %>
+    </div>
   </div>
 </section>
-
-TODO: Replay and generate new address
-TODO: Information and help all around
-TODO: If not user is signed in:
 
 <div class="row">
   <div class="col-md-4">

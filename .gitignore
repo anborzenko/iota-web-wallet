@@ -20,3 +20,8 @@
 .idea/
 db/development.sqlite3
 db/schema.rb
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

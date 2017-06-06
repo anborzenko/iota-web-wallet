@@ -33,17 +33,30 @@ function getMessage(transaction){
 }
 
 function sendIotas(to_address, amount, message, callback){
+    let depth = 4;
+    let minWeightMagnitude = 13;
+
     let transfer = [{
         'address': to_address,
         'value': amount,
         'message': iota.utils.toTrytes(message)
     }];
 
-    let depth = 4;
-    let minWeightMagnitude = 13;
-    iota.api.sendTransfer(getSeed(), depth, minWeightMagnitude, transfer, callback);
+    iota.api.sendTransfer(getSeed(), depth, minWeightMagnitude, transfer, getInputs(), callback);
 }
 
+function getInputs(){
+    // TODO: find all addresses that have a positive balance such that the sum of balances >= the amount. Use those as the inputs.
+    return {};
+}
+/*
+TODO: Select unit when sending
+TODO: Prevent sending more than one transaction at once. Disable button
+TODO: If there is a transaction pending that has been sent recently, avoid sending new ones or make sure a different iota is sent
+TODO: hide the seed under a password field when you are not copying it or using it.
+    TODO: Replay (also under the hood)
+TODO: Information and help all around
+*/
 function generateRandomSeed(){
     const seedLength = 81;
     let seed = "";
