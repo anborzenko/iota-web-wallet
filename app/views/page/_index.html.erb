@@ -7,28 +7,21 @@
   }
 </style>
 
-<script>
-    $(document).ready(function() {
-        if (isLoggedIn()){
-            $('#sign_in').hide();
-        }else{
-            $('#open_wallet').hide();
-        }
-    });
-</script>
-
 <section class="jumbotron text-center">
   <div class="container">
     <h1>IOTA web wallet</h1>
     <p>A secure, available and user friendly wallet for IOTA</p>
-    <div id="sign_in">
-      <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary" %>
-      <%= link_to "New user", wallets_login_path, :class=>"btn btn-default" %>
-    </div>
-    <div id="open_wallet">
-      <%= link_to "Open wallet", wallets_show_path, :class=>"btn btn-primary" %>
-    </div>
-  </div>
+    <% if !cookies.key?('isLoggedIn') %>
+        <div id="sign_in">
+          <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary" %>
+          <%= link_to "New user", wallets_login_path, :class=>"btn btn-default" %>
+        </div>
+    <% else %>
+      <div id="open_wallet">
+          <%= link_to "Go to wallet", wallets_show_path, :class=>"btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
 </section>
 
 <div class="row">

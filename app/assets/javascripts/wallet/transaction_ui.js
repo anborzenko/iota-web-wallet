@@ -59,7 +59,7 @@ function transactionsToHtmlTable(table, transactions){
     }
 }
 
-
+var mytail;
 function openTransactionWindow(bundle) {
     $('#transactionModal').modal('show');
 
@@ -73,17 +73,59 @@ function openTransactionWindow(bundle) {
     }
 
     if (b === null){
-        document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>Transaction \'" + hash + "\' not found</div>";
-        return;
+        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>Bundle \'" + bundle + "\' not found</div>";
     }
 
     var tail = b[0];
+    mytail = tail;
     document.getElementById('bundle_div').innerHTML = tail.bundle;
     document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + tail.value + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
     document.getElementById('status_div').innerHTML = tail.persistence ? 'Completed' : 'Pending';
     document.getElementById('message_div').innerHTML = getMessage(tail);
-    bundleToHtmlTable(document.getElementById('bundle_list'), b)
+    bundleToHtmlTable(document.getElementById('bundle_list'), b);
+
+    // Check if the user should replay by finding the sender address (with value < 0) and using the api
+    // Also ignore incoming transfers, and let the sender deal with replaying
+    $('#replay').hide();
+    $('#double_spend_info').hide();
+    if (!tail.persistence){
+        b.forEach(function (t) {
+            if (t.value < 0) {
+                shouldReplay(t.address, shouldReplayCallback);
+            }
+        });
+    }
+}
+
+function shouldReplayCallback(e, res){
+    if (res){
+        $('#replay').show();
+    }else{
+        $('#double_spend_info').show();
+    }
+}
+
+function replaySelectedTransfer(btn){
+    var tail_hash = document.getElementById('bundle_div').innerHTML;
+    if (!tail_hash){
+        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-danger'>" +
+            "Could not load the transaction. Please contact support if this problem persists</div>";
+    }
+
+    replayBundle(mytail.hash, onReplaySelectedTransferCallback);
+
+    var l = Ladda.create(btn);
+    l.start();
+}
+
+function onReplaySelectedTransferCallback(e, res){
+    Ladda.stopAll();
+
+    if (e){
+        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-danger'>Failed to re-attach. " + e.message + "</div>";
+    }
+    document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>The transaction was re-attached</div>";;
 }
 
 function bundleToHtmlTable(table, bundle){

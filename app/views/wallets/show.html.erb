@@ -40,31 +40,43 @@
         }
 
         loadWalletData(onGetWalletDataFinished);
-          $(document).find('#wallet-data').hide();
-          $("#loading").spin({
-              color: '#000',
-          });
+        $(document).find('#wallet-data').hide();
+        $("#loading").spin({
+            color: '#777',
+            top: '40%',
+            length: 20,
+            width: 15,
+            radius: 30
+        });
     });
 </script>
 
-<div id="loading" ></div>
+<div id="loading" ><p class="text-muted">Loading wallet...</p></div>
 
 <div id="wallet-data">
+  <div id="wallet_show_notifications"></div>
   <div class="panel panel-primary">
     <div class="panel-heading"><h1>Your wallet: <span id="wallet_balance_summary"></span></h1></div>
     <div class="panel-body">
       <h2>Seed</h2>
       <div class="input-group">
-        <input id="seed_box" class="form-control" readonly>
+        <input id="seed_box" class="form-control" type="password" onclick="showSeed()" readonly>
 
         <span class="input-group-btn">
-          <button class="btn" style="background-color: #dddddd" data-clipboard-target="#seed_box">
+          <button class="btn" style="background-color: #dddddd" onclick="showSeed()" data-clipboard-target="#seed_box">
             <%= image_tag('clippy.svg', size: '16') %>
           </button>
         </span>
       </div>
 
-      <h2>Address</h2>
+      <div style="display: inline-block">
+        <div style="display: inline-block">
+          <h2>Address
+            <span id="refresh_address_glyph" onclick="onGenerateAddressClick()" class="glyphicon glyphicon-refresh"></span>
+          </h2>
+        </div>
+        <div style="display: inline-block" class="text-muted" id="address_generation_status"></div>
+      </div>
       <div class="input-group">
         <input id="address_box" class="form-control" readonly>
 

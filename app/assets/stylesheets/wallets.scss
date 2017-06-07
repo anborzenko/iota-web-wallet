@@ -2,9 +2,16 @@
 // They will automatically be included in application.scss.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 #loading {
-  height: 200px;
-  position: relative;
-}
+  height: 13em;
+  position: relative }
+#loading p {
+  margin: 0;
+  position: absolute;
+  top: 90%;
+  font-size: 1.5em;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%) }
 
 table
 {
@@ -34,4 +41,30 @@ table
 
 .modal-wide {
   width: 90vh;
+}
+
+.glyphicon-refresh-animate {
+  -animation: spin .7s infinite linear;
+  -ms-animation: spin .7s infinite linear;
+  -webkit-animation: spinw .7s infinite linear;
+  -moz-animation: spinm .7s infinite linear;
+}
+
+@keyframes spin {
+  from { transform: scale(1) rotate(0deg);}
+  to { transform: scale(1) rotate(360deg);}
+}
+
+@-webkit-keyframes spinw {
+  from { -webkit-transform: rotate(0deg);}
+  to { -webkit-transform: rotate(360deg);}
+}
+
+@-moz-keyframes spinm {
+  from { -moz-transform: rotate(0deg);}
+  to { -moz-transform: rotate(360deg);}
+}
+
+#refresh_address_glyph {
+  cursor: pointer;
 }

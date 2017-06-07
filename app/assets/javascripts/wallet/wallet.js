@@ -4,8 +4,10 @@
 
 
 var iota = new IOTA({
-    'provider': 'http://mainnet.necropaz.com:14500'
+    'provider': 'http://5.9.149.169:14265'
 });
+var depth = 4;
+var minWeightMagnitude = 13;
 
 function addChecksum(data){
     return iota.utils.addChecksum(data);
@@ -32,31 +34,67 @@ function getMessage(transaction){
     return '"' + m + '"';
 }
 
-function sendIotas(to_address, amount, message, callback){
-    var depth = 4;
-    var minWeightMagnitude = 13;
+function getPendingOut(){
+    var outTransactions = categorizeTransactions(walletData.transfers, walletData.addresses).sent;
+    var pendingOut = [];
+    for (var i = 0; i < outTransactions.length; i++){
+        var transfer = outTransactions[i][0];
+        if (!transfer.persistence){
+            pendingOut.push(transfer);
+        }
+    }
 
+    return pendingOut;
+}
+
+/*
+* Finds a list of inputs such that no inputs currently have any pending
+* transactions and the total balance across the inputs are >= amount
+* If no combination if inputs matches those criteria, an empty list
+* is returned, signalling a double spend. If the wallet data is not
+* available, null is returned
+*/
+function findInputs(amount){
+    if (!walletData){
+        return null;
+    }
+
+    var inputs = walletData.inputs;
+
+    var pendingOut = getPendingOut();
+    var confirmedAddresses = [];
+    var availableAmountInConfirmedAddresses = 0;
+    for (var i = 0; i < inputs.length; i++){
+        var isAddressInUse = false;
+        for (var j = 0; j < pendingOut.length; j++){
+            if (pendingOut[j].address !== inputs[i].address){
+                isAddressInUse = true;
+                break;
+            }
+        }
+        if (!isAddressInUse) {
+            availableAmountInConfirmedAddresses += inputs[i].balance;
+            confirmedAddresses.push(inputs[i]);
+        }
+    }
+
+    if (confirmedAddresses.length === 0 || availableAmountInConfirmedAddresses < amount){
+        return [];
+    }
+
+    return confirmedAddresses;
+}
+
+function sendIotas(to_address, amount, message, callback, options={}){
     var transfer = [{
         'address': to_address,
         'value': amount,
         'message': iota.utils.toTrytes(message)
     }];
 
-    iota.api.sendTransfer(getSeed(), depth, minWeightMagnitude, transfer, getInputs(), callback);
+    iota.api.sendTransfer(getSeed(), depth, minWeightMagnitude, transfer, options, callback);
 }
 
-function getInputs(){
-    // TODO: find all addresses that have a positive balance such that the sum of balances >= the amount. Use those as the inputs.
-    return {};
-}
-/*
-TODO: Select unit when sending
-TODO: Prevent sending more than one transaction at once. Disable button
-TODO: If there is a transaction pending that has been sent recently, avoid sending new ones or make sure a different iota is sent
-TODO: hide the seed under a password field when you are not copying it or using it.
-    TODO: Replay (also under the hood)
-TODO: Information and help all around
-*/
 function generateRandomSeed(){
     const seedLength = 81;
     var seed = "";
@@ -79,6 +117,7 @@ function decrypt(key, data){
 
 function saveSeed(cvalue) {
     localStorage.setItem("seed", cvalue);
+    document.cookie = 'isLoggedIn=;Path=/;';
 }
 
 function getSeed() {
@@ -91,10 +130,23 @@ function getSeed() {
     throw('Seed not found');
 }
 
-function isLoggedIn(){
-    return (localStorage.getItem('seed') !== null);
+function deleteSeed() {
+    document.cookie = 'isLoggedIn=; Path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    localStorage.removeItem('seed');
 }
 
-function deleteSeed() {
-    localStorage.removeItem('seed');
+function generateNewAddress(callback){
+    iota.api.getNewAddress(getSeed(), callback);
+}
+
+function attachAddress(addr, callback){
+    sendIotas(addr, 0, 'Attached address', callback);
+}
+
+function shouldReplay(address, callback){
+    iota.api.shouldYouReplay(address, callback);
+}
+
+function replayBundle(tail_hash, callback){
+    iota.api.replayBundle(tail_hash, depth, minWeightMagnitude, callback);
 }
