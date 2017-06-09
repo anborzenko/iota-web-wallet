@@ -7,7 +7,7 @@ var iota = new IOTA({
     'provider': 'http://iotatoken.nl:14265'
 });
 var depth = 4;
-var minWeightMagnitude = 13;
+var minWeightMagnitude = 15;
 
 function addChecksum(data){
     return iota.utils.addChecksum(data);
@@ -157,7 +157,6 @@ function attachAddress(addr, callback){
 function shouldReplay(address, callback){
     iota.api.shouldYouReplay(address, callback);
 }
-
 
 function replayBundle(tail_hash, callback){
     iota.api.replayBundle(tail_hash, depth, minWeightMagnitude, callback);
