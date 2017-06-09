@@ -63,7 +63,7 @@
         <input id="seed_box" class="form-control" type="password" onclick="showSeed()" readonly>
 
         <span class="input-group-btn">
-          <button class="btn" style="background-color: #dddddd" onclick="showSeed()" data-clipboard-target="#seed_box">
+          <button class="btn" type=button style="background-color: #dddddd" onclick="showSeed()" data-clipboard-target="#seed_box">
             <%= image_tag('clippy.svg', size: '16') %>
           </button>
         </span>
@@ -71,7 +71,7 @@
 
       <div style="display: inline-block">
         <div style="display: inline-block">
-          <h2>Address
+          <h2>Your address
             <span id="refresh_address_glyph" onclick="onGenerateAddressClick()" class="glyphicon glyphicon-refresh"></span>
           </h2>
         </div>
@@ -81,7 +81,7 @@
         <input id="address_box" class="form-control" readonly>
 
         <span class="input-group-btn">
-          <button class="btn" style="background-color: #dddddd" data-clipboard-target="#address_box">
+          <button class="btn" type=button style="background-color: #dddddd" data-clipboard-target="#address_box">
             <%= image_tag('clippy.svg', size: '16') %>
           </button>
         </span>
@@ -91,7 +91,7 @@
       <div class="input-group">
         <div id="wallet_balance"></div>
         <span class="input-group-btn">
-          <button class="btn btn-primary" onclick="openSendWindow()">Make transfer</button>
+          <button class="btn btn-primary" type=button onclick="openSendWindow()">Make transfer</button>
         </span>
       </div>
     </div>

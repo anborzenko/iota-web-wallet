@@ -4,7 +4,7 @@
 
 
 var iota = new IOTA({
-    'provider': 'http://5.9.149.169:14265'
+    'provider': 'http://iotatoken.nl:14265'
 });
 var depth = 4;
 var minWeightMagnitude = 13;
@@ -67,7 +67,7 @@ function findInputs(amount){
     for (var i = 0; i < inputs.length; i++){
         var isAddressInUse = false;
         for (var j = 0; j < pendingOut.length; j++){
-            if (pendingOut[j].address !== inputs[i].address){
+            if (pendingOut[j].address === inputs[i].address){
                 isAddressInUse = true;
                 break;
             }
@@ -92,19 +92,27 @@ function sendIotas(to_address, amount, message, callback, options={}){
         'message': iota.utils.toTrytes(message)
     }];
 
-    iota.api.sendTransfer(getSeed(), depth, minWeightMagnitude, transfer, options, callback);
+    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, options, callback);
 }
 
 function generateRandomSeed(){
     const seedLength = 81;
-    var seed = "";
-    const possibleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ9";
+    var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ9";
+    var i;
+    var result = "";
+    if (window.crypto && window.crypto.getRandomValues) {
+        var values = new Uint32Array(seedLength);
+        window.crypto.getRandomValues(values);
+        for (i = 0; i < seedLength; i++) {
+            result += charset[values[i] % charset.length];
+        }
+        return result;
+    } else
+        throw new Error(
+            "Your browser do not support secure seed generation. Try upgrading your browser"
+        );
 
-    for( var i=0; i < seedLength; i++ ) {
-        seed += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
-    }
-
-    return seed;
+    return result;
 }
 
 function encrypt(key, seed){
@@ -115,15 +123,17 @@ function decrypt(key, data){
     return sjcl.decrypt(key, data);
 }
 
-function saveSeed(cvalue) {
-    localStorage.setItem("seed", cvalue);
+function saveSeed(cvalue, password) {
+    sessionStorage.setItem("unnamed", password);
+    sessionStorage.setItem("seed", encrypt(password, cvalue));
     document.cookie = 'isLoggedIn=;Path=/;';
 }
 
 function getSeed() {
-    var seed = localStorage.getItem('seed');
+    var password = sessionStorage.getItem('unnamed');
+    var seed = sessionStorage.getItem('seed');
     if (seed !== null){
-        return seed;
+        return decrypt(password, seed);
     }
 
     window.location = '/wallets/login';
@@ -132,7 +142,8 @@ function getSeed() {
 
 function deleteSeed() {
     document.cookie = 'isLoggedIn=; Path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    localStorage.removeItem('seed');
+    sessionStorage.removeItem('seed');
+    sessionStorage.removeItem('unnamed');
 }
 
 function generateNewAddress(callback){

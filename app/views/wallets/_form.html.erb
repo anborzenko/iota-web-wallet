@@ -32,7 +32,25 @@
   }
 </style>
 
-<script type="text/javascript" src="user_ui.js"></script>
+<script>
+    $("#wallet_username").keyup(function(event){
+        if(event.keyCode === 13){
+            $("#login_btn").click();
+        }
+    });
+
+    $("#wallet_password").keyup(function(event){
+        if(event.keyCode === 13){
+            $("#login_btn").click();
+        }
+    });
+
+    $("#wallet_seed").keyup(function(event){
+        if(event.keyCode === 13){
+            $("#login_btn").click();
+        }
+    });
+</script>
 
 <div id="notifications">
   <% if @wallet.errors.full_messages.any? %>
@@ -62,8 +80,12 @@
         <label class="control-label password required" for="wallet_password"><abbr title="required">*</abbr> Password</label>
         <input class="form-control password required" required="required" aria-required="true" type="password" name="wallet[password]" id="wallet_password" />
       </div>
-      <input type="submit" name="signin" value="Open wallet" class="btn btn-default btn" data-disable-with="Open wallet" onclick="login()" />
-      <input class="btn btn-default btn btn-primary" type="submit" id="signup" value="Sign up" data-disable-with="Sign up" onclick="signup()"  />
+      <button class="ladda-button btn btn-default btn" data-style="expand-right" id="login_btn" onclick="login(this)">
+        <span class="ladda-label">Open wallet</span>
+      </button>
+      <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="signup" onclick="signup(this)">
+        <span class="ladda-label">Sign up</span>
+      </button>
     </div>
   </div>
   <div class="tab-pane" id="seedTab">
@@ -72,7 +94,9 @@
         <label class="control-label string required" for="wallet_seed"><abbr title="required">*</abbr>Seed</label>
         <input class="form-control string required" required="required" aria-required="true" type="text" name="wallet[seed]" id="wallet_seed" />
       </div>
-      <input type="submit" id="openWithSeed" value="Submit" class="btn btn-default btn" data-disable-with="Submit" onclick="openWithSeed()"/>
+      <button class="btn btn-primary btn" id="openWithSeed" onclick="openWithSeed()">
+        <span>Open</span>
+      </button>
     </div>
   </div>
 </div>

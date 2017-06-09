@@ -18,5 +18,4 @@
 //= require spin
 //= require jquery.spin
 //= require "ladda"
-//= require "ladda.jquery"
 //= require_tree .

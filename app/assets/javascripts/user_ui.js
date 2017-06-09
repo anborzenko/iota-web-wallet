@@ -5,23 +5,27 @@
 function openWithSeed() {
     const seed = $('#wallet_seed').val();
     if (seed.length === 0 || !validateSeed(seed)){
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: Invalid seed</div>"; // TODO: Instructions about what is valid.
+        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: Invalid seed</div>";
         return;
     }
 
-    saveSeed(seed);
+    saveSeed(seed, generateRandomSeed());
     document.location.href = 'show';
 }
 
-function signup() {
-    // TODO: Make the button spin
-
+function signup(btn) {
     var username = $('#wallet_username').val();
     var password = $('#wallet_password').val();
     validateUserInput(username, password);
 
-    var seed = generateRandomSeed();
-    var encryptedSeed = encrypt(password, seed);
+    var l = Ladda.create(btn);
+    l.start();
+    try {
+        var seed = generateRandomSeed();
+        var encryptedSeed = encrypt(password, seed);
+    }catch(err){
+        return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + err + "</div>";
+    }
 
     $.ajax({
         type: "GET",
@@ -29,8 +33,9 @@ function signup() {
         data: {'username': username, 'encrypted_seed': encryptedSeed},
         dataType: "JSON",
         success: function (response) {
+            Ladda.stopAll();
             if (response.success){
-                saveSeed(seed);
+                saveSeed(seed, password);
                 document.location.href = 'show';
             }else{
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
@@ -39,17 +44,20 @@ function signup() {
     });
 }
 
-function login () {
+function login (btn) {
     var username = $('#wallet_username').val();
     var password = $('#wallet_password').val();
     validateUserInput(username, password);
 
+    var l = Ladda.create(btn);
+    l.start();
     $.ajax({
         type: "GET",
         url: 'login',
         data: {'username': username},
         dataType: "JSON",
         success: function (response) {
+            Ladda.stopAll();
             if (response.success){
                 var seed;
                 try{

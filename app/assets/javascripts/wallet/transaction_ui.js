@@ -24,7 +24,7 @@ function populateTransactions(data){
 
         transactionsToHtmlTable((document).getElementById('transaction_list'), tflat);
         $(".clickable-row").click(function() {
-            openTransactionWindow($(this).attr("bundle"));
+            openTransactionWindow($(this).attr("hashtimestamp"));
         });
 
         (document).getElementById('transaction_pager').innerHTML = "";
@@ -43,7 +43,7 @@ function transactionsToHtmlTable(table, transactions){
 
         var row = table.insertRow(-1);
         row.classList.add('clickable-row');
-        row.setAttribute('bundle', transfer.bundle);
+        row.setAttribute('hashtimestamp', transfer.hash + transfer.timestamp.toString());
         var direction = row.insertCell(0);
         var date = row.insertCell(1);
         var value = row.insertCell(2);
@@ -59,25 +59,25 @@ function transactionsToHtmlTable(table, transactions){
     }
 }
 
-var mytail;
-function openTransactionWindow(bundle) {
+var openTail;
+function openTransactionWindow(hashtimestamp) {
     $('#transactionModal').modal('show');
 
     var b;
     for (var i = 0; i < walletData.transfers.length; i++){
         var transfer = walletData.transfers[i][0];
-        if (transfer.bundle === bundle){
+        if (transfer.hash + transfer.timestamp.toString() === hashtimestamp){
             b = walletData.transfers[i];
             break;
         }
     }
 
     if (b === null){
-        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>Bundle \'" + bundle + "\' not found</div>";
+        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>Bundle \'" + hash + "\' not found</div>";
     }
 
     var tail = b[0];
-    mytail = tail;
+    openTail = tail;
     document.getElementById('bundle_div').innerHTML = tail.bundle;
     document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + tail.value + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
@@ -86,7 +86,7 @@ function openTransactionWindow(bundle) {
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
     // Check if the user should replay by finding the sender address (with value < 0) and using the api
-    // Also ignore incoming transfers, and let the sender deal with replaying
+    // Also ignore incoming transfers, and let the sender deal with replaying TODO: Ignore incoming
     $('#replay').hide();
     $('#double_spend_info').hide();
     if (!tail.persistence){
@@ -113,7 +113,7 @@ function replaySelectedTransfer(btn){
             "Could not load the transaction. Please contact support if this problem persists</div>";
     }
 
-    replayBundle(mytail.hash, onReplaySelectedTransferCallback);
+    replayBundle(openTail.hash, onReplaySelectedTransferCallback);
 
     var l = Ladda.create(btn);
     l.start();

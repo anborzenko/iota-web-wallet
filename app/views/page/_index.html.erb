@@ -13,12 +13,12 @@
     <p>A secure, available and user friendly wallet for IOTA</p>
     <% if !cookies.key?('isLoggedIn') %>
         <div id="sign_in">
-          <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary" %>
-          <%= link_to "New user", wallets_login_path, :class=>"btn btn-default" %>
+          <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary", :type=>"button" %>
+          <%= link_to "New user", wallets_login_path, :class=>"btn btn-default", :type=>"button" %>
         </div>
     <% else %>
       <div id="open_wallet">
-          <%= link_to "Go to wallet", wallets_show_path, :class=>"btn btn-primary" %>
+          <%= link_to "Go to wallet", wallets_show_path, :class=>"btn btn-primary", :type=>"button" %>
         </div>
       </div>
     <% end %>
@@ -33,7 +33,7 @@
   <div class="col-md-4">
     <h2>Easy to use</h2>
     <p>No need to install anything. The wallet is an easy way of using the IOTA token without the hassle of running a desktop app</p>
-    <p><%= link_to "Learn more", page_help_path, :class=>"btn btn-default" %></p>
+    <p><%= link_to "Learn more", page_help_path, :class=>"btn btn-default", :type=>"button" %></p>
   </div>
   <div class="col-md-4">
     <h2>Learn more</h2>
