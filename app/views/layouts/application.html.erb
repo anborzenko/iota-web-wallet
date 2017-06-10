@@ -15,6 +15,12 @@
     <meta name="author" content="">
   </head>
 
+  <script>
+      $(document).on('turbolinks:load', function() {
+          loadNodeInfoCached(onGetNodeStatusFinished);
+      });
+  </script>
+
     <div class="container">
       <div class="header clearfix">
         <nav>
@@ -40,9 +46,12 @@
       </div>
 
       <footer class="footer">
-        <p>My footer</p>
+        <div class="footer-content">
+          <a href="/nodes/index" class="text-muted inline" id="node_status_wrapper">Node: <i class="fa fa-circle" id="node_status_symbol" aria-hidden="true"></i></a>
+        </div>
       </footer>
 
     </div> <!-- /container -->
   </body>
+
 </html>

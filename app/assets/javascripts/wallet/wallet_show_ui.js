@@ -4,11 +4,10 @@
 
 var walletData;
 
-// TODO: Periodically update the wallet information
-// TODO: Use ccurl to do pow on client
-// TODO: Enter shortkeys
-
 function onGetWalletDataFinished(e, accountData) {
+    if (window.location.href.indexOf('wallets/show') === -1){
+        return;
+    }
     $("#loading").spin(false); // Hide the spinner
 
     if (e){
@@ -19,15 +18,17 @@ function onGetWalletDataFinished(e, accountData) {
 
     $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
-    populateWalletInfo(walletData);
-    populateTransactions(walletData);
+    populateWallet(walletData);
+    setTimeout(() => loadWalletData(onGetWalletDataFinished), 5000); // Periodically update the wallet.
 }
 
-function populateWalletInfo(data){
+function populateWallet(data){
     $("#seed_box").val(getSeed());
     document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(data.balance);
     document.getElementById("wallet_balance").innerHTML = '<b>' + data.balance + '</b> IOTAs';
     $('#address_box').val(addChecksum(data.latestAddress));
+
+    populateTransactions(walletData);
 }
 
 function convertIotaValuesToHtml(value){

@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   get 'wallets/show'
   get 'wallets/login'
   get 'wallets/signup'
+  get 'wallets/settings'
+  get 'nodes/index'
+  get 'pending_transactions/get_next'
+  get 'pending_transactions/delete'
+  get 'pending_transactions/add'
   root 'page#index'
-
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

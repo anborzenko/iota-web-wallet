@@ -62,7 +62,7 @@ function login (btn) {
                 var seed;
                 try{
                     seed = decrypt(password, response.encrypted_seed);
-                    saveSeed(seed);
+                    saveSeed(seed, password);
                     document.location.href = 'show';
                 }catch(err){
                     document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";

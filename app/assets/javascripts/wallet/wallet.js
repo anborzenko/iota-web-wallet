@@ -92,7 +92,18 @@ function sendIotas(to_address, amount, message, callback, options={}){
         'message': iota.utils.toTrytes(message)
     }];
 
-    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, options, callback);
+    options['inputs'] = walletData.inputs; // TODO: Find
+
+    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, options, function(e, res){
+        onSendIotasCallback(e, res, callback);
+    });
+}
+
+function onSendIotasCallback(e, res, callback){// TODO: No need for this after debugging
+    callback(e, res);
+    // TODO: Test if this sends the tail
+    savePendingTransaction(res[0]);
+    doSelflessDeed();
 }
 
 function generateRandomSeed(){
@@ -160,4 +171,77 @@ function shouldReplay(address, callback){
 
 function replayBundle(tail_hash, callback){
     iota.api.replayBundle(tail_hash, depth, minWeightMagnitude, callback);
+}
+
+var nodeInfo = null;
+function loadNodeInfoCached(callback){
+    if (nodeInfo === null){
+        loadNodeInfo(callback);
+    }else{
+        callback(null, nodeInfo);
+    }
+}
+
+function loadNodeInfo(callback){
+    iota.api.getNodeInfo(function (e, res) {
+        if (!e) {
+            nodeInfo = res;
+        }
+        callback(e, res);
+    });
+}
+
+function savePendingTransaction(tail_hash){
+    $.ajax({
+        type: "GET",
+        url: 'pending_transactions/add',
+        data: {tail_hash: tail_hash},
+        dataType: "JSON",
+    });
+}
+
+// Retrieves a previous transaction and replays it
+function doSelflessDeed(){
+    $.ajax({
+        type: "GET",
+        url: 'pending_transactions/get_next',
+        dataType: "JSON",
+        success: function (response) {
+            if (response.success){
+                try{
+                    selflessReplay(response.tail_hash, response.key);
+                }catch(err){}
+            }
+        },
+    });
+}
+
+function selflessReplay(tail_hash, key){
+    // First check if the transaction is done, or is a double spend. If so, tell the server to delete it.
+    iota.api.getBundle(tail_hash, function(e, bundle){
+        var tail = bundle[0];
+        if (tail.persistence){
+            // Done
+            return notifyServerAboutNonReplayableTransaction(tail_hash, key);
+        }
+
+        shouldReplay(tail.address, function (e, res){
+            if (!e && !res){
+                // Double spend
+                return notifyServerAboutNonReplayableTransaction(tail_hash, key);
+            }
+
+            replayBundle(tail_hash, function(e, res){});
+        })
+
+    })
+}
+
+function notifyServerAboutNonReplayableTransaction(tail_hash, key){
+    $.ajax({
+        type: "GET",
+        url: 'pending_transactions/delete',
+        data: {key: key},
+        dataType: "JSON",
+    });
 }

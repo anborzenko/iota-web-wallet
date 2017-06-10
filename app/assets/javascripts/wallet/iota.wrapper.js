@@ -2,7 +2,7 @@
  * Created by Daniel on 08.06.2017.
  */
 
-function sendTransferWrapper(iota_inst, seed, depth, minWeightMagnitude, transfer, callback, options){
+function sendTransferWrapper(iota_inst, seed, depth, minWeightMagnitude, transfer, options, callback){
     iota_inst.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
 
         if (error) {
@@ -42,25 +42,33 @@ function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callbac
 }
 
 function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes, callback){
-    alert('pow');
+    try {
+        converterInit();
+        branchTransaction = toTrits(branchTransaction);
+        trunkTransaction = toTrits(trunkTransaction);
+    }catch (err){
+        alert(err);
+    }
 
-    var prevTransaction;
-
+    var prevTransaction = null;
     var rec_pow = (res, i) => {
         try {
             if (i >= trytes.length) {
                 alert('finished: ' + res);
                 return callback(null, res);
             }
-            alert(i);
 
-            var transaction_trits = curl.trits(trytes[i]);
-            arrayCopy(curl.trits(prevTransaction === null ? trunkTransaction : prevTransaction), 0, transaction_trits, TRUNK_TRANSACTION_TRINARY_OFFSET, TRUNK_TRANSACTION_TRINARY_SIZE);
-            arrayCopy(curl.trits(prevTransaction === null ? branchTransaction : trunkTransaction), 0, transaction_trits, BRANCH_TRANSACTION_TRINARY_OFFSET, BRANCH_TRANSACTION_TRINARY_SIZE);
+            var transactionTrits = toTrits(trytes[i]);
+            arrayCopy(prevTransaction === null ? trunkTransaction : prevTransaction, 0, transactionTrits, TRUNK_TRANSACTION_TRINARY_OFFSET, TRUNK_TRANSACTION_TRINARY_SIZE);
+            arrayCopy(prevTransaction === null ? branchTransaction : trunkTransaction, 0, transactionTrits, BRANCH_TRANSACTION_TRINARY_OFFSET, BRANCH_TRANSACTION_TRINARY_SIZE);
 
-            curl.pow(transaction_trits, minWeightMagnitude
+            prevTransaction = transactionTrits;
+
+            curl.pow(toTrytes(transactionTrits, 0, transactionTrits.length), minWeightMagnitude
             ).then((hash) => {
-                return rec_pow(res.add(curl.trytes(hash)), i + 1);
+                alert(hash);
+                res.add(hash);
+                return rec_pow(res, i + 1);
             }).catch((err) => {
                 alert(err);
             });

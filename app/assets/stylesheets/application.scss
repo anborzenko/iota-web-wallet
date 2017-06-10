@@ -1,7 +1,10 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 @import "wallets";
+@import "nodes";
 @import "ladda";
+@import "font-awesome-sprockets";
+@import "font-awesome";
 
 body {
   padding-top: 20px;
@@ -65,4 +68,36 @@ h2 {
   .jumbotron {
     border-bottom: 0;
   }
+}
+
+.inline {
+  display: inline-block;
+}
+
+.footer-content{
+  text-align: center;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }

@@ -51,12 +51,16 @@
     });
 </script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <div id="loading" ><p class="text-muted">Loading wallet...</p></div>
 
 <div id="wallet-data">
   <div id="wallet_show_notifications"></div>
   <div class="panel panel-primary">
-    <div class="panel-heading"><h1>Your wallet: <span id="wallet_balance_summary"></span></h1></div>
+    <div class="panel-heading">
+      <h1><span class="inline">Your wallet: <span id="wallet_balance_summary"></span></span></h1>
+    </div>
     <div class="panel-body">
       <h2>Seed</h2>
       <div class="input-group">
@@ -69,19 +73,19 @@
         </span>
       </div>
 
-      <div style="display: inline-block">
-        <div style="display: inline-block">
+      <div>
+        <div class="inline">
           <h2>Your address
-            <span id="refresh_address_glyph" onclick="onGenerateAddressClick()" class="glyphicon glyphicon-refresh"></span>
+            <span id="refresh_address_glyph" onclick="onGenerateAddressClick()" class="glyphicon glyphicon-refresh icon-clickable" title="Generate a new address"></span>
           </h2>
         </div>
-        <div style="display: inline-block" class="text-muted" id="address_generation_status"></div>
+        <div class="text-muted inline" id="address_generation_status"></div>
       </div>
       <div class="input-group">
         <input id="address_box" class="form-control" readonly>
 
         <span class="input-group-btn">
-          <button class="btn" type=button style="background-color: #dddddd" data-clipboard-target="#address_box">
+          <button class="btn" type=button style="background-color: #dddddd" data-clipboard-target="#address_box" title="Click to copy">
             <%= image_tag('clippy.svg', size: '16') %>
           </button>
         </span>
@@ -91,7 +95,7 @@
       <div class="input-group">
         <div id="wallet_balance"></div>
         <span class="input-group-btn">
-          <button class="btn btn-primary" type=button onclick="openSendWindow()">Make transfer</button>
+          <button class="btn btn-primary" type=button title="Send iotas" onclick="openSendWindow()">Make transfer</button>
         </span>
       </div>
     </div>

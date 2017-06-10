@@ -33,23 +33,25 @@
 </style>
 
 <script>
-    $("#wallet_username").keyup(function(event){
-        if(event.keyCode === 13){
-            $("#login_btn").click();
-        }
-    });
+  $( document ).ready(function() {
+      $("#wallet_username").keyup(function (event) {
+          if (event.keyCode === 13) {
+              $("#login_btn").click();
+          }
+      });
 
-    $("#wallet_password").keyup(function(event){
-        if(event.keyCode === 13){
-            $("#login_btn").click();
-        }
-    });
+      $("#wallet_password").keyup(function (event) {
+          if (event.keyCode === 13) {
+              $("#login_btn").click();
+          }
+      });
 
-    $("#wallet_seed").keyup(function(event){
-        if(event.keyCode === 13){
-            $("#login_btn").click();
-        }
-    });
+      $("#wallet_seed").keyup(function (event) {
+          if (event.keyCode === 13) {
+              $("#openWithSeed").click();
+          }
+      });
+  });
 </script>
 
 <div id="notifications">

@@ -1,0 +1,2 @@
+module PendingTransactionsHelper
+end

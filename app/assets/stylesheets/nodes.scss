@@ -1,0 +1,12 @@
+// Place all the styles related to the nodes controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+#node-info {
+  width:100%;
+  table-layout:fixed;
+  overflow-y: scroll;
+}
+
+#node-info td{
+  word-wrap: break-word;
+}
