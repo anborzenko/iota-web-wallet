@@ -28,13 +28,13 @@ function onGetNodeInfoFinished(e, res){
     });
 }
 
-function onGetNodeStatusFinished(e, res2){
+function onGetNodeStatusFinished(e, res){
     var status_symbol = document.getElementById('node_status_symbol');
     var status_wrapper = document.getElementById('node_status_wrapper');
     if (e){
         status_symbol.style.color = "red";
         status_wrapper.title = 'Node is offline'
-    }else if (res2.latestMilestoneIndex === res2.latestSolidSubtangleMilestoneIndex){
+    }else if (res.latestMilestoneIndex === res.latestSolidSubtangleMilestoneIndex){
         status_symbol.style.color = "green";
         status_wrapper.title = 'Node is synced'
     }else{

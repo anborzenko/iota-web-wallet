@@ -4,11 +4,6 @@
 
 // TODO: Fix isloggedin problems (cannot use cache)
 
-var iota = new IOTA({
-    'provider': 'http://service.iotasupport.com:14265'
-});
-var depth = 4;
-var minWeightMagnitude = 15;
 
 function addChecksum(data){
     return iota.utils.addChecksum(data);
@@ -162,7 +157,6 @@ function replayBundle(tail_hash, callback){
     iota.api.replayBundle(tail_hash, depth, minWeightMagnitude, callback);
 }
 
-var nodeInfo = null;
 function loadNodeInfoCached(callback){
     if (nodeInfo === null){
         loadNodeInfo(callback);

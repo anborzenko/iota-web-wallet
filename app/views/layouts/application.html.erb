@@ -15,10 +15,19 @@
     <meta name="author" content="">
   </head>
 
+  <body>
   <script>
-      $(document).on('turbolinks:load', function() {
-          loadNodeInfoCached(onGetNodeStatusFinished);
-      });
+      $(document).ready(function(){
+        loadGlobal();
+    });
+
+    $(document).on('turbolinks:load', function() {
+        try {
+            loadNodeInfoCached(onGetNodeStatusFinished);
+        }catch (err){
+            alert(err);
+        }
+    });
   </script>
 
     <div class="container">

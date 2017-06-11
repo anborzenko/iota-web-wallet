@@ -2,8 +2,6 @@
  * Created by Daniel on 04.06.2017.
  */
 
-var walletData;
-
 function onGetWalletDataFinished(e, accountData) {
     if (window.location.href.indexOf('wallets/show') === -1){
         return;

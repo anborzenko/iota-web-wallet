@@ -1,46 +1,3 @@
-/**
-*
-*   Conversion functions
-*
-**/
-
-var RADIX = 3;
-var MAX_TRIT_VALUE = 1;
-var MIN_TRIT_VALUE = -1;
-
-// All possible tryte values
-var trytesAlphabet = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-// map of all trits representations
-var trytesTrits = [
-    [ 0,  0,  0],
-    [ 1,  0,  0],
-    [-1,  1,  0],
-    [ 0,  1,  0],
-    [ 1,  1,  0],
-    [-1, -1,  1],
-    [ 0, -1,  1],
-    [ 1, -1,  1],
-    [-1,  0,  1],
-    [ 0,  0,  1],
-    [ 1,  0,  1],
-    [-1,  1,  1],
-    [ 0,  1,  1],
-    [ 1,  1,  1],
-    [-1, -1, -1],
-    [ 0, -1, -1],
-    [ 1, -1, -1],
-    [-1,  0, -1],
-    [ 0,  0, -1],
-    [ 1,  0, -1],
-    [-1,  1, -1],
-    [ 0,  1, -1],
-    [ 1,  1, -1],
-    [-1, -1,  0],
-    [ 0, -1,  0],
-    [ 1, -1,  0],
-    [-1,  0,  0]
-];
 
 /**
 *   Converts trytes into trits
@@ -89,7 +46,7 @@ var trits = function(input, state) {
     }
 
     return trits;
-}
+};
 
 /**
 *   Converts trits into trytes
@@ -116,7 +73,7 @@ var trytes = function(trits) {
     }
 
     return trytes;
-}
+};
 
 /**
 *   Converts trits into an integer value
@@ -135,7 +92,7 @@ var toValue = function(trits) {
     }
 
     return value;
-}
+};
 
 
 /**
@@ -166,7 +123,7 @@ var fromValue= function(value) {
         }
     }
     return destination;
-}
+};
 
 module.exports = {
     trits       : trits,

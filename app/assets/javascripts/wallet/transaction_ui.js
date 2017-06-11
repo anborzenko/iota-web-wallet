@@ -59,7 +59,6 @@ function transactionsToHtmlTable(table, transactions){
     }
 }
 
-var openTail;
 function openTransactionWindow(hashtimestamp) {
     $('#transactionModal').modal('show');
 
