@@ -15,6 +15,7 @@ gem 'ladda-rails'
 gem 'font-awesome-sass'
 gem 'js-routes'
 gem 'pg'
+gem 'yui-compressor'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.1'
 # Use Puma as the app server
