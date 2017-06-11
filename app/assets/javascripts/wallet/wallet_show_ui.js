@@ -19,7 +19,7 @@ function onGetWalletDataFinished(e, accountData) {
     $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
     populateWallet(walletData);
-    setTimeout(() => loadWalletData(onGetWalletDataFinished), 5000); // Periodically update the wallet.
+    setTimeout(function () { loadWalletData(onGetWalletDataFinished); }, 5000); // Periodically update the wallet.
 }
 
 function populateWallet(data){
@@ -60,7 +60,7 @@ function onGenerateAddressClick(){
 function onAttachBeforeGenerateAddressCallback(e, res){
     if (e){
         document.getElementById('address_generation_status').innerHTML = 'Failed';
-        $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh');
+        $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh icon-clickable');
         return document.getElementById('wallet_show_notifications').innerHTML =
             "<div class='alert alert-danger'>Failed to generate new address. " + e.message + "</div>";
     }
@@ -70,7 +70,7 @@ function onAttachBeforeGenerateAddressCallback(e, res){
 }
 
 function onGenerateAddressCallback(e, res){
-    $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh');
+    $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh icon-clickable');
 
     if (e){
         document.getElementById('address_generation_status').innerHTML = 'Failed';

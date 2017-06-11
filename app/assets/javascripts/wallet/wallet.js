@@ -2,9 +2,10 @@
  * Created by Daniel on 03.06.2017.
  */
 
+// TODO: Fix isloggedin problems (cannot use cache)
 
 var iota = new IOTA({
-    'provider': 'http://iotatoken.nl:14265'
+    'provider': 'http://service.iotasupport.com:14265'
 });
 var depth = 4;
 var minWeightMagnitude = 15;
@@ -85,25 +86,14 @@ function findInputs(amount){
     return confirmedAddresses;
 }
 
-function sendIotas(to_address, amount, message, callback, options={}){
+function sendIotas(to_address, amount, message, callback, status_callback){
     var transfer = [{
         'address': to_address,
         'value': amount,
         'message': iota.utils.toTrytes(message)
     }];
 
-    options['inputs'] = walletData.inputs; // TODO: Find
-
-    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, options, function(e, res){
-        onSendIotasCallback(e, res, callback);
-    });
-}
-
-function onSendIotasCallback(e, res, callback){// TODO: No need for this after debugging
-    callback(e, res);
-    // TODO: Test if this sends the tail
-    savePendingTransaction(res[0]);
-    doSelflessDeed();
+    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, {}, callback, status_callback);
 }
 
 function generateRandomSeed(){
@@ -118,10 +108,9 @@ function generateRandomSeed(){
             result += charset[values[i] % charset.length];
         }
         return result;
-    } else
-        throw new Error(
-            "Your browser do not support secure seed generation. Try upgrading your browser"
-        );
+    } else {
+        throw("Your browser do not support secure seed generation. Try upgrading your browser");
+    }
 
     return result;
 }
@@ -192,56 +181,68 @@ function loadNodeInfo(callback){
 }
 
 function savePendingTransaction(tail_hash){
-    $.ajax({
-        type: "GET",
-        url: 'pending_transactions/add',
-        data: {tail_hash: tail_hash},
-        dataType: "JSON",
-    });
+    try {
+        $.ajax({
+            type: "GET",
+            url: 'add_pending_transaction',
+            data: {tail_hash: tail_hash},
+            dataType: "JSON",
+            success: function(response) {},
+            error: function(err) {}
+        });
+    }catch(err){
+        alert(err);
+    }
 }
 
 // Retrieves a previous transaction and replays it
-function doSelflessDeed(){
+function getAndReplayPendingTransaction(){
     $.ajax({
         type: "GET",
-        url: 'pending_transactions/get_next',
+        url: 'get_next_pending_transaction',
         dataType: "JSON",
         success: function (response) {
-            if (response.success){
-                try{
-                    selflessReplay(response.tail_hash, response.key);
-                }catch(err){}
-            }
+            selflessReplay(response.tail_hash);
         },
+        error: function(err){}
     });
 }
 
-function selflessReplay(tail_hash, key){
+function selflessReplay(tail_hash){
     // First check if the transaction is done, or is a double spend. If so, tell the server to delete it.
-    iota.api.getBundle(tail_hash, function(e, bundle){
+    iota.api.getTransactionsObjects([tail_hash], function(e, bundle){
         var tail = bundle[0];
-        if (tail.persistence){
-            // Done
-            return notifyServerAboutNonReplayableTransaction(tail_hash, key);
+        if (e){
+            // Done or invalid
+            return notifyServerAboutNonReplayableTransaction(tail_hash);
         }
 
         shouldReplay(tail.address, function (e, res){
-            if (!e && !res){
-                // Double spend
-                return notifyServerAboutNonReplayableTransaction(tail_hash, key);
+            if (e ||!res){
+                // Possibly double spend
+                return notifyServerAboutNonReplayableTransaction(tail_hash);
             }
 
-            replayBundle(tail_hash, function(e, res){});
+            replayBundle(tail_hash, function(e, res){
+                if (e){
+                    return notifyServerAboutNonReplayableTransaction(tail_hash);
+                }
+            });
         })
 
     })
 }
 
-function notifyServerAboutNonReplayableTransaction(tail_hash, key){
+function notifyServerAboutNonReplayableTransaction(tail_hash){
     $.ajax({
         type: "GET",
-        url: 'pending_transactions/delete',
-        data: {key: key},
+        url: 'delete_pending_transaction',
+        data: {tail_hash: tail_hash},
         dataType: "JSON",
+        success: function(response) {
+            // Try the next transaction instead.
+            getAndReplayPendingTransaction();
+        },
+        error: function(err){}
     });
 }

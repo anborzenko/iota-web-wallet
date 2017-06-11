@@ -40,19 +40,23 @@
     <span class="ladda-label" data-disable-with="Make transaction" >Make transaction</span>
   </button>
 
+  <div id="progress_text" class="text-muted"></div>
+
   <div id="send_confirmation_box" hidden="hidden">
     <div id="send_confirmation_message"></div>
     <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="send_button" onclick="onSendClick(this)">
-      <span class="ladda-label" data-disable-with="Make transaction">Confirm</span>
+      <span class="ladda-label">Confirm</span>
     </button>
-    <button class="btn btn-default" onclick="restoreSendForm()">Cancel</button>
+    <button class="btn btn-default" onclick="restoreSendForm()" id="cancel">Cancel</button>
   </div>
 
   <div id="double_spend_confirmation_box" hidden="hidden">
-    <p><b>Double spend warning</b></p>
-    <p>This is a double spend. If you choose to confirm this transfer, only one of your transfers will be completed, while the rest will be pending forever.</p>
-    <p>You should wait for any transactions you just made to finish before sending a new one</p>
-    <button class="btn btn-primary btn" onclick="restoreSendForm()">Abort</button>
+    <div id="double_spend_warning_text">
+      <p><b>Double spend warning</b></p>
+      <p>This is a double spend. If you choose to confirm this transfer, only one of your transfers will be completed, while the rest will be pending forever.</p>
+      <p>You should wait for any transactions you just made to finish before sending a new one</p>
+    </div>
+    <button class="btn btn-primary btn" onclick="restoreSendForm()" id="abort_double_spend">Abort</button>
     <button class="ladda-button btn btn-danger" data-style="expand-right" id="force_send_button" onclick="onSendClick(this)">
       <span class="ladda-label" data-disable-with="Make transaction">I want to send anyway</span>
     </button>

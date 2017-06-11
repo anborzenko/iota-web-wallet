@@ -1,5 +1,4 @@
 class PendingTransaction < ApplicationRecord
-  validates :key, presence: true, uniqueness: true
-  validates :tail_hash, presence: true
+  validates :tail_hash, presence: true, uniqueness: true
   validates :last_replay, presence: true
 end

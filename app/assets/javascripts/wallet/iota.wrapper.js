@@ -2,24 +2,32 @@
  * Created by Daniel on 08.06.2017.
  */
 
-function sendTransferWrapper(iota_inst, seed, depth, minWeightMagnitude, transfer, options, callback){
+function sendTransferWrapper(iota_inst, seed, depth, minWeightMagnitude, transfer, options, callback, status_callback){
+    try{
+        status_callback(0, "Preparing transfers");
+    }catch(err){}
+
     iota_inst.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
 
         if (error) {
             return callback(error)
         }
 
-        sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callback);
+        sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callback, status_callback);
     })
 }
 
-function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callback){
+function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callback, status_callback){
+    try{
+        status_callback(0, "Finding transactions to approve");
+    }catch(err){}
+
     iota_inst.api.getTransactionsToApprove(depth, function(error, toApprove) {
         if (error) {
             return callback(error)
         }
 
-        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, function(error, attached) {
+        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback, function(error, attached) {
             if (error) {
                 return callback(error)
             }
@@ -32,7 +40,7 @@ function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callbac
                 var finalTxs = [];
 
                 attached.forEach(function(trytes) {
-                    finalTxs.push(Utils.transactionObject(trytes));
+                    finalTxs.push(iota_inst.utils.transactionObject(trytes));
                 });
 
                 return callback(null, finalTxs);
@@ -41,41 +49,49 @@ function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callbac
     })
 }
 
-function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes, callback){
+function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes_in, status_callback, callback){
     try {
-        converterInit();
-        branchTransaction = toTrits(branchTransaction);
-        trunkTransaction = toTrits(trunkTransaction);
+        branchTransaction = trits(branchTransaction);
+        trunkTransaction = trits(trunkTransaction);
     }catch (err){
-        alert(err);
+        callback(err, null);
     }
 
     var prevTransaction = null;
-    var rec_pow = (res, i) => {
+    var rec_pow = function (res, i) {
+        try{
+            status_callback(i / trytes_in.length, "Doing proof of work: " + i + " of " + trytes_in.length + " are complete");
+        }catch(err){}
+
         try {
-            if (i >= trytes.length) {
-                alert('finished: ' + res);
-                return callback(null, res);
+            if (i >= trytes_in.length) {
+                return callback(null, res.reverse());
             }
 
-            var transactionTrits = toTrits(trytes[i]);
+            var transactionTrits = trits(trytes_in[i]);
             arrayCopy(prevTransaction === null ? trunkTransaction : prevTransaction, 0, transactionTrits, TRUNK_TRANSACTION_TRINARY_OFFSET, TRUNK_TRANSACTION_TRINARY_SIZE);
             arrayCopy(prevTransaction === null ? branchTransaction : trunkTransaction, 0, transactionTrits, BRANCH_TRANSACTION_TRINARY_OFFSET, BRANCH_TRANSACTION_TRINARY_SIZE);
 
-            prevTransaction = transactionTrits;
+            var transactionTrytes = trytes(transactionTrits);
 
-            curl.pow(toTrytes(transactionTrits, 0, transactionTrits.length), minWeightMagnitude
-            ).then((hash) => {
-                alert(hash);
-                res.add(hash);
+            curl.pow(transactionTrytes, minWeightMagnitude
+            ).then(function (hash) {
+                prevTransaction = trits(iota.utils.transactionObject(hash).hash);
+                res.push(hash);
                 return rec_pow(res, i + 1);
-            }).catch((err) => {
-                alert(err);
+            }).catch(function (err) {
+                callback(err, null);
             });
         }catch(err){
-            alert(err);
+            callback(err, null);
         }
     };
 
     rec_pow([], 0);
+}
+
+function arrayCopy(src, src_start, dst, dst_start, len){
+    for (var i = src_start; i < src_start + len; i++){
+        dst[dst_start + (i - src_start)] = src[i];
+    }
 }

@@ -45,18 +45,30 @@ function onSendClick(btn){
     var amount = parseInt($('#amount').val());
     var message = $('#message').val();
 
-    var inputs = findInputs();
-    var options = inputs && inputs.length > 0 ? {inputs: findInputs()} : {};
-
-    sendIotas(to_address, amount, message, onSendFinished, options);
     var l = Ladda.create(btn);
+    $("#double_spend_confirmation_box").hide();
+    $("#send_confirmation_message").hide();
+    $("#cancel").hide();
+    $("#abort_double_spend").hide();
+
+
+    sendIotas(to_address, amount, message, onSendFinished, function (progress, text) {
+        l.setProgress(progress);
+        document.getElementById('progress_text').innerHTML = text;
+    });
     l.start();
+    getAndReplayPendingTransaction();
 }
 
 function restoreSendForm(){
+    $("#send_confirmation_message").show();
+    $("#abort_double_spend").show();
+    $("#cancel").show();
+    $('#send_button').show();
     $("#double_spend_confirmation_box").hide();
     $("#send_confirmation_box").hide();
-    $('#send_button').show();
+
+    document.getElementById('progress_text').innerHTML = "";
     Ladda.stopAll();
 }
 
@@ -74,4 +86,6 @@ function onSendFinished(e, response){
     }
 
     restoreSendForm();
+
+    savePendingTransaction(response[0].hash);
 }

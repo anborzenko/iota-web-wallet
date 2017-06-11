@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   get 'wallets/signup'
   get 'wallets/settings'
   get 'nodes/index'
-  get 'pending_transactions/get_next'
-  get 'pending_transactions/delete'
-  get 'pending_transactions/add'
+  get 'wallets/get_next_pending_transaction'
+  get 'wallets/delete_pending_transaction'
+  get 'wallets/add_pending_transaction'
   root 'page#index'
 end

@@ -42,5 +42,6 @@ function onGetNodeStatusFinished(e, res){
         status_wrapper.title = 'Node is not synced'
     }
 
-    setTimeout(() => loadNodeInfo(onGetNodeStatusFinished), 30000); // Periodically update the state
+    // Periodically update the state
+    setTimeout(function(){ onGetNodeStatusFinished(); }, 3000);
 }
