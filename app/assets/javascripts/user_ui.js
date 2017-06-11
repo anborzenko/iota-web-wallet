@@ -3,7 +3,7 @@
  */
 
 function openWithSeed() {
-    const seed = $('#wallet_seed').val();
+    var seed = $('#wallet_seed').val();
     if (seed.length === 0 || !validateSeed(seed)){
         document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: Invalid seed</div>";
         return;

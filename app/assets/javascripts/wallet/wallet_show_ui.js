@@ -34,7 +34,7 @@ function populateWallet(data){
 function convertIotaValuesToHtml(value){
     var units = ['i', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi'];
     value = value.toString();
-    const minNumBeforeDecimal = 1;
+    var minNumBeforeDecimal = 1;
 
     var i = Math.floor((value.length - minNumBeforeDecimal) / 3);
     if (i >= units.length){
