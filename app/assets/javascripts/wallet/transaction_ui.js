@@ -30,7 +30,7 @@ function populateTransactions(data){
         (document).getElementById('transaction_pager').innerHTML = "";
         $('#transaction_list').pageMe({pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10});
     }catch (err){
-        alert(err);
+        (document).getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>" + err + "</div>";
     }
 }
 
@@ -38,8 +38,10 @@ function transactionsToHtmlTable(table, transactions){
     table.innerHTML = "";
     var today = new Date().toDateString();
 
+    var sender_addresses = [];
     for (var i = 0; i < transactions.length; i++){
         var tail = transactions[i][0];
+        sender_addresses.push(getSenderAddress(transactions[i]));
 
         var row = table.insertRow(-1);
         row.classList.add('clickable-row');
@@ -48,22 +50,38 @@ function transactionsToHtmlTable(table, transactions){
         var date = row.insertCell(1);
         var value = row.insertCell(2);
         var status = row.insertCell(3);
-        var category = row.insertCell(4);
 
         var d = new Date(tail.timestamp*1000);
         direction.innerHTML = tail.direction === 'in' ?
-            "<span class='glyphicon glyphicon-chevron-right' style='color:#008000' title='Received'></span>" :
-            "<span class='glyphicon glyphicon-chevron-left' style='color:#FF0000' title='Sent'></span>";
+            "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
+            "<i class='fa fa-angle-left' style='color:#FF0000' aria-hidden='true' title='Outgoing'></i>"
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
         value.innerHTML = convertIotaValuesToHtml(tail.value);
         status.innerHTML = tail.persistence ? 'Completed' : 'Pending';
-
-        if (false){// TODO: If the remaining balance == 0 and value > 0: Double spend (may have to use shouldResend)
-            category.innerHTML = 'Double spend';
-        }else if (true){// TODO:If bundle length = 1: Attach address
-            category.innerHTML = 'Attach';
-        }
     }
+
+    iota.api.getBalances(sender_addresses, 100, function(e, res){
+        if (e){
+            return (document).getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>Failed to load balances. " + e + "</div>";
+        }
+
+        var rows = table.rows;
+        for (var i = 0; i < res.balances.length; i++){
+            var cell = rows[i].cells[0];
+            if (transactions[i].length === 1){
+                cell.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
+            }else if (res.balances[i] === '0') {
+                var tail = transactions[i][0];
+                if (!tail.persistence && tail.value > 0) {
+                    if (tail.direction === 'out') {
+                        cell.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
+                    }else if (tail.direction === 'in'){
+                        cell.innerHTML = "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>"
+                    }
+                }
+            }
+        }
+    })
 }
 
 function openTransactionWindow(hashtimestamp) {

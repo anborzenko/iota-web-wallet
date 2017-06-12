@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get 'page/index'
   get 'page/about'
   get 'page/help'
+  get 'page/donate'
 
   get 'wallets/show'
   get 'wallets/login'

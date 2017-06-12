@@ -26,6 +26,7 @@ function loadGlobal(){
     // The asset preprocessing of rails don't allow global variables, so
     // have to attach them to window
     window.iota = new IOTA({
+        //'provider': 'http://service.iotasupport.com:14265'
         'provider': 'https://d3j4w674fijhi2.cloudfront.net'
     });
     window.depth = 4;

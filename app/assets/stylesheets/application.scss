@@ -101,3 +101,13 @@ h2 {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+.fixed-table {
+  width:100%;
+  table-layout:fixed;
+  overflow-y: scroll;
+}
+
+.fixed-table td {
+  word-wrap: break-word;
+}

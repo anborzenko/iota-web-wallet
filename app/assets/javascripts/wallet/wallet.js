@@ -34,8 +34,8 @@ function getPendingOut(){
     var outTransactions = categorizeTransactions(walletData.transfers, walletData.addresses).sent;
     var pendingOut = [];
     for (var i = 0; i < outTransactions.length; i++){
-        var transfer = outTransactions[i][0];
-        if (!transfer.persistence){
+        var transfer = outTransactions[i];
+        if (!transfer[0].persistence){
             pendingOut.push(transfer);
         }
     }
@@ -63,7 +63,7 @@ function findInputs(amount){
     for (var i = 0; i < inputs.length; i++){
         var isAddressInUse = false;
         for (var j = 0; j < pendingOut.length; j++){
-            if (pendingOut[j].address === inputs[i].address){
+            if (getSenderAddress(pendingOut[j]).address === inputs[i].address){
                 isAddressInUse = true;
                 break;
             }
