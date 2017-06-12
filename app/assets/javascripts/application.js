@@ -26,7 +26,7 @@ function loadGlobal(){
     // The asset preprocessing of rails don't allow global variables, so
     // have to attach them to window
     window.iota = new IOTA({
-        'provider': 'http://service.iotasupport.com:14265'
+        'provider': 'https://d3j4w674fijhi2.cloudfront.net'
     });
     window.depth = 4;
     window.minWeightMagnitude = 15;
@@ -39,7 +39,7 @@ function loadGlobal(){
     window.MIN_TRIT_VALUE = -1;
 
     // All possible tryte values
-    window.trytesAlphabet = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    window.trytesAlphabet = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     // map of all trits representations
     window.trytesTrits = [

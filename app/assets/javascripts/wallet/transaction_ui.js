@@ -7,19 +7,19 @@ function populateTransactions(data){
         var cTransfers = categorizeTransactions(data.transfers, data.addresses);
         var tflat = [];
         for (var i = 0; i < cTransfers.sent.length; i++){
-            var transfer = cTransfers.sent[i][0];
-            transfer.direction = 'out';
-            tflat.push(transfer);
+            var transferOut = cTransfers.sent[i][0];
+            transferOut.direction = 'out';
+            tflat.push(cTransfers.sent[i]);
         }
 
         for (var i = 0; i < cTransfers.received.length; i++){
-            var transfer = cTransfers.received[i][0];
-            transfer.direction = 'in';
-            tflat.push(transfer);
+            var transferIn = cTransfers.received[i][0];
+            transferIn.direction = 'in';
+            tflat.push(cTransfers.received[i]);
         }
 
         tflat.sort(function (x, y){
-           return y.timestamp - x.timestamp;
+           return y[0].timestamp - x[0].timestamp;
         });
 
         transactionsToHtmlTable((document).getElementById('transaction_list'), tflat);
@@ -39,23 +39,30 @@ function transactionsToHtmlTable(table, transactions){
     var today = new Date().toDateString();
 
     for (var i = 0; i < transactions.length; i++){
-        var transfer = transactions[i];
+        var tail = transactions[i][0];
 
         var row = table.insertRow(-1);
         row.classList.add('clickable-row');
-        row.setAttribute('hashtimestamp', transfer.hash + transfer.timestamp.toString());
+        row.setAttribute('hashtimestamp', tail.hash + tail.timestamp.toString());
         var direction = row.insertCell(0);
         var date = row.insertCell(1);
         var value = row.insertCell(2);
         var status = row.insertCell(3);
+        var category = row.insertCell(4);
 
-        var d = new Date(transfer.timestamp*1000);
-        direction.innerHTML = transfer.direction === 'in' ?
+        var d = new Date(tail.timestamp*1000);
+        direction.innerHTML = tail.direction === 'in' ?
             "<span class='glyphicon glyphicon-chevron-right' style='color:#008000' title='Received'></span>" :
             "<span class='glyphicon glyphicon-chevron-left' style='color:#FF0000' title='Sent'></span>";
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
-        value.innerHTML = convertIotaValuesToHtml(transfer.value);
-        status.innerHTML = transfer.persistence ? 'Completed' : 'Pending';
+        value.innerHTML = convertIotaValuesToHtml(tail.value);
+        status.innerHTML = tail.persistence ? 'Completed' : 'Pending';
+
+        if (false){// TODO: If the remaining balance == 0 and value > 0: Double spend (may have to use shouldResend)
+            category.innerHTML = 'Double spend';
+        }else if (true){// TODO:If bundle length = 1: Attach address
+            category.innerHTML = 'Attach';
+        }
     }
 }
 
@@ -85,7 +92,7 @@ function openTransactionWindow(hashtimestamp) {
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
     // Check if the user should replay by finding the sender address (with value < 0) and using the api
-    // Also ignore incoming transfers, and let the sender deal with replaying TODO: Ignore incoming
+    // Also ignore incoming transfers, and let the sender deal with replaying
     $('#replay').hide();
     $('#double_spend_info').hide();
     if (!tail.persistence){
