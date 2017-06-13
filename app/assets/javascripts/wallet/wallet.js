@@ -2,8 +2,6 @@
  * Created by Daniel on 03.06.2017.
  */
 
-// TODO: Fix isloggedin problems (cannot use cache)
-
 
 function addChecksum(data){
     return iota.utils.addChecksum(data);
@@ -22,7 +20,20 @@ function categorizeTransactions(transactions, addresses){
 }
 
 function loadWalletData(callback){
-    iota.api.getAccountData(getSeed(), callback);
+    var seed = getSeed();
+    if (walletData.maxAddressIndex !== 0){
+        walletData.latestAddress = iota.api._newAddress(seed, walletData.maxAddressIndex+1, 2, false);
+        getAccountData(seed, {start: walletData.maxAddressIndex - 1, end: walletData.maxAddressIndex + 1}, callback);
+    }else {
+        getMostRecentAddressIndex(getSeed(), function (e, end) {
+            walletData.latestAddress = iota.api._newAddress(seed, end + 1, 2, false);
+            walletData.maxAddressIndex = end+1;
+            callback(null, walletData);
+            alert(end);
+            //getAccountData(seed, {start: end > 10 ? end - 10 : 0, end: end + 1}, callback);
+            iota.api.getAccountData(seed, {start: end - 5, callback});
+        });
+    }
 }
 
 function getMessage(transaction){
@@ -88,7 +99,7 @@ function sendIotas(to_address, amount, message, callback, status_callback){
         'message': iota.utils.toTrytes(message)
     }];
 
-    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, {}, callback, status_callback);
+    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, {'inputs': findInputs()}, callback, status_callback);
 }
 
 function generateRandomSeed(){

@@ -2,8 +2,8 @@
  * Created by Daniel on 08.06.2017.
  */
 function openSendWindow(){
+    document.getElementById('send_balance').innerHTML = 'Limit: ' + sumDictValues(walletData.balances) + ' IOTAs';
     $('#sendModal').modal('show');
-    document.getElementById('send_balance').innerHTML = 'Limit: ' + walletData.balance + ' IOTAs';
 }
 
 function moveBalanceToSendAmount(){
@@ -73,6 +73,7 @@ function restoreSendForm(){
 }
 
 function onSendFinished(e, response){
+    walletData.maxAddressIndex += 1;
     Ladda.create( document.querySelector( '#send_button' ) ).stop();
     if (e){
         if (e.message === 'Double spend'){

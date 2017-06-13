@@ -39,7 +39,6 @@
             return;
         }
 
-        loadWalletData(onGetWalletDataFinished);
         $(document).find('#wallet-data').hide();
         $("#loading").spin({
             color: '#777',
@@ -48,6 +47,7 @@
             width: 15,
             radius: 30
         });
+        loadWalletData(onGetWalletDataFinished);
     });
 </script>
 

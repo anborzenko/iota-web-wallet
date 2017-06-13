@@ -4,7 +4,10 @@
 
 function populateTransactions(data){
     try {
-        var cTransfers = categorizeTransactions(data.transfers, data.addresses);
+        if (data.transfers.length === 0){
+            return;
+        }
+        var cTransfers = categorizeTransactions(data.transfers, walletData.addresses);
         var tflat = [];
         for (var i = 0; i < cTransfers.sent.length; i++){
             var transferOut = cTransfers.sent[i][0];
@@ -24,7 +27,7 @@ function populateTransactions(data){
 
         transactionsToHtmlTable((document).getElementById('transaction_list'), tflat);
         $(".clickable-row").click(function() {
-            openTransactionWindow($(this).attr("hashtimestamp"));
+            openTransactionWindow($(this).attr("tid"));
         });
 
         (document).getElementById('transaction_pager').innerHTML = "";
@@ -35,62 +38,59 @@ function populateTransactions(data){
 }
 
 function transactionsToHtmlTable(table, transactions){
-    table.innerHTML = "";
-    var today = new Date().toDateString();
-
-    var sender_addresses = [];
     for (var i = 0; i < transactions.length; i++){
         var tail = transactions[i][0];
-        sender_addresses.push(getSenderAddress(transactions[i]));
 
-        var row = table.insertRow(-1);
+        var rowIndex = getArrayIndex(table.rows, tail, compareTableRowAndTail);
+        var row;
+        if (rowIndex === -1){
+            row = table.insertRow(findTableRowIndex(tail, table));
+            row.insertCell(0);
+            row.insertCell(1);
+            row.insertCell(2);
+            row.insertCell(3);
+        }else{
+            // Update existing
+            row = table.rows[rowIndex];
+        }
         row.classList.add('clickable-row');
-        row.setAttribute('hashtimestamp', tail.hash + tail.timestamp.toString());
-        var direction = row.insertCell(0);
-        var date = row.insertCell(1);
-        var value = row.insertCell(2);
-        var status = row.insertCell(3);
+        row.setAttribute('tid', tail.persistence + tail.hash + tail.timestamp.toString());
+
+        var direction = row.cells[0];
+        var date = row.cells[1];
+        var value = row.cells[2];
+        var status = row.cells[3];
+
+        var balance = getAddressBalance(getSenderAddress(transactions[i]));
+        if (transactions[i].length === 1){
+            direction.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
+        }else if (balance === 0 && !tail.persistence && tail.value > 0) {
+            if (tail.direction === 'out') {
+                direction.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
+            }else {
+                direction.innerHTML = "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>"
+            }
+        }else{
+            direction.innerHTML = tail.direction === 'in' ?
+                "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
+                "<i class='fa fa-angle-left' style='color:#FF0000' aria-hidden='true' title='Outgoing'></i>";
+        }
 
         var d = new Date(tail.timestamp*1000);
-        direction.innerHTML = tail.direction === 'in' ?
-            "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
-            "<i class='fa fa-angle-left' style='color:#FF0000' aria-hidden='true' title='Outgoing'></i>"
+        var today = new Date().toDateString();
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
         value.innerHTML = convertIotaValuesToHtml(tail.value);
         status.innerHTML = tail.persistence ? 'Completed' : 'Pending';
     }
-
-    iota.api.getBalances(sender_addresses, 100, function(e, res){
-        if (e){
-            return (document).getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>Failed to load balances. " + e + "</div>";
-        }
-
-        var rows = table.rows;
-        for (var i = 0; i < res.balances.length; i++){
-            var cell = rows[i].cells[0];
-            if (transactions[i].length === 1){
-                cell.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
-            }else if (res.balances[i] === '0') {
-                var tail = transactions[i][0];
-                if (!tail.persistence && tail.value > 0) {
-                    if (tail.direction === 'out') {
-                        cell.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
-                    }else if (tail.direction === 'in'){
-                        cell.innerHTML = "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>"
-                    }
-                }
-            }
-        }
-    })
 }
 
-function openTransactionWindow(hashtimestamp) {
+function openTransactionWindow(tid) {
     $('#transactionModal').modal('show');
 
     var b;
     for (var i = 0; i < walletData.transfers.length; i++){
         var transfer = walletData.transfers[i][0];
-        if (transfer.hash + transfer.timestamp.toString() === hashtimestamp){
+        if (transfer.persistence + transfer.hash + transfer.timestamp.toString() === tid){
             b = walletData.transfers[i];
             break;
         }
@@ -110,7 +110,6 @@ function openTransactionWindow(hashtimestamp) {
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
     // Check if the user should replay by finding the sender address (with value < 0) and using the api
-    // Also ignore incoming transfers, and let the sender deal with replaying
     $('#replay').hide();
     $('#double_spend_info').hide();
     if (!tail.persistence){
@@ -164,4 +163,15 @@ function bundleToHtmlTable(table, bundle){
         address.innerHTML = t.address;
         hash.innerHTML = t.hash;
     });
+}
+
+function findTableRowIndex(tail, table){
+    for (var i = 0; i < table.rows.length; i++){
+        var tid = table.rows[i].getAttribute('tid');
+        var timestamp = parseInt(tid.replace('false', '').replace('true', '').slice(81, -1));
+        if (tail.timestamp < timestamp){
+            return i === 0 ? 0 : i-1;
+        }
+    }
+    return -1;
 }

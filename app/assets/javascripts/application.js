@@ -32,7 +32,14 @@ function loadGlobal(){
     window.depth = 4;
     window.minWeightMagnitude = 15;
     window.nodeInfo = null;
-    window.walletData = null;
+    window.walletData = {
+        'latestAddress'     : '',
+        'addresses'         : [],
+        'transfers'         : [],
+        'inputs'            : [],
+        'balances'          : {},
+        'maxAddressIndex'   : 0
+    };
     window.openTail = null;
 
     window.RADIX = 3;

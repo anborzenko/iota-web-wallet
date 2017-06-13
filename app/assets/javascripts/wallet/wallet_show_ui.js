@@ -12,21 +12,19 @@ function onGetWalletDataFinished(e, accountData) {
         document.getElementById('loading').innerHTML = "<div class='alert alert-danger'>Could not load your wallet. Please check the node health. " + e.message + "</div>";
         return;
     }
-    walletData = accountData;
+    addWalletData(accountData);
 
     $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
     populateWallet(walletData);
-    setTimeout(function () { loadWalletData(onGetWalletDataFinished); }, 5000); // Periodically update the wallet.
+    populateTransactions(accountData);
 }
 
 function populateWallet(data){
     $("#seed_box").val(getSeed());
-    document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(data.balance);
-    document.getElementById("wallet_balance").innerHTML = '<b>' + data.balance + '</b> IOTAs';
+    document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(sumDictValues(data.balances));
+    document.getElementById("wallet_balance").innerHTML = '<b>' + sumDictValues(data.balances) + '</b> IOTAs';
     $('#address_box').val(addChecksum(data.latestAddress));
-
-    populateTransactions(walletData);
 }
 
 function convertIotaValuesToHtml(value){
