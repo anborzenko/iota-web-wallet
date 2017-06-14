@@ -1,7 +1,12 @@
-
+<style>
+  .center {
+    text-align: center;
+    vertical-align: middle;
+  }
+</style>
 
 <div class="panel panel-default">
-  <div class="panel-heading"><h1 class="inline">Transactions</h1><h2 id="tx_loading_notification" class="inline text-muted" style="float: right">loading..</h2></div>
+  <div class="panel-heading"><h1 class="inline">Transactions</h1></div>
   <div class="panel-body">
     <table class="table clickable"  >
       <thead>
@@ -18,6 +23,11 @@
     </table>
     <div class="col-md-12 text-center">
       <ul class="pagination pagination-lg pager" id="transaction_pager"></ul>
+    </div>
+    <div id="loadAllTransactionsDiv" style="text-align: center" hidden="hidden"><a class="text-muted" href="javascript:loadAllTransactions();">Load all</a></div>
+    <div id="tx_loading_notification" style="text-align: center" class="text-muted center">
+      <i class="fa fa-spinner fa-spin center" style="font-size:24px"></i>
+      <span class="center" id="transactionLoadStatus" style="padding-left: 3px"></span>
     </div>
   </div>
 </div>

@@ -19,26 +19,33 @@ function categorizeTransactions(transactions, addresses){
     return iota.utils.categorizeTransfers(transactions, addresses);
 }
 
-function loadWalletData(callback){
+function loadWalletData(callback, onFinishedCallback){
+    var lastKnownAddressIndex = getLastKnownAddressIndex();
     var seed = getSeed();
-    if (walletData.maxAddressIndex !== 0){
-        walletData.latestAddress = iota.api._newAddress(seed, walletData.maxAddressIndex+1, 2, false);
-        getAccountData(seed, {start: walletData.maxAddressIndex - 1, end: walletData.maxAddressIndex + 1}, callback);
-    }else {
-        getMostRecentAddressIndex(getSeed(), function (e, end) {
-            walletData.latestAddress = iota.api._newAddress(seed, end + 1, 2, false);
-            walletData.maxAddressIndex = end+1;
+
+    if (!lastKnownAddressIndex){
+        getMostRecentAddressIndex(seed, function (e, end) {
+            lastKnownAddressIndex = end+1;
+            setLastKnownAddressIndex(lastKnownAddressIndex);
+            walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
             callback(null, walletData);
-            alert(end);
-            //getAccountData(seed, {start: end > 10 ? end - 10 : 0, end: end + 1}, callback);
-            iota.api.getAccountData(seed, {start: end - 5, callback});
+            getAccountData(seed, {start: lastKnownAddressIndex > defaultNumAddessesToLoad ? lastKnownAddressIndex - defaultNumAddessesToLoad : 0, end: lastKnownAddressIndex},
+                callback, onFinishedCallback);
+        });
+    }else{
+        // Make sure it really is the most recent
+        iota.api.getNewAddress(seed, {index: lastKnownAddressIndex, returnAll: true}, function (e, res) {
+            setLastKnownAddressIndex(lastKnownAddressIndex + res.length - 1);
+            walletData.latestAddress = res[res.length-1];
+
+            getAccountData(seed, {start: lastKnownAddressIndex > defaultNumAddessesToLoad ? lastKnownAddressIndex - defaultNumAddessesToLoad : 0, end: lastKnownAddressIndex},
+                callback, onFinishedCallback);
         });
     }
 }
 
-function getMessage(transaction){
-    var m = iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
-    return '"' + m + '"';
+function loadWalletDataRange(start, end, callback, onFinishedCallback){
+    setTimeout(function(){ getAccountData(getSeed(), {start: start, end: end}, callback, onFinishedCallback); }, 0);
 }
 
 function getPendingOut(){
@@ -52,6 +59,19 @@ function getPendingOut(){
     }
 
     return pendingOut;
+}
+
+function getConfirmedOut(){
+    var outTransactions = categorizeTransactions(walletData.transfers, walletData.addresses).sent;
+    var confirmedOut = [];
+    for (var i = 0; i < outTransactions.length; i++){
+        var transfer = outTransactions[i];
+        if (transfer[0].persistence){
+            confirmedOut.push(transfer);
+        }
+    }
+
+    return confirmedOut;
 }
 
 /*
@@ -98,8 +118,7 @@ function sendIotas(to_address, amount, message, callback, status_callback){
         'value': amount,
         'message': iota.utils.toTrytes(message)
     }];
-
-    sendTransferWrapper(iota, getSeed(), depth, minWeightMagnitude, transfer, {'inputs': findInputs()}, callback, status_callback);
+    sendTransferWrapper(getSeed(), depth, minWeightMagnitude, transfer, {'inputs': findInputs()}, callback, status_callback);
 }
 
 function generateRandomSeed(){
@@ -164,6 +183,32 @@ function shouldReplay(address, callback){
     iota.api.shouldYouReplay(address, callback);
 }
 
+function isDoubleSpend(transfer, callback){
+    if (transfer[0].persistence){
+        return callback(null, false);
+    }
+
+    var addressesOut = [];
+    var values = 0;
+
+    for (var i = 0; i < transfer.length; i++){
+        if (transfer[i].value < 0){
+            addressesOut.push(transfer[i].address);
+            values += transfer[i].value;
+        }
+    }
+
+    if (values === 0){// Not a value transfer
+        callback(null, false);
+    }
+
+    iota.api.getBalances(addressesOut, 100, function(e, balances){
+        var b = sumList(balances.balances);
+        var outgoingValues = Math.abs(values);
+        return callback(null, b < outgoingValues);
+    });
+}
+
 function replayBundle(tail_hash, callback){
     iota.api.replayBundle(tail_hash, depth, minWeightMagnitude, callback);
 }
@@ -179,7 +224,7 @@ function loadNodeInfoCached(callback){
 function loadNodeInfo(callback){
     iota.api.getNodeInfo(function (e, res) {
         if (!e) {
-            nodeInfo = res;
+            window.nodeInfo = res;
         }
         callback(e, res);
     });
@@ -195,9 +240,7 @@ function savePendingTransaction(tail_hash){
             success: function(response) {},
             error: function(err) {}
         });
-    }catch(err){
-        alert(err);
-    }
+    }catch(err){}
 }
 
 // Retrieves a previous transaction and replays it
@@ -218,7 +261,6 @@ function selflessReplay(tail_hash){
     iota.api.getTransactionsObjects([tail_hash], function(e, bundle){
         var tail = bundle[0];
         if (e){
-            // Done or invalid
             return notifyServerAboutNonReplayableTransaction(tail_hash);
         }
 
@@ -250,4 +292,12 @@ function notifyServerAboutNonReplayableTransaction(tail_hash){
         },
         error: function(err){}
     });
+}
+
+function getLastKnownAddressIndex(){
+    return parseInt(sessionStorage.getItem('lkai'));
+}
+
+function setLastKnownAddressIndex(value){
+    sessionStorage.setItem('lkai', value);
 }

@@ -64,12 +64,9 @@ function transactionsToHtmlTable(table, transactions){
         var balance = getAddressBalance(getSenderAddress(transactions[i]));
         if (transactions[i].length === 1){
             direction.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
-        }else if (balance === 0 && !tail.persistence && tail.value > 0) {
-            if (tail.direction === 'out') {
-                direction.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
-            }else {
-                direction.innerHTML = "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>"
-            }
+        }else if (balance === 0 && !tail.persistence && tail.value > 0 && tail.direction === 'out') {
+            direction.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
+            // TODO: Incoming double spend. Have to use getBalance async
         }else{
             direction.innerHTML = tail.direction === 'in' ?
                 "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
@@ -79,12 +76,14 @@ function transactionsToHtmlTable(table, transactions){
         var d = new Date(tail.timestamp*1000);
         var today = new Date().toDateString();
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
+        date.setAttribute('timestamp', tail.timestamp);
         value.innerHTML = convertIotaValuesToHtml(tail.value);
         status.innerHTML = tail.persistence ? 'Completed' : 'Pending';
     }
 }
 
 function openTransactionWindow(tid) {
+    document.getElementById('transaction-notifications').innerHTML = '';
     $('#transactionModal').modal('show');
 
     var b;
@@ -101,7 +100,7 @@ function openTransactionWindow(tid) {
     }
 
     var tail = b[0];
-    openTail = tail;
+    window.openTail = tail;
     document.getElementById('bundle_div').innerHTML = tail.bundle;
     document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + tail.value + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
@@ -109,20 +108,15 @@ function openTransactionWindow(tid) {
     document.getElementById('message_div').innerHTML = getMessage(tail);
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
-    // Check if the user should replay by finding the sender address (with value < 0) and using the api
     $('#replay').hide();
     $('#double_spend_info').hide();
     if (!tail.persistence){
-        b.forEach(function (t) {
-            if (t.value < 0) {
-                shouldReplay(t.address, shouldReplayCallback);
-            }
-        });
+        isDoubleSpend(b, isDoubleSpendCallback);
     }
 }
 
-function shouldReplayCallback(e, res){
-    if (res){
+function isDoubleSpendCallback(e, res){
+    if (!res){
         $('#replay').show();
     }else{
         $('#double_spend_info').show();
@@ -166,12 +160,30 @@ function bundleToHtmlTable(table, bundle){
 }
 
 function findTableRowIndex(tail, table){
-    for (var i = 0; i < table.rows.length; i++){
-        var tid = table.rows[i].getAttribute('tid');
-        var timestamp = parseInt(tid.replace('false', '').replace('true', '').slice(81, -1));
-        if (tail.timestamp < timestamp){
-            return i === 0 ? 0 : i-1;
+    for (var i = 0; i < table.rows.length; i++) {
+        var timestamp = parseInt(table.rows[i].cells[1].getAttribute('timestamp'));
+        if (parseInt(tail.timestamp) > timestamp) {
+            return i;
         }
     }
     return -1;
+}
+
+function loadAllTransactions(){
+    showTxLoadUI();
+    loadWalletDataRange(0, getLastKnownAddressIndex() - defaultNumAddessesToLoad, onGetWalletData, function(e, res){
+        onTxLoadingFinished();
+        $('#loadAllTransactionsDiv').hide();
+    });
+}
+
+function showTxLoadUI(){
+    $('#tx_loading_notification').show();
+    $('#loadAllTransactionsDiv').hide();
+}
+
+function onTxLoadingFinished(){
+    window.walletDataLoader = setTimeout(function () { loadWalletData(onGetWalletData, onTxLoadingFinished); }, 10000);
+    $('#tx_loading_notification').hide();
+    $('#loadAllTransactionsDiv').show();
 }

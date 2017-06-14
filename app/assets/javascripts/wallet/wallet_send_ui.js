@@ -2,7 +2,7 @@
  * Created by Daniel on 08.06.2017.
  */
 function openSendWindow(){
-    document.getElementById('send_balance').innerHTML = 'Limit: ' + sumDictValues(walletData.balances) + ' IOTAs';
+    document.getElementById('send_balance').innerHTML = 'Limit: ' + getSeedBalance() + ' IOTAs';
     $('#sendModal').modal('show');
 }
 
@@ -24,20 +24,23 @@ function onMakeTransactionClick(){
     }
 
     var inputs = findInputs();
-
     if (inputs === null){
         return n_div.innerHTML = "<div class='alert alert-danger'>Not able to load your wallet data. Please contact support if this problem persists</div>";
     }
 
-    $('#send_button').hide();
-    if(inputs.length === 0 && amount !== 0){
-        $("#double_spend_confirmation_box").show();
-        $("#send_confirmation_box").hide()
-    }else{
-        $("#double_spend_confirmation_box").hide();
-        $("#send_confirmation_box").show();
-        document.getElementById('send_confirmation_message').innerHTML = 'Please confirm sending ' + amount + ' IOTAs to ' + to_address;
+    var pendingOut = getPendingOut();
+    for (var i = 0; i < inputs.length; i++){
+        if (isInArray(pendingOut, inputs[i], senderInputAddressComparer)){
+            $("#double_spend_confirmation_box").show();
+            $("#send_confirmation_box").hide();
+            return;
+        }
     }
+
+    $('#send_button').hide();
+    $("#double_spend_confirmation_box").hide();
+    $("#send_confirmation_box").show();
+    document.getElementById('send_confirmation_message').innerHTML = 'Please confirm sending ' + amount + ' IOTAs to ' + to_address;
 }
 
 function onSendClick(btn){
@@ -57,7 +60,6 @@ function onSendClick(btn){
         document.getElementById('progress_text').innerHTML = text;
     });
     l.start();
-    getAndReplayPendingTransaction();
 }
 
 function restoreSendForm(){
@@ -83,10 +85,11 @@ function onSendFinished(e, response){
         }
     }else{
         document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>Transfer succeeded</div>";
-        loadWalletData(onGetWalletDataFinished);
+        loadWalletData(onGetWalletData);
     }
 
     restoreSendForm();
 
+    getAndReplayPendingTransaction();
     savePendingTransaction(response[0].hash);
 }

@@ -2,27 +2,27 @@
  * Created by Daniel on 08.06.2017.
  */
 
-function sendTransferWrapper(iota_inst, seed, depth, minWeightMagnitude, transfer, options, callback, status_callback){
+function sendTransferWrapper(seed, depth, minWeightMagnitude, transfer, options, callback, status_callback){
     try{
         status_callback(0, "Preparing transfers");
     }catch(err){}
 
-    iota_inst.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
+    iota.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
 
         if (error) {
             return callback(error)
         }
 
-        sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callback, status_callback);
+        sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback);
     })
 }
 
-function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callback, status_callback){
+function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback){
     try{
         status_callback(0, "Finding transactions to approve");
     }catch(err){}
 
-    iota_inst.api.getTransactionsToApprove(depth, function(error, toApprove) {
+    iota.api.getTransactionsToApprove(depth, function(error, toApprove) {
         if (error) {
             return callback(error)
         }
@@ -32,7 +32,7 @@ function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callbac
                 return callback(error)
             }
 
-            iota_inst.api.broadcastAndStore(attached, function(error, success) {
+            iota.api.broadcastAndStore(attached, function(error, success) {
                 if (error) {
                     return callback(error);
                 }
@@ -40,7 +40,7 @@ function sendTrytesWrapper(iota_inst, trytes, depth, minWeightMagnitude, callbac
                 var finalTxs = [];
 
                 attached.forEach(function(trytes) {
-                    finalTxs.push(iota_inst.utils.transactionObject(trytes));
+                    finalTxs.push(iota.utils.transactionObject(trytes));
                 });
 
                 return callback(null, finalTxs);
@@ -90,40 +90,42 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
     rec_pow([], 0);
 }
 
-var getAccountData = function(seed, options, callback) {
+var getAccountData = function(seed, options, liveCallback, onFinishedCallback) {
     var end = options.end || null;
     var security = options.security || 2;
+
+    var addressesToLoad = new Array(end - options.start);
+    for (var i = options.start; i < end; i++) {
+        var address = generateAddress(seed, i);
+        addressesToLoad[i - options.start] = address;
+    }
+    addressesToLoad.reverse();
 
     var step = 3;
     var loader = function(start, end) {
         var valuesToReturn = {
-            'addresses'         : [],
             'transfers'         : [],
             'inputs'            : [],
             'balances'          : {}
         };
 
-        for (var i = start; i < end; i++) {
-            var address = iota.api._newAddress(seed, i, security, false);
-            valuesToReturn.addresses.push(address);
-        }
-
-        iota.api._bundlesFromAddresses(valuesToReturn.addresses, true, function (error, bundles) {
-            if (error) return callback(error);
+        var addresses = addressesToLoad.slice(options.end - end, options.end - start);
+        iota.api._bundlesFromAddresses(addresses, true, function (error, bundles) {
+            if (error) return onFinishedCallback(error);
 
             for (i = 0; i < bundles.length; i++) {
                 valuesToReturn.transfers.push(bundles[i]);
             }
 
-            iota.api.getBalances(valuesToReturn.addresses, 100, function (error, balances) {
+            iota.api.getBalances(addresses, 100, function (error, balances) {
                 balances.balances.forEach(function (balance, index) {
                     balance = parseInt(balance);
-                    valuesToReturn.balances[valuesToReturn.addresses[index]] = balance;
+                    valuesToReturn.balances[addresses[index]] = balance;
 
                     if (balance > 0) {
                         var newInput = {
-                            'address': valuesToReturn.addresses[index],
-                            'keyIndex': index,
+                            'address': addresses[index],
+                            'keyIndex': getIndexOfAddress(addresses[index]),
                             'security': security,
                             'balance': balance
                         };
@@ -131,15 +133,16 @@ var getAccountData = function(seed, options, callback) {
                     }
                 });
                 try {
-                    callback(null, valuesToReturn);
+                    var progress = 100 * (options.end - start) / (options.end - options.start);
+                    liveCallback(null, valuesToReturn, progress >= 100 ? 99 : Math.floor(progress));
                 } catch (err) {
-                    alert(err);
+                    // Happens when a new address is generated or iotas are transferred during the update
+                    return onFinishedCallback()
                 }
                 if (end >= options.start) {
                     loader(start - step, end - step);
                 }else{
-                    $('#tx_loading_notification').hide();
-                    setTimeout(function () { loadWalletData(callback); }, 5000); // Periodically update the wallet.
+                    onFinishedCallback();
                 }
             });
         });
@@ -149,51 +152,37 @@ var getAccountData = function(seed, options, callback) {
 };
 
 function getMostRecentAddressIndex(seed, callback){
-    var step = 100;
-
     var getLastAddressIndex = function(min_nohit, index){
         index = Math.floor(index);
-        var addressOptions = {
-            index: index,
-            total: 1,
-            returnAll: false,
-            security: 2
-        };
+        var address = generateAddress(seed, index);
+        iota.api.findTransactions({addresses: [address]}, function (err, transactions) {
+            if (err) return callback(err);
+            try {
+                if (transactions.length !== 0 && min_nohit === index + 1 || index < 0) {
+                    return callback(null, index < 0 ? 0 : index);
+                }
 
-        try {
-            iota.api.getNewAddress(seed, addressOptions, function (error, addresses) {
-                if (error) return callback(error);
-
-                iota.api.findTransactions({addresses: addresses}, function (err, transactions) {
-                    if (err) return callback(err);
-                    try {
-                        if (transactions.length === 1 && min_nohit === index + 1) {
-                            return callback(err, index);
-                        }
-
-                        if (transactions.length > 0) {
-                            if (index >= min_nohit) {
-                                return getLastAddressIndex(index * 2, index * 2);
-                            } else {
-                                return getLastAddressIndex(min_nohit, (min_nohit + index) / 2);
-                            }
-                        } else {
-                            if (index <= min_nohit) {
-                                return getLastAddressIndex(index, (min_nohit - index) / 2);
-                            } else {
-                                return getLastAddressIndex(min_nohit, (index + min_nohit) / 2);
-                            }
-                        }
-                    }catch(err){
-                        alert(err);// TODO: Message instead
+                if (transactions.length > 0) {
+                    if (index >= min_nohit) {
+                        return getLastAddressIndex(index * 2, index * 2);
+                    } else {
+                        return getLastAddressIndex(min_nohit, (min_nohit + index) / 2);
                     }
-                })
-            });
-        }
-        catch (err){
-            alert(err);
-        }
+                } else {
+                    if (index === min_nohit){
+                        return getLastAddressIndex(min_nohit, index / 2);
+                    }else if (index <= min_nohit) {
+                        return getLastAddressIndex(index, index - (min_nohit - index) / 2);
+                    } else {
+                        return getLastAddressIndex(min_nohit, (index + min_nohit) / 2);
+                    }
+                }
+            }catch(err){
+                return callback(err);
+            }
+        });
     };
 
-    getLastAddressIndex(step, step);// TODO: If no addresses
+    var start = 100;
+    getLastAddressIndex(start, start);// TODO: If no addresses
 }

@@ -39,7 +39,6 @@
             return;
         }
 
-        $(document).find('#wallet-data').hide();
         $("#loading").spin({
             color: '#777',
             top: '40%',
@@ -47,7 +46,8 @@
             width: 15,
             radius: 30
         });
-        loadWalletData(onGetWalletDataFinished);
+
+        loadWalletData(onGetWalletData, onTxLoadingFinished);
     });
 </script>
 
@@ -55,7 +55,7 @@
 
 <div id="loading" ><p class="text-muted">Loading wallet...</p></div>
 
-<div id="wallet-data">
+<div id="wallet-data" hidden="hidden">
   <div id="wallet_show_notifications"></div>
   <div class="panel panel-primary">
     <div class="panel-heading">

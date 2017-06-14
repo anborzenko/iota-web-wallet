@@ -2,7 +2,7 @@
  * Created by Daniel on 04.06.2017.
  */
 
-function onGetWalletDataFinished(e, accountData) {
+function onGetWalletData(e, accountData, progress) {
     if (window.location.href.indexOf('wallets/show') === -1){
         return;
     }
@@ -16,14 +16,15 @@ function onGetWalletDataFinished(e, accountData) {
 
     $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
+    document.getElementById('transactionLoadStatus').innerHTML = (progress ? progress : 0) + '%';
     populateWallet(walletData);
     populateTransactions(accountData);
 }
 
 function populateWallet(data){
     $("#seed_box").val(getSeed());
-    document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(sumDictValues(data.balances));
-    document.getElementById("wallet_balance").innerHTML = '<b>' + sumDictValues(data.balances) + '</b> IOTAs';
+    document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(getSeedBalance());
+    document.getElementById("wallet_balance").innerHTML = '<b>' + getSeedBalance() + '</b> IOTAs';
     $('#address_box').val(addChecksum(data.latestAddress));
 }
 

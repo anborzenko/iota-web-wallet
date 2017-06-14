@@ -33,13 +33,14 @@ function loadGlobal(){
     window.minWeightMagnitude = 15;
     window.nodeInfo = null;
     window.walletData = {
-        'latestAddress'     : '',
-        'addresses'         : [],
-        'transfers'         : [],
-        'inputs'            : [],
-        'balances'          : {},
-        'maxAddressIndex'   : 0
+        'latestAddress'         : '',
+        'addresses'             : [],
+        'transfers'             : [],
+        'inputs'                : [],
+        'balances'              : {},
+        'generatedIndexes'      : {}
     };
+    window.defaultNumAddessesToLoad = 15;
     window.openTail = null;
 
     window.RADIX = 3;
