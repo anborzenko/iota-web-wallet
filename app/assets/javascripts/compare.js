@@ -16,7 +16,8 @@ function primitiveComparer(a, b){
 }
 
 function compareTableRowAndTail(tail, row){
-    return row.getAttribute('tid') === tail.persistence + tail.hash + tail.timestamp.toString();
+    return row.getAttribute('tid') === tail.persistence + tail.hash + tail.timestamp.toString() ||
+        row.getAttribute('tid') === !tail.persistence + tail.hash + tail.timestamp.toString();
 }
 
 function senderInputAddressComparer(input, tx){

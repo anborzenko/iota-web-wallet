@@ -7,7 +7,7 @@ function openSendWindow(){
 }
 
 function moveBalanceToSendAmount(){
-    $('#amount').val(walletData.balance);
+    $('#amount').val(getSeedBalance());
 }
 
 function onMakeTransactionClick(){

@@ -208,7 +208,7 @@ function replayBundle(tail_hash, callback){
 }
 
 function loadNodeInfoCached(callback){
-    if (nodeInfo === null){
+    if (!nodeInfo){
         loadNodeInfo(callback);
     }else{
         callback(null, nodeInfo);
