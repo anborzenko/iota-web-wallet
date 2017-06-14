@@ -96,6 +96,13 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
         clearTimeout(window.walletDataLoader);
     }catch(err){}
 
+    if (options.start < 0){
+        options.start = 0;
+    }
+    if (options.end < 0){
+        options.end = 0;
+    }
+
     var end = options.end || null;
     var security = options.security || 2;
 

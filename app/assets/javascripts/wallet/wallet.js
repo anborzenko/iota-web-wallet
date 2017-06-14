@@ -21,12 +21,12 @@ function loadWalletData(callback, onFinishedCallback){
 
     if (!lastKnownAddressIndex){
         getMostRecentAddressIndex(seed, function (e, end) {
+            alert(end);
             lastKnownAddressIndex = end+1;
             setLastKnownAddressIndex(lastKnownAddressIndex);
             walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
             callback(null, walletData);
-            getAccountData(seed, {start: lastKnownAddressIndex > defaultNumAddessesToLoad ? lastKnownAddressIndex - defaultNumAddessesToLoad : 0, end: lastKnownAddressIndex},
-                callback, onFinishedCallback);
+            getAccountData(seed, {start: lastKnownAddressIndex - defaultNumAddessesToLoad, end: lastKnownAddressIndex},callback, onFinishedCallback);
         });
     }else{
         // Make sure it really is the most recent
@@ -34,8 +34,7 @@ function loadWalletData(callback, onFinishedCallback){
             setLastKnownAddressIndex(lastKnownAddressIndex + res.length - 1);
             walletData.latestAddress = res[res.length-1];
 
-            getAccountData(seed, {start: lastKnownAddressIndex > defaultNumAddessesToLoad ? lastKnownAddressIndex - defaultNumAddessesToLoad : 0, end: lastKnownAddressIndex},
-                callback, onFinishedCallback);
+            getAccountData(seed, {start: lastKnownAddressIndex - defaultNumAddessesToLoad, end: lastKnownAddressIndex}, callback, onFinishedCallback);
         });
     }
 }
