@@ -291,9 +291,16 @@ function notifyServerAboutNonReplayableTransaction(tail_hash){
 }
 
 function getLastKnownAddressIndex(){
-    return parseInt(sessionStorage.getItem('lkai'));
+    var seed = sessionStorage.getItem('seed');
+    if (seed !== null){
+        return parseInt(sessionStorage.getItem(seed));
+    }
 }
 
 function setLastKnownAddressIndex(value){
-    sessionStorage.setItem('lkai', value);
+    // Use the encrypted seed as key
+    var seed = sessionStorage.getItem('seed');
+    if (seed !== null){
+        sessionStorage.setItem(seed, value);
+    }
 }
