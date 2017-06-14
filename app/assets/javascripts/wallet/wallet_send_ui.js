@@ -28,6 +28,7 @@ function onMakeTransactionClick(){
         return n_div.innerHTML = "<div class='alert alert-danger'>Not able to load your wallet data. Please contact support if this problem persists</div>";
     }
 
+    $('#send_button').hide();
     var pendingOut = getPendingOut();
     for (var i = 0; i < inputs.length; i++){
         if (isInArray(pendingOut, inputs[i], senderInputAddressComparer)){
@@ -37,7 +38,6 @@ function onMakeTransactionClick(){
         }
     }
 
-    $('#send_button').hide();
     $("#double_spend_confirmation_box").hide();
     $("#send_confirmation_box").show();
     document.getElementById('send_confirmation_message').innerHTML = 'Please confirm sending ' + amount + ' IOTAs to ' + to_address;
