@@ -90,7 +90,7 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
     rec_pow([], 0);
 }
 
-var getAccountData = function(seed, options, liveCallback, onFinishedCallback) {
+function getAccountData (seed, options, liveCallback, onFinishedCallback) {
     var end = options.end || null;
     var security = options.security || 2;
 
@@ -102,11 +102,11 @@ var getAccountData = function(seed, options, liveCallback, onFinishedCallback) {
     addressesToLoad.reverse();
 
     var step = 3;
-    var loader = function(start, end) {
+    var loader = function (start, end) {
         var valuesToReturn = {
-            'transfers'         : [],
-            'inputs'            : [],
-            'balances'          : {}
+            'transfers': [],
+            'inputs': [],
+            'balances': {}
         };
 
         var addresses = addressesToLoad.slice(options.end - end, options.end - start);
@@ -141,7 +141,7 @@ var getAccountData = function(seed, options, liveCallback, onFinishedCallback) {
                 }
                 if (end >= options.start) {
                     loader(start - step, end - step);
-                }else{
+                } else {
                     onFinishedCallback();
                 }
             });
@@ -149,7 +149,7 @@ var getAccountData = function(seed, options, liveCallback, onFinishedCallback) {
     };
 
     loader(end - step, end);
-};
+}
 
 function getMostRecentAddressIndex(seed, callback){
     var getLastAddressIndex = function(min_nohit, index){
