@@ -16,7 +16,7 @@ function sendTransferWrapper(seed, depth, minWeightMagnitude, transfer, options,
         sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback);
     })
 }
-
+// TODO: Store transfer address immidiatley to check for double spendings.
 function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback){
     try{
         status_callback(0, "Finding transactions to approve");
