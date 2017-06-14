@@ -46,6 +46,14 @@ function sumDictValues(dict){
     return sum;
 }
 
+function getDictValues(dict){
+    var values = [];
+    for (var key in dict){
+        values.push(dict[key]);
+    }
+    return values;
+}
+
 function sumList(list){
     var sum = 0;
     for (var i = 0; i < list.length; i++){
@@ -59,8 +67,8 @@ function getCookie(name){
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        while (c.charAt(0)===' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
 }
@@ -73,4 +81,46 @@ function findMin(iterable){
         }
     }
     return min;
+}
+
+function getStringHash(string){
+    var hash = 0, i, chr;
+    if (string.length === 0) return hash;
+    for (i = 0; i < string.length; i++) {
+        chr   = string.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+function dictHasKeys(dict){
+    for (var key in dict) {
+        if (dict.hasOwnProperty(key)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function dictToString(dict){
+    var string = '';
+    for (var key in dict) {
+        if (dict.hasOwnProperty(key)) {
+            string += (string.length === 0 ? '' : ';') + key + ',' + dict[key];
+        }
+    }
+
+    return string;
+}
+
+function dictFromString(string){
+    var dict = {};
+    var entries = string.split(';');
+    for (var i = 0; i < entries.length; i++) {
+        var keyvalue = entries[i].split(',');
+        dict[parseInt(keyvalue[0])] = keyvalue[1];
+    }
+
+    return dict;
 }

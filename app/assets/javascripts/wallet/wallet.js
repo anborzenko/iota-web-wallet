@@ -150,7 +150,7 @@ function saveSeed(cvalue, password) {
 
 function getSeed() {
     var password = sessionStorage.getItem('unnamed');
-    var seed = sessionStorage.getItem('seed');
+    var seed = getEncryptedSeed();
     if (seed !== null){
         return decrypt(password, seed);
     }
@@ -288,17 +288,21 @@ function notifyServerAboutNonReplayableTransaction(tail_hash){
     });
 }
 
+function getEncryptedSeed(){
+    return sessionStorage.getItem('seed');
+}
+
 function getLastKnownAddressIndex(){
-    var seed = sessionStorage.getItem('seed');
+    var seed = getEncryptedSeed();
     if (seed !== null){
-        return parseInt(sessionStorage.getItem(seed));
+        return parseInt(sessionStorage.getItem('lkai' + seed));
     }
 }
 
 function setLastKnownAddressIndex(value){
     // Use the encrypted seed as key
-    var seed = sessionStorage.getItem('seed');
+    var seed = getEncryptedSeed();
     if (seed !== null){
-        sessionStorage.setItem(seed, value);
+        sessionStorage.setItem('lkai' + seed, value);
     }
 }

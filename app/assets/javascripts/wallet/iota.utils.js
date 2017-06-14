@@ -63,14 +63,25 @@ function getSeedBalance(){
     return balance;
 }
 
-function generateAddress(seed, i){
-    if (!(i in walletData.generatedIndexes)){
-        var address = iota.api._newAddress(seed, i, 2, false);
-        walletData.addresses.push(address);
-        walletData.generatedIndexes[i] = address;
+function generateAddress(seed, index){
+    // First see if anything is cached.
+    var cacheKey = 'rai' + getStringHash(getEncryptedSeed());
+
+    var rawAddressIndexes = localStorage.getItem(cacheKey);
+    if (!dictHasKeys(walletData.generatedIndexes) && rawAddressIndexes) {
+        walletData.generatedIndexes = dictFromString(rawAddressIndexes);
+        walletData.addresses = getDictValues(walletData.generatedIndexes);
     }
 
-    return walletData.generatedIndexes[i];
+    if (!(index in walletData.generatedIndexes)) {
+        var address = iota.api._newAddress(seed, index, 2, false);
+        walletData.addresses.push(address);
+        walletData.generatedIndexes[index] = address;
+
+        localStorage.setItem(cacheKey, dictToString(walletData.generatedIndexes));
+    }
+
+    return walletData.generatedIndexes[index];
 }
 
 function getIndexOfAddress(address){
