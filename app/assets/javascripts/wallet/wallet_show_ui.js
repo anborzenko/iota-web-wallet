@@ -16,7 +16,10 @@ function onGetWalletData(e, accountData, progress) {
 
     $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
-    document.getElementById('transactionLoadStatus').innerHTML = (progress ? progress : 0) + '%';
+
+    if (progress) {
+        document.getElementById('transactionLoadStatus').innerHTML = (progress ? progress : 0) + '%';
+    }
     populateWallet(walletData);
     populateTransactions(accountData);
 }

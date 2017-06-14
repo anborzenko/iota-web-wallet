@@ -78,11 +78,7 @@ function onSendFinished(e, response){
     walletData.maxAddressIndex += 1;
     Ladda.create( document.querySelector( '#send_button' ) ).stop();
     if (e){
-        if (e.message === 'Double spend'){
-            $('#confirmation_box').show();
-        }else{
-            document.getElementById('send-notifications').innerHTML = "<div class='alert alert-danger'>Transfer failed. " + e.message + "</div>";
-        }
+        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-danger'>Transfer failed. " + e.message + "</div>";
     }else{
         document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>Transfer succeeded</div>";
         loadWalletData(onGetWalletData);

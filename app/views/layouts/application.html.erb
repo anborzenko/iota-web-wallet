@@ -22,11 +22,7 @@
     });
 
     $(document).on('turbolinks:load', function() {
-        try {
-            loadNodeInfoCached(onGetNodeStatusFinished);
-        }catch (err){
-            alert(err);
-        }
+          loadNodeInfoCached(onGetNodeStatusFinished);
     });
   </script>
 

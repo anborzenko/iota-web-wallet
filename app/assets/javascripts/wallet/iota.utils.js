@@ -85,3 +85,37 @@ function getMessage(transaction){
     var m = iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
     return '"' + m + '"';
 }
+
+function categorizeTransactions(transactions){
+    var res = iota.utils.categorizeTransfers(transactions, walletData.addresses);
+    if (res.sent.length + res.received.length === transactions.length) {
+        return res;
+    }
+    // Some transactions could not be classified because we don't have enough addresses.
+    // Generate backwards until all are known
+    var unknownTx = [];
+    for (var i = 0; i < transactions.length; i++){
+        if (!isInArray(res.sent, transactions[i], transferComparer) &&
+            !isInArray(res.received, transactions[i], transferComparer)){
+            unknownTx.push(transactions[i]);
+        }
+    }
+
+    var seed = getSeed();
+    var keys = [];
+    for(var k in walletData.generatedIndexes) keys.push(k);
+    var minLoaded = findMin(keys);
+    for (i = minLoaded - 1; i >= 0 && unknownTx.length > 0; i--){
+        generateAddress(seed, i);
+        c = iota.utils.categorizeTransfers(unknownTx, walletData.addresses);
+        for (var j = c.sent.length - 1; j >= 0; j--){
+            res.sent.push(c.sent[j]);
+            unknownTx.splice(j, 1);
+        }
+        for (j = c.received.length - 1; j >= 0; j--){
+            res.received.push(c.received[j]);
+            unknownTx.splice(j, 1);
+        }
+    }
+    return res;
+}

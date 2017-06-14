@@ -15,10 +15,6 @@ function validateAddress(address){
     return iota.valid.isAddress(address);
 }
 
-function categorizeTransactions(transactions, addresses){
-    return iota.utils.categorizeTransfers(transactions, addresses);
-}
-
 function loadWalletData(callback, onFinishedCallback){
     var lastKnownAddressIndex = getLastKnownAddressIndex();
     var seed = getSeed();
@@ -49,7 +45,7 @@ function loadWalletDataRange(start, end, callback, onFinishedCallback){
 }
 
 function getPendingOut(){
-    var outTransactions = categorizeTransactions(walletData.transfers, walletData.addresses).sent;
+    var outTransactions = categorizeTransactions(walletData.transfers).sent;
     var pendingOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];
@@ -62,7 +58,7 @@ function getPendingOut(){
 }
 
 function getConfirmedOut(){
-    var outTransactions = categorizeTransactions(walletData.transfers, walletData.addresses).sent;
+    var outTransactions = categorizeTransactions(walletData.transfers).sent;
     var confirmedOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];

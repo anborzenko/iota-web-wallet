@@ -91,6 +91,11 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
 }
 
 function getAccountData (seed, options, liveCallback, onFinishedCallback) {
+    try{
+        // Stop timeouts if any
+        clearTimeout(window.walletDataLoader);
+    }catch(err){}
+
     var end = options.end || null;
     var security = options.security || 2;
 
@@ -101,7 +106,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
     }
     addressesToLoad.reverse();
 
-    var step = 3;
+    var bulkSize = 3;
     var loader = function (start, end) {
         var valuesToReturn = {
             'transfers': [],
@@ -140,7 +145,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
                     return onFinishedCallback()
                 }
                 if (end >= options.start) {
-                    loader(start - step, end - step);
+                    loader(start - bulkSize, end - bulkSize);
                 } else {
                     onFinishedCallback();
                 }
@@ -148,7 +153,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
         });
     };
 
-    loader(end - step, end);
+    loader(end - bulkSize, end);
 }
 
 function getMostRecentAddressIndex(seed, callback){

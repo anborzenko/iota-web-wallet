@@ -64,3 +64,13 @@ function getCookie(name){
     }
     return null;
 }
+
+function findMin(iterable){
+    var min = iterable[0];
+    for (var i = 1; i < iterable.length; i++){
+        if (iterable[i] < min){
+            min = iterable[i];
+        }
+    }
+    return min;
+}

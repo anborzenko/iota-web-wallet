@@ -7,7 +7,7 @@ function populateTransactions(data){
         if (data.transfers.length === 0){
             return;
         }
-        var cTransfers = categorizeTransactions(data.transfers, walletData.addresses);
+        var cTransfers = categorizeTransactions(data.transfers);
         var tflat = [];
         for (var i = 0; i < cTransfers.sent.length; i++){
             var transferOut = cTransfers.sent[i][0];
@@ -170,20 +170,33 @@ function findTableRowIndex(tail, table){
 }
 
 function loadAllTransactions(){
+    window.isCurrentlyLoadingAll = true;
     showTxLoadUI();
     loadWalletDataRange(0, getLastKnownAddressIndex() - defaultNumAddessesToLoad, onGetWalletData, function(e, res){
+        if (e){
+            document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>Failed to load all. " + (e.hasOwnProperty('message') ? e.message : e) + "</div>";
+        }
+        window.isCurrentlyLoadingAll = false;
         onTxLoadingFinished();
-        $('#loadAllTransactionsDiv').hide();
+        $('#txLoadingWrapper').hide();
     });
 }
 
 function showTxLoadUI(){
+    document.getElementById('transactionLoadStatus').innerHTML = '0%';
     $('#tx_loading_notification').show();
     $('#loadAllTransactionsDiv').hide();
 }
 
 function onTxLoadingFinished(){
-    window.walletDataLoader = setTimeout(function () { loadWalletData(onGetWalletData, onTxLoadingFinished); }, 10000);
-    $('#tx_loading_notification').hide();
-    $('#loadAllTransactionsDiv').show();
+    if (!window.isCurrentlyLoadingAll) {
+        window.walletDataLoader = setTimeout(function () {
+            loadWalletData(function(e, res, progress){
+                onGetWalletData(e, res);//Don't want to show progress for live loads
+            }, onTxLoadingFinished);
+        }, 10000);
+
+        $('#tx_loading_notification').hide();
+        $('#loadAllTransactionsDiv').show();
+    }
 }
