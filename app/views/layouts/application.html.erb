@@ -18,18 +18,15 @@
 
   <body>
   <script>
-      $(document).ready(function(){
+    $(document).ready(function(){
+      if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
+          document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-info'>This site does not currently work with safari. It will be supported very soon.</div>";
+      }
         loadGlobal();
     });
 
     $(document).on('turbolinks:load', function() {
           loadNodeInfoCached(onGetNodeStatusFinished);
-    });
-
-    $(document).ready(function() {
-        if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
-            document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-info'>This site does not currently work with safari. It will be supported very soon.</div>";
-        }
     });
   </script>
 
