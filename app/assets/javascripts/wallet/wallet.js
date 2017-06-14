@@ -21,7 +21,6 @@ function loadWalletData(callback, onFinishedCallback){
 
     if (!lastKnownAddressIndex){
         getMostRecentAddressIndex(seed, function (e, end) {
-            alert(end);
             lastKnownAddressIndex = end+1;
             setLastKnownAddressIndex(lastKnownAddressIndex);
             walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
