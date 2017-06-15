@@ -60,7 +60,7 @@ function getConfirmedOut(){
     var confirmedOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];
-        if (transfer[0].persistence){
+        if (transfer.persistence){
             confirmedOut.push(transfer);
         }
     }

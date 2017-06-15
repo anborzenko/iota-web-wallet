@@ -38,6 +38,10 @@ function sortNumber(a,b) {
     return a - b;
 }
 
+function sortTx(a, b){
+    return a.currentIndex - b.currentIndex;
+}
+
 function sumDictValues(dict){
     var sum = 0;
     for (var key in dict){
@@ -123,4 +127,35 @@ function dictFromString(string){
     }
 
     return dict;
+}
+
+// Merges common elements in the list into single lists. Returns a list of lists
+function mergeCommon(list, comparer){
+    var merged = [];
+    for (var i = 0; i < list.length; i++){
+        var isAdded = false;
+        for (var j = 0; j < merged.length; j++){
+            if (isInArray(merged[j], list[i], comparer)){
+                isAdded = true;
+                merged[j].push(list[i]);
+                break;
+            }
+        }
+        if (!isAdded) {
+            merged.push([list[i]]);
+        }
+    }
+
+    return merged;
+}
+
+function getUnique(list, comparer){
+    var unique = [];
+    for (var i = 0; i < list.length; i++){
+        if (!isInArray(unique, list[i], comparer)){
+            unique.push(list[i]);
+        }
+    }
+
+    return unique;
 }

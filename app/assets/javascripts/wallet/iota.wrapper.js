@@ -16,7 +16,7 @@ function sendTransferWrapper(seed, depth, minWeightMagnitude, transfer, options,
         sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback);
     })
 }
-// TODO: Store transfer address immidiatley to check for double spendings.
+
 function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback){
     try{
         status_callback(0, "Finding transactions to approve");
@@ -106,12 +106,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
     var end = options.end || null;
     var security = options.security || 2;
 
-    var addressesToLoad = new Array(end - options.start);
-    for (var i = options.start; i < end; i++) {
-        var address = generateAddress(seed, i);
-        addressesToLoad[i - options.start] = address;
-    }
-    addressesToLoad.reverse();
+
 
     var bulkSize = 3;
     var loader = function (start, end) {
@@ -121,8 +116,12 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
             'balances': {}
         };
 
-        var addresses = addressesToLoad.slice(options.end - end, options.end - start);
-        iota.api._bundlesFromAddresses(addresses, true, function (error, bundles) {
+        var addresses = [];
+        for (var i = 0; i < end - start; i++) {
+            addresses.push(generateAddress(seed, end - i));
+        }
+
+        bundlesFromAddresses(addresses, function (error, bundles) {
             if (error) return onFinishedCallback(error);
 
             for (i = 0; i < bundles.length; i++) {
@@ -151,7 +150,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
                     // Happens when a new address is generated or iotas are transferred during the update
                     return onFinishedCallback()
                 }
-                if (end >= options.start) {
+                if (end > options.start) {
                     loader(start - bulkSize, end - bulkSize);
                 } else {
                     onFinishedCallback();
@@ -196,5 +195,47 @@ function getMostRecentAddressIndex(seed, callback){
     };
 
     var start = 100;
-    getLastAddressIndex(start, start);// TODO: If no addresses
+    getLastAddressIndex(start, start);
+}
+
+
+function bundlesFromAddresses (addresses, callback) {
+    // call wrapper function to get txs associated with addresses
+    iota.api.findTransactionObjects({'addresses': addresses}, function(error, transactionObjects) {
+
+        if (error) return callback(error);
+
+        // set of tail transactions
+        var bundleHashes = new Set();
+
+        transactionObjects.forEach(function(thisTransaction) {
+            bundleHashes.add(thisTransaction.bundle)
+        });
+
+
+        // Get tail transactions for each nonTail via the bundle hash
+        iota.api.findTransactionObjects({'bundles': Array.from(bundleHashes)}, function(error, bundleObjects) {
+            if (error) return callback(error);
+
+            var tailTxArray = [];
+            for (var i = 0; i < bundleObjects.length; i++){
+                tailTxArray.push(bundleObjects[i].hash);
+            }
+
+            iota.api.getLatestInclusion(tailTxArray, function(error, states) {
+                if (error) return callback(error);
+
+                for (i = 0; i < states.length; i++){
+                    bundleObjects[i].persistence = states[i];
+                }
+
+                var bundles = mergeCommon(bundleObjects, txInSameBundleComparer);
+                for (i = 0; i < bundles.length; i++){
+                    bundles[i].sort(sortTx);
+                }
+
+                callback(null, bundles);
+            });
+        })
+    })
 }

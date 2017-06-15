@@ -40,6 +40,7 @@ function populateTransactions(data){
 function transactionsToHtmlTable(table, transactions){
     for (var i = 0; i < transactions.length; i++){
         var tail = transactions[i][0];
+        var persistence = getPersistence(transactions[i]);
 
         var rowIndex = getArrayIndex(table.rows, tail, compareTableRowAndTail);
         var row;
@@ -54,7 +55,7 @@ function transactionsToHtmlTable(table, transactions){
             row = table.rows[rowIndex];
         }
         row.classList.add('clickable-row');
-        row.setAttribute('tid', tail.persistence + tail.hash + tail.timestamp.toString());
+        row.setAttribute('tid', persistence + tail.hash + tail.timestamp.toString());
 
         var direction = row.cells[0];
         var date = row.cells[1];
@@ -62,9 +63,9 @@ function transactionsToHtmlTable(table, transactions){
         var status = row.cells[3];
 
         var balance = getAddressBalance(getSenderAddress(transactions[i]));
-        if (transactions[i].length === 1){
+        if (getUnique(transactions[i], txAddressComparer).length === 1){
             direction.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
-        }else if (balance === 0 && !tail.persistence && tail.value > 0 && tail.direction === 'out') {
+        }else if (balance === 0 && !persistence && tail.value > 0 && tail.direction === 'out') {
             direction.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
             // TODO: Incoming double spend. Have to use getBalance async
         }else{
@@ -78,7 +79,7 @@ function transactionsToHtmlTable(table, transactions){
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
         date.setAttribute('timestamp', tail.timestamp);
         value.innerHTML = convertIotaValuesToHtml(tail.value);
-        status.innerHTML = tail.persistence ? 'Completed' : 'Pending';
+        status.innerHTML = persistence ? 'Completed' : 'Pending';
     }
 }
 

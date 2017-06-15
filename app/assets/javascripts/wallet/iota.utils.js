@@ -130,3 +130,12 @@ function categorizeTransactions(transactions){
     }
     return res;
 }
+
+function getPersistence(bundle){
+    for (var i = 0; i < bundle.length; i++){
+        if (bundle[i].persistence){
+            return true;
+        }
+    }
+    return false;
+}

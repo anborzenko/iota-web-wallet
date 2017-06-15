@@ -11,10 +11,6 @@ function inputComparer(a, b){
     return a.address === b.address;
 }
 
-function primitiveComparer(a, b){
-    return a === b;
-}
-
 function compareTableRowAndTail(tail, row){
     return row.getAttribute('tid') === tail.persistence + tail.hash + tail.timestamp.toString() ||
         row.getAttribute('tid') === !tail.persistence + tail.hash + tail.timestamp.toString();
@@ -22,4 +18,12 @@ function compareTableRowAndTail(tail, row){
 
 function senderInputAddressComparer(input, tx){
     return getSenderAddress(tx) === input.address;
+}
+
+function txInSameBundleComparer(a, b){
+    return a.bundle === b.bundle;
+}
+
+function txAddressComparer(a, b){
+    return a.address === b.address;
 }
