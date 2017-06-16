@@ -39,7 +39,7 @@ function sortNumber(a,b) {
 }
 
 function sortTx(a, b){
-    return a.currentIndex - b.currentIndex;
+    return a.currentIndex === b.currentIndex ? a.hash > b.hash : a.currentIndex - b.currentIndex;
 }
 
 function sumDictValues(dict){

@@ -4,7 +4,7 @@
 function transferComparer(a, b){
     a = a[0];
     b = b[0];
-    return a.hash === b.hash && a.timestamp === b.timestamp && a.bundle === b.bundle && a.persistence === b.persistence;
+    return a.timestamp === b.timestamp && a.bundle === b.bundle && a.persistence === b.persistence;
 }
 
 function inputComparer(a, b){
@@ -12,8 +12,7 @@ function inputComparer(a, b){
 }
 
 function compareTableRowAndTail(tail, row){
-    return row.getAttribute('tid') === tail.persistence + tail.hash + tail.timestamp.toString() ||
-        row.getAttribute('tid') === !tail.persistence + tail.hash + tail.timestamp.toString();
+    return row.getAttribute('bundle_id') === tail.bundle;
 }
 
 function senderInputAddressComparer(input, tx){

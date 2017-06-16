@@ -27,11 +27,13 @@ function populateTransactions(data){
 
         transactionsToHtmlTable((document).getElementById('transaction_list'), tflat);
         $(".clickable-row").click(function() {
-            openTransactionWindow($(this).attr("tid"));
+            openTransactionWindow($(this).attr("bundle_id"));
         });
 
-        (document).getElementById('transaction_pager').innerHTML = "";
-        $('#transaction_list').pageMe({pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10});
+        var pager = $('.pager');
+        pager.empty();
+        var currPage = pager.data('curr') || 0;
+        $('#transaction_list').pageMe({pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10, pageNum: currPage});
     }catch (err){
         (document).getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>" + err + "</div>";
     }
@@ -55,7 +57,7 @@ function transactionsToHtmlTable(table, transactions){
             row = table.rows[rowIndex];
         }
         row.classList.add('clickable-row');
-        row.setAttribute('tid', persistence + tail.hash + tail.timestamp.toString());
+        row.setAttribute('bundle_id', tail.bundle);
 
         var direction = row.cells[0];
         var date = row.cells[1];
@@ -83,14 +85,14 @@ function transactionsToHtmlTable(table, transactions){
     }
 }
 
-function openTransactionWindow(tid) {
+function openTransactionWindow(bundle_id) {
     document.getElementById('transaction-notifications').innerHTML = '';
     $('#transactionModal').modal('show');
 
     var b;
     for (var i = 0; i < walletData.transfers.length; i++){
         var transfer = walletData.transfers[i][0];
-        if (transfer.persistence + transfer.hash + transfer.timestamp.toString() === tid){
+        if (transfer.bundle === bundle_id){
             b = walletData.transfers[i];
             break;
         }
@@ -101,17 +103,18 @@ function openTransactionWindow(tid) {
     }
 
     var tail = b[0];
+    var persistence = getPersistence(b);
     window.openTail = tail;
     document.getElementById('bundle_div').innerHTML = tail.bundle;
     document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + tail.value + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
-    document.getElementById('status_div').innerHTML = tail.persistence ? 'Completed' : 'Pending';
+    document.getElementById('status_div').innerHTML = persistence ? 'Completed' : 'Pending';
     document.getElementById('message_div').innerHTML = getMessage(tail);
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
     $('#replay').hide();
     $('#double_spend_info').hide();
-    if (!tail.persistence){
+    if (!persistence){
         isDoubleSpend(b, isDoubleSpendCallback);
     }
 }

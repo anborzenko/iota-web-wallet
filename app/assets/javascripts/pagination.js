@@ -3,7 +3,8 @@ $.fn.pageMe = function(opts){
         defaults = {
             perPage: 3,
             showPrevNext: false,
-            hidePageNumbers: false
+            hidePageNumbers: false,
+            pageNum: 0
         },
         settings = $.extend(defaults, opts);
 
@@ -11,6 +12,7 @@ $.fn.pageMe = function(opts){
     var perPage = settings.perPage;
     var children = listElement.children();
     var pager = $('.pager');
+    var pageNum = settings.pageNum;
 
     if (typeof settings.childSelector!="undefined") {
         children = listElement.find(settings.childSelector);
@@ -23,7 +25,7 @@ $.fn.pageMe = function(opts){
     var numItems = children.size();
     var numPages = Math.ceil(numItems/perPage);
 
-    pager.data("curr",0);
+    pager.data("curr",pageNum);
 
     if (settings.showPrevNext){
         $('<li><a href="#" class="prev_link">«</a></li>').appendTo(pager);
@@ -62,6 +64,7 @@ $.fn.pageMe = function(opts){
         next();
         return false;
     });
+    goTo(pageNum);
 
     function previous(){
         var goToPage = parseInt(pager.data("curr")) - 1;
