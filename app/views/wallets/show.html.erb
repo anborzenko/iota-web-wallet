@@ -77,10 +77,8 @@
       <div>
         <div class="inline">
           <h2>Your address
-            <span id="refresh_address_glyph" onclick="onGenerateAddressClick()" class="glyphicon glyphicon-refresh icon-clickable" title="Generate a new address"></span>
           </h2>
         </div>
-        <div class="text-muted inline" id="address_generation_status"></div>
       </div>
       <div class="input-group">
         <input id="address_box" class="form-control" readonly>
@@ -91,6 +89,7 @@
           </button>
         </span>
       </div>
+      <a id="refresh_address" class="text-muted" onclick="onGenerateAddressClick()" title="Generate a new address">Generate new address</a>
 
     <h2>Full balance</h2>
       <div class="input-group">

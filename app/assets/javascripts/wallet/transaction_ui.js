@@ -64,12 +64,8 @@ function transactionsToHtmlTable(table, transactions){
         var value = row.cells[2];
         var status = row.cells[3];
 
-        var balance = getAddressBalance(getSenderAddress(transactions[i]));
         if (getUnique(transactions[i], txAddressComparer).length === 1){
             direction.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
-        }else if (balance === 0 && !persistence && tail.value > 0 && tail.direction === 'out') {
-            direction.innerHTML = "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>"
-            // TODO: Incoming double spend. Have to use getBalance async
         }else{
             direction.innerHTML = tail.direction === 'in' ?
                 "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :

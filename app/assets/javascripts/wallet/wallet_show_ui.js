@@ -32,7 +32,6 @@ function populateWallet(data){
 }
 
 function convertIotaValuesToHtml(value){
-    var units = ['i', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi'];
     value = value.toString();
     var minNumBeforeDecimal = 1;
 
@@ -52,33 +51,41 @@ function onGenerateAddressClick(){
     if (!walletData){
         return;
     }
-    $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh glyphicon-refresh-animate');
-    document.getElementById('address_generation_status').innerHTML = 'Attaching';
+    var status = document.getElementById('refresh_address');
+    status.onclick = function() {};
+    status.innerHTML = 'Attaching. Please wait..';
     attachAddress(walletData.latestAddress, onAttachBeforeGenerateAddressCallback);
 }
 
 function onAttachBeforeGenerateAddressCallback(e, res){
     if (e){
-        document.getElementById('address_generation_status').innerHTML = 'Failed';
-        $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh icon-clickable');
+        resetAddressGenerationInput();
         return document.getElementById('wallet_show_notifications').innerHTML =
             "<div class='alert alert-danger'>Failed to generate new address. " + e.message + "</div>";
     }
 
-    document.getElementById('address_generation_status').innerHTML = 'Generating';
+    document.getElementById('refresh_address').innerHTML = 'Generating. Please wait..';
     generateNewAddress(onGenerateAddressCallback);
 }
 
 function onGenerateAddressCallback(e, res){
-    $("#refresh_address_glyph").attr('class', 'glyphicon glyphicon-refresh icon-clickable');
+    resetAddressGenerationInput();
 
     if (e){
-        document.getElementById('address_generation_status').innerHTML = 'Failed';
         return document.getElementById('wallet_show_notifications').innerHTML =
             "<div class='alert alert-danger'>Failed to generate new address. " + e.message + "</div>";
     }
+
     res = addChecksum(res);
     $('#address_box').val(res);
     walletData.latestAddress = res;
-    document.getElementById('address_generation_status').innerHTML = 'Done';
+    document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-success'>A new address was generated</div>";
+}
+
+function resetAddressGenerationInput(){
+    var status = document.getElementById('refresh_address');
+    status.onclick = function() {onGenerateAddressClick()};
+
+    status.innerHTML = 'Generate new address';
+    onTxLoadingFinished();
 }

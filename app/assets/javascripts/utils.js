@@ -42,14 +42,6 @@ function sortTx(a, b){
     return a.currentIndex === b.currentIndex ? a.hash > b.hash : a.currentIndex - b.currentIndex;
 }
 
-function sumDictValues(dict){
-    var sum = 0;
-    for (var key in dict){
-        sum += dict[key];
-    }
-    return sum;
-}
-
 function getDictValues(dict){
     var values = [];
     for (var key in dict){
@@ -64,17 +56,6 @@ function sumList(list){
         sum += parseInt(list[i]);
     }
     return sum;
-}
-
-function getCookie(name){
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)===' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
 }
 
 function findMin(iterable){
@@ -116,6 +97,10 @@ function dictToString(dict){
     }
 
     return string;
+}
+
+function numberWithSpaces(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 function dictFromString(string){

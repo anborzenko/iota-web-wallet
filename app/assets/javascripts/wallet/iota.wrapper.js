@@ -91,11 +91,6 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
 }
 
 function getAccountData (seed, options, liveCallback, onFinishedCallback) {
-    try{
-        // Stop timeouts if any
-        clearTimeout(window.walletDataLoader);
-    }catch(err){}
-
     if (options.start < 0){
         options.start = 0;
     }
@@ -105,15 +100,12 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
 
     var end = options.end || null;
     var security = options.security || 2;
+    var bulkSize = 10;
 
-
-
-    var bulkSize = 3;
     var loader = function (start, end) {
         var valuesToReturn = {
             'transfers': [],
-            'inputs': [],
-            'balances': {}
+            'inputs': []
         };
 
         var addresses = [];
@@ -129,9 +121,10 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
             }
 
             iota.api.getBalances(addresses, 100, function (error, balances) {
+                if (error) return onFinishedCallback(error);
+
                 balances.balances.forEach(function (balance, index) {
                     balance = parseInt(balance);
-                    valuesToReturn.balances[addresses[index]] = balance;
 
                     if (balance > 0) {
                         var newInput = {

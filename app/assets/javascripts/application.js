@@ -38,12 +38,12 @@ function loadGlobal(){
         'addresses'             : [],
         'transfers'             : [],
         'inputs'                : [],
-        'balances'              : {},
         'generatedIndexes'      : {}
     };
     window.defaultNumAddessesToLoad = 30;
     window.openTail = null;
 
+    window.units = ['i', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi'];
     window.RADIX = 3;
     window.MAX_TRIT_VALUE = 1;
     window.MIN_TRIT_VALUE = -1;

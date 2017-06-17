@@ -16,26 +16,13 @@ function validateAddress(address){
 }
 
 function loadWalletData(callback, onFinishedCallback){
-    var lastKnownAddressIndex = getLastKnownAddressIndex();
-    var seed = getSeed();
-
-    if (!lastKnownAddressIndex){
-        getMostRecentAddressIndex(seed, function (e, end) {
-            lastKnownAddressIndex = end+1;
-            setLastKnownAddressIndex(lastKnownAddressIndex);
-            walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
-            callback(null, walletData);
-            getAccountData(seed, {start: lastKnownAddressIndex - defaultNumAddessesToLoad, end: lastKnownAddressIndex},callback, onFinishedCallback);
-        });
-    }else{
-        // Make sure it really is the most recent
-        iota.api.getNewAddress(seed, {index: lastKnownAddressIndex, returnAll: true}, function (e, res) {
-            setLastKnownAddressIndex(lastKnownAddressIndex + res.length - 1);
-            walletData.latestAddress = res[res.length-1];
-
-            getAccountData(seed, {start: lastKnownAddressIndex - defaultNumAddessesToLoad, end: lastKnownAddressIndex}, callback, onFinishedCallback);
-        });
-    }
+    generateNewAddress(function(e, res){
+        if (e){
+            return callback(e);
+        }
+        var lastKnownAddressIndex = getLastKnownAddressIndex();
+        getAccountData(getSeed(), {start: lastKnownAddressIndex - defaultNumAddessesToLoad, end: lastKnownAddressIndex},callback, onFinishedCallback);
+    });
 }
 
 function loadWalletDataRange(start, end, callback, onFinishedCallback){
@@ -47,7 +34,7 @@ function getPendingOut(){
     var pendingOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];
-        if (!transfer[0].persistence){
+        if (!getPersistence(transfer)){
             pendingOut.push(transfer);
         }
     }
@@ -60,7 +47,7 @@ function getConfirmedOut(){
     var confirmedOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];
-        if (transfer.persistence){
+        if (getPersistence(transfer)){
             confirmedOut.push(transfer);
         }
     }
@@ -80,7 +67,7 @@ function findInputs(amount){
         return null;
     }
 
-    var inputs = walletData.inputs;
+    var inputs = walletData.inputs.sort(function(a, b) { return a.balance - b.balance});
 
     var pendingOut = getPendingOut();
     var confirmedAddresses = [];
@@ -96,6 +83,9 @@ function findInputs(amount){
         if (!isAddressInUse) {
             availableAmountInConfirmedAddresses += inputs[i].balance;
             confirmedAddresses.push(inputs[i]);
+            if (availableAmountInConfirmedAddresses >= amount){
+                break;
+            }
         }
     }
 
@@ -112,7 +102,7 @@ function sendIotas(to_address, amount, message, callback, status_callback){
         'value': amount,
         'message': iota.utils.toTrytes(message)
     }];
-    sendTransferWrapper(getSeed(), depth, minWeightMagnitude, transfer, {'inputs': findInputs()}, callback, status_callback);
+    sendTransferWrapper(getSeed(), depth, minWeightMagnitude, transfer, {'inputs': findInputs(amount)}, callback, status_callback);
 }
 
 function generateRandomSeed(){
@@ -166,7 +156,30 @@ function deleteSeed() {
 }
 
 function generateNewAddress(callback){
-    iota.api.getNewAddress(getSeed(), callback);
+    var lastKnownAddressIndex = getLastKnownAddressIndex();
+    var seed = getSeed();
+
+    if (!lastKnownAddressIndex){
+        getMostRecentAddressIndex(seed, function (e, end) {
+            if (e){
+                return callback(e);
+            }
+            lastKnownAddressIndex = end+1;
+            setLastKnownAddressIndex(lastKnownAddressIndex);
+            walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
+            callback(null, walletData.latestAddress);
+        });
+    }else{
+        // Make sure it really is the most recent
+        iota.api.getNewAddress(seed, {index: lastKnownAddressIndex, returnAll: true}, function (e, res) {
+            if (e){
+                return callback(e);
+            }
+            setLastKnownAddressIndex(lastKnownAddressIndex + res.length - 1);
+            walletData.latestAddress = res[res.length-1];
+            callback(null, walletData.latestAddress);
+        });
+    }
 }
 
 function attachAddress(addr, callback){
@@ -178,7 +191,7 @@ function shouldReplay(address, callback){
 }
 
 function isDoubleSpend(transfer, callback){
-    if (transfer[0].persistence){
+    if (getPersistence(transfer)){
         return callback(null, false);
     }
 
@@ -295,7 +308,7 @@ function getEncryptedSeed(){
 function getLastKnownAddressIndex(){
     var seed = getEncryptedSeed();
     if (seed !== null){
-        return parseInt(sessionStorage.getItem('lkai' + seed));
+        return parseInt(localStorage.getItem('lkai' + getStringHash(seed)));
     }
 }
 
@@ -303,6 +316,6 @@ function setLastKnownAddressIndex(value){
     // Use the encrypted seed as key
     var seed = getEncryptedSeed();
     if (seed !== null){
-        sessionStorage.setItem('lkai' + seed, value);
+        localStorage.setItem('lkai' + getStringHash(seed), value);
     }
 }
