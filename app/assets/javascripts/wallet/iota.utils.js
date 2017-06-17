@@ -144,5 +144,5 @@ function getPersistence(bundle){
 }
 
 function convertToIotas(value, unit){
-    return value * 1000 ** units.indexOf(unit);
+    return value * Math.pow(1000, units.indexOf(unit));
 }

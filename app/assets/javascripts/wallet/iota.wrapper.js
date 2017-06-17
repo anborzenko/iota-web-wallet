@@ -100,7 +100,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
 
     var end = options.end || null;
     var security = options.security || 2;
-    var bulkSize = 10;
+    var bulkSize = 5;
 
     var loader = function (start, end) {
         var valuesToReturn = {
