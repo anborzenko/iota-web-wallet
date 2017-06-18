@@ -21,6 +21,8 @@
 //= require "ladda"
 //= require_tree .
 //= stub "vendor/iota.min"
+//= stub "vendor/curl.min"
+//= stub "vendor/sjcl"
 
 
 function loadGlobal(){
