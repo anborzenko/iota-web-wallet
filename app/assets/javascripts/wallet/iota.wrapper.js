@@ -32,7 +32,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
                 return callback(error)
             }
 
-            window.iota.api.broadcastAndStore(attached, function(error, success) {
+            iota.api.storeAndBroadcast(attached, function(error, success) {
                 if (error) {
                     return callback(error);
                 }
