@@ -20,13 +20,14 @@
 //= require jquery.spin
 //= require "ladda"
 //= require_tree .
+//= stub "vendor/iota.min"
 
 
 function loadGlobal(){
     // The asset preprocessing in rails don't allow global variables, so
     // have to attach them to window
-    window.iota = new IOTA({
-        //'provider': 'http://service.iotasupport.com:14265'
+    window.iota = new window.IOTA({
+        //'provider': 'https://d4spftjljtef9.cloudfront.net'
         'provider': 'https://d3j4w674fijhi2.cloudfront.net'
     });
 

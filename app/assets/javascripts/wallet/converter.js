@@ -38,10 +38,10 @@ var trits = function(input, state) {
 
         for (var i = 0; i < input.length; i++) {
 
-            var index = trytesAlphabet.indexOf(input.charAt(i));
-            trits[i * 3] = trytesTrits[index][0];
-            trits[i * 3 + 1] = trytesTrits[index][1];
-            trits[i * 3 + 2] = trytesTrits[index][2];
+            var index = window.trytesAlphabet.indexOf(input.charAt(i));
+            trits[i * 3] = window.trytesTrits[index][0];
+            trits[i * 3 + 1] = window.trytesTrits[index][1];
+            trits[i * 3 + 2] = window.trytesTrits[index][2];
         }
     }
 
@@ -62,11 +62,11 @@ var trytes = function(trits) {
     for (var i = 0; i < trits.length; i += 3) {
 
         // Iterate over all possible tryte values to find correct trit representation
-        for (var j = 0; j < trytesAlphabet.length; j++) {
+        for (var j = 0; j < window.trytesAlphabet.length; j++) {
 
-            if (trytesTrits[j][0] == trits[i] && trytesTrits[j][1] == trits[i + 1] && trytesTrits[j][2] == trits[i + 2]) {
+            if (window.trytesTrits[j][0] == trits[i] && window.trytesTrits[j][1] == trits[i + 1] && window.trytesTrits[j][2] == trits[i + 2]) {
 
-                trytes += trytesAlphabet.charAt(j);
+                trytes += window.trytesAlphabet.charAt(j);
                 break;
             }
         }
@@ -107,11 +107,11 @@ var fromValue= function(value) {
     var absoluteValue = value < 0 ? -value : value;
     var i = 0;
     while(absoluteValue > 0) {
-        var remainder = (absoluteValue % RADIX);
-        absoluteValue = Math.floor(absoluteValue / RADIX);
-        if (remainder > MAX_TRIT_VALUE) {
+        var remainder = (absoluteValue % window.RADIX);
+        absoluteValue = Math.floor(absoluteValue / window.RADIX);
+        if (remainder > window.MAX_TRIT_VALUE) {
 
-            remainder = MIN_TRIT_VALUE;
+            remainder = window.MIN_TRIT_VALUE;
             absoluteValue++;
         }
         destination[i] = remainder;

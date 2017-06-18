@@ -20,7 +20,7 @@ function onGetWalletData(e, accountData, progress) {
     if (progress) {
         document.getElementById('transactionLoadStatus').innerHTML = (progress ? progress : 0) + '%';
     }
-    populateWallet(walletData);
+    populateWallet(window.walletData);
     populateTransactions(accountData);
 }
 
@@ -36,11 +36,11 @@ function convertIotaValuesToHtml(value){
     var minNumBeforeDecimal = 1;
 
     var i = Math.floor((value.length - minNumBeforeDecimal) / 3);
-    if (i >= units.length){
-        i = units.length-1;
+    if (i >= window.units.length){
+        i = window.units.length-1;
     }
 
-    return '<b>' + Math.floor(iota.utils.convertUnits(value, units[0], units[i])) + '</b> ' + units[i];
+    return '<b>' + Math.floor(window.iota.utils.convertUnits(value, window.units[0], window.units[i])) + '</b> ' + window.units[i];
 }
 
 function showSeed(){
@@ -48,13 +48,13 @@ function showSeed(){
 }
 
 function onGenerateAddressClick(){
-    if (!walletData){
+    if (!window.walletData){
         return;
     }
     var status = document.getElementById('refresh_address');
     status.onclick = function() {};
     status.innerHTML = 'Attaching. Please wait..';
-    attachAddress(walletData.latestAddress, onAttachBeforeGenerateAddressCallback);
+    attachAddress(window.walletData.latestAddress, onAttachBeforeGenerateAddressCallback);
 }
 
 function onAttachBeforeGenerateAddressCallback(e, res){
@@ -78,7 +78,7 @@ function onGenerateAddressCallback(e, res){
 
     res = addChecksum(res);
     $('#address_box').val(res);
-    walletData.latestAddress = res;
+    window.walletData.latestAddress = res;
     document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-success'>A new address was generated</div>";
 }
 

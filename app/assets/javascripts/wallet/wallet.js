@@ -4,15 +4,15 @@
 
 
 function addChecksum(data){
-    return iota.utils.addChecksum(data);
+    return window.iota.utils.addChecksum(data);
 }
 
 function validateSeed(seed){
-    return iota.valid.isTrytes(seed);
+    return window.iota.valid.isTrytes(seed);
 }
 
 function validateAddress(address){
-    return iota.valid.isAddress(address);
+    return window.iota.valid.isAddress(address);
 }
 
 function loadWalletData(callback, onFinishedCallback){
@@ -21,7 +21,7 @@ function loadWalletData(callback, onFinishedCallback){
             return callback(e);
         }
         var lastKnownAddressIndex = getLastKnownAddressIndex();
-        getAccountData(getSeed(), {start: lastKnownAddressIndex - defaultNumAddessesToLoad, end: lastKnownAddressIndex},callback, onFinishedCallback);
+        getAccountData(getSeed(), {start: lastKnownAddressIndex - window.defaultNumAddessesToLoad, end: lastKnownAddressIndex},callback, onFinishedCallback);
     });
 }
 
@@ -30,7 +30,7 @@ function loadWalletDataRange(start, end, callback, onFinishedCallback){
 }
 
 function getPendingOut(){
-    var outTransactions = categorizeTransactions(walletData.transfers).sent;
+    var outTransactions = categorizeTransactions(window.walletData.transfers).sent;
     var pendingOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];
@@ -43,7 +43,7 @@ function getPendingOut(){
 }
 
 function getConfirmedOut(){
-    var outTransactions = categorizeTransactions(walletData.transfers).sent;
+    var outTransactions = categorizeTransactions(window.walletData.transfers).sent;
     var confirmedOut = [];
     for (var i = 0; i < outTransactions.length; i++){
         var transfer = outTransactions[i];
@@ -63,11 +63,11 @@ function getConfirmedOut(){
 * available, null is returned
 */
 function findInputs(amount){
-    if (!walletData){
+    if (!window.walletData){
         return null;
     }
 
-    var inputs = walletData.inputs.sort(function(a, b) { return a.balance - b.balance});
+    var inputs = window.walletData.inputs.sort(function(a, b) { return a.balance - b.balance});
 
     var pendingOut = getPendingOut();
     var confirmedAddresses = [];
@@ -100,9 +100,9 @@ function sendIotas(to_address, amount, message, callback, status_callback){
     var transfer = [{
         'address': to_address,
         'value': amount,
-        'message': iota.utils.toTrytes(message)
+        'message': window.iota.utils.toTrytes(message)
     }];
-    sendTransferWrapper(getSeed(), depth, minWeightMagnitude, transfer, {'inputs': findInputs(amount)}, callback, status_callback);
+    sendTransferWrapper(getSeed(), transfer, {'inputs': findInputs(amount)}, callback, status_callback);
 }
 
 function generateRandomSeed(){
@@ -166,18 +166,18 @@ function generateNewAddress(callback){
             }
             lastKnownAddressIndex = end+1;
             setLastKnownAddressIndex(lastKnownAddressIndex);
-            walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
-            callback(null, walletData.latestAddress);
+            window.walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
+            callback(null, window.walletData.latestAddress);
         });
     }else{
         // Make sure it really is the most recent
-        iota.api.getNewAddress(seed, {index: lastKnownAddressIndex, returnAll: true}, function (e, res) {
+        window.iota.api.getNewAddress(seed, {index: lastKnownAddressIndex, returnAll: true}, function (e, res) {
             if (e){
                 return callback(e);
             }
             setLastKnownAddressIndex(lastKnownAddressIndex + res.length - 1);
-            walletData.latestAddress = res[res.length-1];
-            callback(null, walletData.latestAddress);
+            window.walletData.latestAddress = res[res.length-1];
+            callback(null, window.walletData.latestAddress);
         });
     }
 }
@@ -187,7 +187,7 @@ function attachAddress(addr, callback){
 }
 
 function shouldReplay(address, callback){
-    iota.api.shouldYouReplay(address, callback);
+    window.iota.api.shouldYouReplay(address, callback);
 }
 
 function isDoubleSpend(transfer, callback){
@@ -209,7 +209,7 @@ function isDoubleSpend(transfer, callback){
         callback(null, false);
     }
 
-    iota.api.getBalances(addressesOut, 100, function(e, balances){
+    window.iota.api.getBalances(addressesOut, 100, function(e, balances){
         var b = sumList(balances.balances);
         var outgoingValues = Math.abs(values);
         return callback(null, b < outgoingValues);
@@ -217,19 +217,19 @@ function isDoubleSpend(transfer, callback){
 }
 
 function replayBundle(tail_hash, callback){
-    iota.api.replayBundle(tail_hash, depth, minWeightMagnitude, callback);
+    window.iota.api.replayBundle(tail_hash, window.depth, window.minWeightMagnitude, callback);
 }
 
 function loadNodeInfoCached(callback){
-    if (!nodeInfo){
+    if (!window.nodeInfo){
         loadNodeInfo(callback);
     }else{
-        callback(null, nodeInfo);
+        callback(null, window.nodeInfo);
     }
 }
 
 function loadNodeInfo(callback){
-    iota.api.getNodeInfo(function (e, res) {
+    window.iota.api.getNodeInfo(function (e, res) {
         if (!e) {
             window.nodeInfo = res;
         }
@@ -265,7 +265,7 @@ function getAndReplayPendingTransaction(){
 
 function selflessReplay(tail_hash){
     // First check if the transaction is done, or is a double spend. If so, tell the server to delete it.
-    iota.api.getTransactionsObjects([tail_hash], function(e, bundle){
+    window.iota.api.getTransactionsObjects([tail_hash], function(e, bundle){
         var tail = bundle[0];
         if (e){
             return notifyServerAboutNonReplayableTransaction(tail_hash);

@@ -2,18 +2,18 @@
  * Created by Daniel on 08.06.2017.
  */
 
-function sendTransferWrapper(seed, depth, minWeightMagnitude, transfer, options, callback, status_callback){
+function sendTransferWrapper(seed, transfer, options, callback, status_callback){
     try{
         status_callback(0, "Preparing transfers");
     }catch(err){}
 
-    iota.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
+    window.iota.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
 
         if (error) {
             return callback(error)
         }
 
-        sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback);
+        sendTrytesWrapper(trytes, window.depth, window.minWeightMagnitude, callback, status_callback);
     })
 }
 
@@ -22,7 +22,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
         status_callback(0, "Finding transactions to approve");
     }catch(err){}
 
-    iota.api.getTransactionsToApprove(depth, function(error, toApprove) {
+    window.iota.api.getTransactionsToApprove(window.depth, function(error, toApprove) {
         if (error) {
             return callback(error)
         }
@@ -32,7 +32,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
                 return callback(error)
             }
 
-            iota.api.broadcastAndStore(attached, function(error, success) {
+            window.iota.api.broadcastAndStore(attached, function(error, success) {
                 if (error) {
                     return callback(error);
                 }
@@ -40,7 +40,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
                 var finalTxs = [];
 
                 attached.forEach(function(trytes) {
-                    finalTxs.push(iota.utils.transactionObject(trytes));
+                    finalTxs.push(window.iota.utils.transactionObject(trytes));
                 });
 
                 return callback(null, finalTxs);
@@ -69,14 +69,14 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
             }
 
             var transactionTrits = trits(trytes_in[i]);
-            arrayCopy(prevTransaction === null ? trunkTransaction : prevTransaction, 0, transactionTrits, TRUNK_TRANSACTION_TRINARY_OFFSET, TRUNK_TRANSACTION_TRINARY_SIZE);
-            arrayCopy(prevTransaction === null ? branchTransaction : trunkTransaction, 0, transactionTrits, BRANCH_TRANSACTION_TRINARY_OFFSET, BRANCH_TRANSACTION_TRINARY_SIZE);
+            arrayCopy(prevTransaction === null ? trunkTransaction : prevTransaction, 0, transactionTrits, window.TRUNK_TRANSACTION_TRINARY_OFFSET, window.TRUNK_TRANSACTION_TRINARY_SIZE);
+            arrayCopy(prevTransaction === null ? branchTransaction : trunkTransaction, 0, transactionTrits, window.BRANCH_TRANSACTION_TRINARY_OFFSET, window.BRANCH_TRANSACTION_TRINARY_SIZE);
 
             var transactionTrytes = trytes(transactionTrits);
 
             curl.pow(transactionTrytes, minWeightMagnitude
             ).then(function (hash) {
-                prevTransaction = trits(iota.utils.transactionObject(hash).hash);
+                prevTransaction = trits(window.iota.utils.transactionObject(hash).hash);
                 res.push(hash);
                 return rec_pow(res, i + 1);
             }).catch(function (err) {
@@ -120,7 +120,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
                 valuesToReturn.transfers.push(bundles[i]);
             }
 
-            iota.api.getBalances(addresses, 100, function (error, balances) {
+            window.iota.api.getBalances(addresses, 100, function (error, balances) {
                 if (error) return onFinishedCallback(error);
 
                 balances.balances.forEach(function (balance, index) {
@@ -159,7 +159,7 @@ function getMostRecentAddressIndex(seed, callback){
     var getLastAddressIndex = function(min_nohit, index){
         index = Math.floor(index);
         var address = generateAddress(seed, index);
-        iota.api.findTransactions({addresses: [address]}, function (err, transactions) {
+        window.iota.api.findTransactions({addresses: [address]}, function (err, transactions) {
             if (err) return callback(err);
             try {
                 if (transactions.length !== 0 && min_nohit === index + 1 || index < 0) {
@@ -194,7 +194,7 @@ function getMostRecentAddressIndex(seed, callback){
 
 function bundlesFromAddresses (addresses, callback) {
     // call wrapper function to get txs associated with addresses
-    iota.api.findTransactionObjects({'addresses': addresses}, function(error, transactionObjects) {
+    window.iota.api.findTransactionObjects({'addresses': addresses}, function(error, transactionObjects) {
 
         if (error) return callback(error);
 
@@ -207,7 +207,7 @@ function bundlesFromAddresses (addresses, callback) {
 
 
         // Get tail transactions for each nonTail via the bundle hash
-        iota.api.findTransactionObjects({'bundles': Array.from(bundleHashes)}, function(error, bundleObjects) {
+        window.iota.api.findTransactionObjects({'bundles': Array.from(bundleHashes)}, function(error, bundleObjects) {
             if (error) return callback(error);
 
             var tailTxArray = [];
@@ -215,7 +215,7 @@ function bundlesFromAddresses (addresses, callback) {
                 tailTxArray.push(bundleObjects[i].hash);
             }
 
-            iota.api.getLatestInclusion(tailTxArray, function(error, states) {
+            window.iota.api.getLatestInclusion(tailTxArray, function(error, states) {
                 if (error) return callback(error);
 
                 for (i = 0; i < states.length; i++){

@@ -86,10 +86,10 @@ function openTransactionWindow(bundle_id) {
     $('#transactionModal').modal('show');
 
     var b;
-    for (var i = 0; i < walletData.transfers.length; i++){
-        var transfer = walletData.transfers[i][0];
+    for (var i = 0; i < window.walletData.transfers.length; i++){
+        var transfer = window.walletData.transfers[i][0];
         if (transfer.bundle === bundle_id){
-            b = walletData.transfers[i];
+            b = window.walletData.transfers[i];
             break;
         }
     }
@@ -130,7 +130,7 @@ function replaySelectedTransfer(btn){
             "Could not load the transaction. Please contact support if this problem persists</div>";
     }
 
-    replayBundle(openTail.hash, onReplaySelectedTransferCallback);
+    replayBundle(window.openTail.hash, onReplaySelectedTransferCallback);
 
     var l = Ladda.create(btn);
     l.start();
@@ -172,7 +172,7 @@ function findTableRowIndex(tail, table){
 function loadAllTransactions(){
     window.isCurrentlyLoadingAll = true;
     showTxLoadUI();
-    loadWalletDataRange(0, getLastKnownAddressIndex() - defaultNumAddessesToLoad, onGetWalletData, function(e, res){
+    loadWalletDataRange(0, getLastKnownAddressIndex() - window.defaultNumAddessesToLoad, onGetWalletData, function(e, res){
         if (e){
             document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>Failed to load all. " + (e.hasOwnProperty('message') ? e.message : e) + "</div>";
         }
