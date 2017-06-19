@@ -27,7 +27,10 @@
       }
       try {
           loadGlobal();
-      }catch (err){alert(err);}
+          loadPolyfills();
+      }catch (err){
+          document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-error'>Something went wrong. Please contact support if the problem persists. " + err + "</div>";
+      }
     });
 
     $(document).on('turbolinks:load', function() {

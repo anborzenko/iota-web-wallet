@@ -80,7 +80,11 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
                 res.push(hash);
                 return rec_pow(res, i + 1);
             }).catch(function (err) {
-                callback(err, null);
+                if (err === 'curl is not defined'){
+                    callback('Looks like your browser do not support webgl2. Please enable it', null);
+                }else {
+                    callback(err, null);
+                }
             });
         }catch(err){
             callback(err, null);
@@ -204,7 +208,6 @@ function bundlesFromAddresses (addresses, callback) {
         transactionObjects.forEach(function(thisTransaction) {
             bundleHashes.add(thisTransaction.bundle)
         });
-
 
         // Get tail transactions for each nonTail via the bundle hash
         window.iota.api.findTransactionObjects({'bundles': Array.from(bundleHashes)}, function(error, bundleObjects) {
