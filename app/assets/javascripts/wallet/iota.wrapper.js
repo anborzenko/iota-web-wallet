@@ -50,6 +50,10 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
 }
 
 function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes_in, status_callback, callback){
+    if (!curl){
+        return callback('Looks like your browser do not support webgl2. Please enable it', null);
+    }
+    
     try {
         branchTransaction = trits(branchTransaction);
         trunkTransaction = trits(trunkTransaction);
@@ -80,11 +84,7 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
                 res.push(hash);
                 return rec_pow(res, i + 1);
             }).catch(function (err) {
-                if (err === 'curl is not defined'){
-                    callback('Looks like your browser do not support webgl2. Please enable it', null);
-                }else {
-                    callback(err, null);
-                }
+                callback(err, null);
             });
         }catch(err){
             callback(err, null);

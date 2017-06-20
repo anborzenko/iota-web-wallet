@@ -24,6 +24,8 @@
     $(document).ready(function(){
       if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
           document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-info'>This site does not currently work with safari. It will be supported very soon.</div>";
+      }else if (!curl){
+          document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-info'>Looks like your browser do not support WebGL2. You will therefore not be able to use all our services</div>";
       }
       try {
           loadGlobal();
