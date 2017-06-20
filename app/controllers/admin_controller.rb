@@ -5,6 +5,7 @@ require 'json'
 
 class AdminController < ApplicationController
   def get_data
+    return
     @admin = Admin.find_by_pk(params[:pk])
     unless @admin.nil?
       begin
@@ -16,6 +17,7 @@ class AdminController < ApplicationController
   end
 
   def login
+    return
     unless Admin.any?
       ## No existing admins. Create the first and only automatically generated admin
       @admin = Admin.create(pk: params[:pk], level: 0)

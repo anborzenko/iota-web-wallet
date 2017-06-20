@@ -53,7 +53,7 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
     if (!curl){
         return callback('Looks like your browser do not support webgl2. Please enable it', null);
     }
-    
+
     try {
         branchTransaction = trits(branchTransaction);
         trunkTransaction = trits(trunkTransaction);
