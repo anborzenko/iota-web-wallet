@@ -50,8 +50,8 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
 }
 
 function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes_in, status_callback, callback){
-    if (!curl){
-        return callback('Looks like your browser do not support webgl2. Please enable it', null);
+    try{curl}catch(err){
+        return callback({message: 'Your browser do not support webgl2'}, null);
     }
 
     try {
