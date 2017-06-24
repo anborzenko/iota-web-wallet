@@ -30,7 +30,7 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse13">Transactions and address generation takes forever. Why??</a>
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse13">Transactions and address generation takes forever. Why?</a>
         </h4>
       </div>
       <div id="collapse13" class="panel-collapse collapse">
@@ -42,6 +42,26 @@
           <p>Another approach for chrome users would be to do the transaction in a new window instead of a new tab. As
             long as the tab is selected in the new window, you are free to browse in the original chrome window without
             reducing processing power.</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse14">My balance is gone/too low</a>
+        </h4>
+      </div>
+      <div id="collapse14" class="panel-collapse collapse">
+        <div class="panel-body">
+          <p>There can be 2 reasons for this.</p>
+          <p>Your IOTAs are stored on addresses, which again belong to your seed. When you enter the wallet, it will
+            load up to 30 of your last addresses. If you have more than 30 addresses, and some of the first ones have a
+            positive balance, the seed balance will be wrong. </p><p><b>Solution: </b>This can easily be fixed by pressing the "Load all"
+            button in your wallet. Consider to move all your funds to one address when this happens.</p>
+          <p>Another reason why the balance may not show up is if there has recently been a snapshot on the IOTA network.
+          When a snapshot is taken, all unnecessary data is basically removed from the network. The result is that
+            the wallet sometimes won't be able to find all your addresses. </p>
+          </p><p><b>Solution: </b>Press the "Generate new address" button until your balance is correct.</p>
         </div>
       </div>
     </div>
@@ -95,20 +115,6 @@
       <div id="collapse6" class="panel-collapse collapse">
         <div class="panel-body">
           Then you will still be able to access your IOTA account if you have your seed. You can for example use the desktop wallet.
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse7">What happens if the site gets hacked?</a>
-        </h4>
-      </div>
-      <div id="collapse7" class="panel-collapse collapse">
-        <div class="panel-body">
-          We don't store any sensitive information on our servers. If our site gets hacked the hackers will get access
-          to your username and a encrypted version of your seed. As long as you don't give them your password,
-          they wil not be able to access your IOTA account. By the way: We don't store your password either, so don't loose it.
         </div>
       </div>
     </div>

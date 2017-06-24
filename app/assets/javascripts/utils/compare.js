@@ -41,3 +41,7 @@ function txInSameBundleComparer(a, b){
 function txAddressComparer(a, b){
     return a.address === b.address;
 }
+
+function plainComparer(a, b){
+    return a === b;
+}

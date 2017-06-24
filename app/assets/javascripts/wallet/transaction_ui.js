@@ -76,7 +76,7 @@ function transactionsToHtmlTable(table, transactions){
         var today = new Date().toDateString();
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
         date.setAttribute('timestamp', tail.timestamp);
-        value.innerHTML = convertIotaValuesToHtml(tail.value);
+        value.innerHTML = convertIotaValuesToHtml(findTxAmount(transactions[i]));
         status.innerHTML = persistence ? 'Completed' : 'Pending';
     }
 }
@@ -102,7 +102,7 @@ function openTransactionWindow(bundle_id) {
     var persistence = getPersistence(b);
     window.openTail = tail;
     document.getElementById('bundle_div').innerHTML = tail.bundle;
-    document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + tail.value + '</b> IOTAs';
+    document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + findTxAmount(b) + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
     document.getElementById('status_div').innerHTML = persistence ? 'Completed' : 'Pending';
     document.getElementById('message_div').innerHTML = getMessage(tail);
@@ -190,11 +190,12 @@ function showTxLoadUI(){
 
 function onTxLoadingFinished(){
     if (!window.isCurrentlyLoadingAll) {
+        window.loadingTimeout *= 0.05;   // Update less and lass frequently as the user becomes inactive
         window.walletDataLoader = setTimeout(function () {
             loadWalletData(function(e, res, progress){
                 onGetWalletData(e, res);//Don't want to show progress for live loads
             }, onTxLoadingFinished);
-        }, 10000);
+        }, Math.floor(window.loadingTimeout));
 
         $('#tx_loading_notification').hide();
         $('#loadAllTransactionsDiv').show();

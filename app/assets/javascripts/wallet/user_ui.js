@@ -4,13 +4,21 @@
 
 function openWithSeed() {
     var seed = $('#wallet_seed').val();
-    if (seed.length === 0 || !validateSeed(seed)){
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: Invalid seed</div>";
+    if (seed.length !== 81){
+        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Your seed is too short. It must be exactly 81 characters long</div>";
+        return;
+    } else if (!validateSeed(seed)){
+        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: Invalid seed. It can only contain capital letters A to Z and the number 9</div>";
         return;
     }
 
     saveSeed(seed, generateRandomSeed());
     document.location.href = 'show';
+}
+
+function onGenerateSeedClick() {
+    var seed = generateRandomSeed();
+    $('#wallet_seed').val(seed);
 }
 
 function signup(btn) {

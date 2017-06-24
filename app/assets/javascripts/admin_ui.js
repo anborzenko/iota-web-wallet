@@ -5,12 +5,11 @@
 
 function loginAdmin(){
     sessionStorage.setItem('private_key', $('#privkey').val());
-    sessionStorage.setItem('public_key', $('#pubkey').val());
     try {
         $.ajax({
             type: "GET",
             url: 'login',
-            data: {pk: sessionStorage.getItem('public_key')},
+            data: {pk: sessionStorage.getItem('private_key')},
             dataType: "JSON",
             success: function(){document.location.href = 'dashboard';},
             error: function(err) {console.write(err)}
@@ -19,12 +18,11 @@ function loginAdmin(){
 }
 
 function loadAdminDashboardData(){
-    alert(sessionStorage.getItem('public_key'));
     try {
         $.ajax({
             type: "GET",
             url: 'get_data',
-            data: {pk: sessionStorage.getItem('public_key')},
+            data: {pk: sessionStorage.getItem('private_key')},
             dataType: "JSON",
             success: onLoadAdminDashboardCallback,
             error: function(err) {alert(err)}
@@ -33,8 +31,9 @@ function loadAdminDashboardData(){
 }
 
 function onLoadAdminDashboardCallback(response){
-    var decrypt = new JSEncrypt();
-    decrypt.setPrivateKey(sessionStorage.getItem('private_key'));
-
-    document.getElementById('content').innerHTML = decrypt.decrypt(response.content);
+    try {
+        document.getElementById('content').innerHTML = JSON.stringify(response);
+    }catch(err){
+        alert('onloaddashboardcallback: ' + err);
+    }
 }

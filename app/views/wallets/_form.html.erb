@@ -94,10 +94,13 @@
     <div id="new_wallet" >
       <div class="form-group string required wallet_seed">
         <label class="control-label string required" for="wallet_seed"><abbr title="required">*</abbr>Seed</label>
-        <input class="form-control string required" required="required" aria-required="true" type="text" name="wallet[seed]" id="wallet_seed" />
+        <input class="form-control overflow-elipsis string required" required="required" aria-required="true" type="text" name="wallet[seed]" id="wallet_seed" />
       </div>
       <button class="btn btn-primary btn" id="openWithSeed" onclick="openWithSeed()">
         <span>Open</span>
+      </button>
+      <button class="btn btn-default btn" id="generateSeed" onclick="onGenerateSeedClick()">
+        <span>Generate random seed</span>
       </button>
     </div>
   </div>
