@@ -5,16 +5,7 @@
 
 function loginAdmin(){
     sessionStorage.setItem('private_key', $('#privkey').val());
-    try {
-        $.ajax({
-            type: "GET",
-            url: 'login',
-            data: {pk: sessionStorage.getItem('private_key')},
-            dataType: "JSON",
-            success: function(){document.location.href = 'dashboard';},
-            error: function(err) {console.write(err)}
-        });
-    }catch(err){console.write(err)}
+    document.location.href = 'dashboard';
 }
 
 function loadAdminDashboardData(){

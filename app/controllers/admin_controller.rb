@@ -14,10 +14,6 @@ class AdminController < ApplicationController
   end
 
   def login
-    unless Admin.any?
-      ## No existing admins. Create the first and only automatically generated admin
-      @admin = Admin.create(pk: params[:pk], level: 0)
-    end
   end
 
   private
