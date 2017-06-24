@@ -3,10 +3,6 @@ require 'json'
 
 class AdminController < ApplicationController
   def get_data
-    if Admin.where('level == 0').count > 1
-      return render json: { message: 'WTF' }.to_json
-    end
-
     @admin = Admin.find_by_pk(params[:pk])
     unless @admin.nil?
       begin

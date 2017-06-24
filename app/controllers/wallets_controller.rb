@@ -1,15 +1,33 @@
 class WalletsController < ApplicationController
   def login
-    if params.key?(:username)
-      wallet = Wallet.find_by_username(params[:username])
-      if wallet.nil?
-        render json: { success: false, message: 'Username not found' }
-      else
-        render json: { success: true, encrypted_seed: wallet[:encrypted_seed] }
-      end
-    else
-      @wallet = Wallet.new
+    unless params.key?(:username)
+      return
     end
+
+    wallet = Wallet.find_by_username(params[:username])
+    if wallet.nil?
+      return render json: { success: false, message: 'Username not found' }
+    end
+
+    unless wallet.otp_secret_key.nil?
+      # The user have enabled 2FA
+      if params.key?(:otp_key)
+        # The user have entered a otp key.
+        unless wallet.authenticate_otp(params[:otp_key])
+          return render json: { success: false, message: 'Your 2FA code is invalid' }
+        end
+      else
+        # Prompt the user to enter a otp key
+        return render json: { success: true, enabled_2fa: true }
+      end
+    end
+
+    render json: { success: true, encrypted_seed: wallet[:encrypted_seed] }
+  end
+
+  def enable_2fa
+
+    user.update_attribute(:otp_secret_key, ROTP::Base32.random_base32)
   end
 
   def signup
@@ -60,7 +78,9 @@ class WalletsController < ApplicationController
   private
 
   def create_wallet(wallet_params)
-    @wallet = Wallet.create(username: wallet_params[:username], encrypted_seed: wallet_params[:encrypted_seed])
+    @wallet = Wallet.create(username: wallet_params[:username],
+                            encrypted_seed: wallet_params[:encrypted_seed],
+                            otp_secret_key: nil)
     !@wallet.errors.any?
   end
 

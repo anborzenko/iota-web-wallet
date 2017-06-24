@@ -156,8 +156,8 @@ function deleteSeed() {
 }
 
 function generateNewAddress(callback){
-    var lastKnownAddressIndex = getLastKnownAddressIndex();
     var seed = getSeed();
+    var lastKnownAddressIndex = getLastKnownAddressIndex();
 
     if (!lastKnownAddressIndex){
         getMostRecentAddressIndex(seed, function (e, end) {

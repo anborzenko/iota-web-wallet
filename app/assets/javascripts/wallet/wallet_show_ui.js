@@ -6,7 +6,7 @@ function onGetWalletData(e, accountData, progress) {
     if (window.location.href.indexOf('wallets/show') === -1){
         return;
     }
-    $("#loading").spin(false); // Hide the spinner
+    $("#loading").spin(false);
 
     if (e){
         document.getElementById('loading').innerHTML = "<div class='alert alert-danger'>Could not load your wallet. Please check the node health. " + e.message + "</div>";

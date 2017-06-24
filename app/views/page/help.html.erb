@@ -10,7 +10,7 @@
       </div>
       <div id="collapse1" class="panel-collapse collapse">
         <div class="panel-body">
-          No. You can access your wallet using an account, or only with your seed.
+          No. You can access your wallet using an account, or using your seed alone.
         </div>
       </div>
     </div>
@@ -35,7 +35,7 @@
       </div>
       <div id="collapse13" class="panel-collapse collapse">
         <div class="panel-body">
-          <p>When making a transaction, your browser have to do proof of work. This is similar to what bitcoin miners have
+          <p>When making a transaction, your browser has to do proof of work. This is similar to what bitcoin miners have
             to do, but with IOTA this is done by the senders. If your computer is slow, this could take some time.</p>
           <p>Another thing to be aware of is that some browsers reduce the processing power of tabs when you leave them.
             You should therefore make sure to stay on the site until the work is done (sadly, we do not control this). </p>
@@ -57,7 +57,7 @@
           <p>Your IOTAs are stored on addresses, which again belong to your seed. When you enter the wallet, it will
             load up to 30 of your last addresses. If you have more than 30 addresses, and some of the first ones have a
             positive balance, the seed balance will be wrong. </p><p><b>Solution: </b>This can easily be fixed by pressing the "Load all"
-            button in your wallet. Consider to move all your funds to one address when this happens.</p>
+            button in your wallet. Consider moving all your funds to one address when this happens.</p>
           <p>Another reason why the balance may not show up is if there has recently been a snapshot on the IOTA network.
           When a snapshot is taken, all unnecessary data is basically removed from the network. The result is that
             the wallet sometimes won't be able to find all your addresses. </p>
@@ -77,19 +77,19 @@
         <div class="panel-body">
           No sensitive information ever leaves your client. If you register an account your seed immediately gets
           encrypted before it is transferred to our server. That means we will never be able to restore your seed if you
-          loose it or your log in credentials.
+          loose it or your login credentials.
         </div>
       </div>
     </div>
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse4">What happens if I loose my seed?</a>
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse4">What happens if I lose my seed?</a>
         </h4>
       </div>
       <div id="collapse4" class="panel-collapse collapse">
         <div class="panel-body">
-          <p>If you loose your seed and do not have a account, your iotas are gone.</p>
+          <p>If you lose your seed and do not have a account, your iotas are gone.</p>
           <p>It is always advised that you keep a backup of your seed somewhere safe</p>
         </div>
       </div>
@@ -115,18 +115,6 @@
       <div id="collapse6" class="panel-collapse collapse">
         <div class="panel-body">
           Then you will still be able to access your IOTA account if you have your seed. You can for example use the desktop wallet.
-        </div>
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse8">How can I be sure you're not scamming?</a>
-        </h4>
-      </div>
-      <div id="collapse8" class="panel-collapse collapse">
-        <div class="panel-body">
-          This is a open source project, which means that you can see exactly what we do by heading over to your <a href="https://github.com/danilind/iota-web-wallet">github repo</a>.
         </div>
       </div>
     </div>
@@ -170,20 +158,20 @@
     <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse14">What is a double spend?</a>
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse15">What is a double spend?</a>
       </h4>
     </div>
-    <div id="collapse14" class="panel-collapse collapse">
+    <div id="collapse15" class="panel-collapse collapse">
       <div class="panel-body">
-        <p>IOTA addresses become insecure to use after it have been used to make a transaction. Because of this, this is what happens when you make a transaction:</p>
+        <p>IOTA addresses become insecure to use after it has been used to make a transaction. Because of this, this is what happens when you make a transaction:</p>
         <ul>
           <li>A list of your addresses with a positive balance is collected, and is used to fund the transaction</li>
           <li>The transaction is made by doing proof of work. You validate two other transactions at the same time</li>
-          <li>All remaining funds on the addresses used in step 1 is transferred to a newly generated address</li>
+          <li>All remaining funds on the addresses used in step 1 are transferred to a newly generated address</li>
         </ul>
         <p>What this means is that if you send two transactions from the same address, one of them will be confirmed,
           and the addresses will have a balance of 0. The remaining transaction will therefore never be confirmed, because
-          it don't have enough funds</p>
+          it doesn't have enough funds</p>
         <p>If this happens, the solution is simple: Do the pending transaction again. iota-wallet.org provides a warning
           before every attempt to double spend. If you get such a warning, simply wait until the last outgoing transaction
           has been confirmed</p>
@@ -203,7 +191,7 @@
             <li>You see a green re-attach button. </li>
             <li>You get a red warning telling you that the transaction is a double spend. In that case you will have to do the transaction again manually</li>
           </ul>
-          iota-wallet.org replays your transactions automatically, but if it have been pending a long time and it is not
+          iota-wallet.org replays your transactions automatically, but if it has been pending a long time and it is not
           a double spend, you can choose to replay it yourself.
         </div>
       </div>
