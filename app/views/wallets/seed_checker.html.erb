@@ -18,6 +18,12 @@
 <div class="form-group string">
   <label class="control-label string required" for="seed"><abbr title="required">*</abbr> Seed</label>
   <input class="form-control string required" required="required" aria-required="true" type="text" name="wallet[username]" id="seed_input" />
+  <label class="control-label string required" for="seed"><abbr title="required">*</abbr> Security</label>
+  <select id="sec_level">
+    <option value="1">1</option>
+    <option value="2" selected>2</option>
+    <option value="3">3</option>
+  </select>
 </div>
 <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="login_btn" onclick="check_seed()">
   <span class="ladda-label">Run</span>

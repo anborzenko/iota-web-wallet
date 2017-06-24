@@ -4,6 +4,7 @@
 
 function check_seed(){
     var seed = $("#seed_input").val();
+    var secLevel = parseInt($("#sec_level").val());
     if (seed.length === 0){
         return document.getElementById('seed_checker_notifications').innerHTML = "<div class='alert alert-danger'>Invalid seed</div>";
     }
@@ -15,8 +16,8 @@ function check_seed(){
     $(document).find('#seed_checker_result').hide();
 
     setTimeout(function () {
-        var total = 200;
-        iota.api.getNewAddress(seed, {'index': 0, 'total': total}, function (_, addresses) {
+        var total = 100;
+        iota.api.getNewAddress(seed, {'index': 0, 'total': total, 'security': secLevel}, function (_, addresses) {
             window.iota.api.getBalances(addresses, 100, function (error, res) {
                 $("#loading").spin(false);
                 $(document).find('#loading').hide();
