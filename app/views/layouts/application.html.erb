@@ -38,7 +38,7 @@
     });
 
     $(document).on('turbolinks:load', function() {
-          loadNodeInfoCached(onGetNodeStatusFinished);
+        loadNodeInfoCached(onGetNodeStatusFinished);
     });
   </script>
 
@@ -48,7 +48,7 @@
           <ul id="main_menu_nav" class="nav nav-pills pull-right">
             <li role="presentation" class=<%= 'active' if current_page?(root_path) %>><%= link_to "Home", root_path %></li>
             <% if cookies.key?('isLoggedIn') %>
-              <li role="presentation" class=<%= 'active' if current_page?(wallets_show_path) %>><%= link_to "Wallet", wallets_show_path %></li>
+              <li role="presentation" class=<%= 'active' if current_page?(wallets_show_path) or current_page?(wallets_details_path) %>><%= link_to "Wallet", wallets_show_path %></li>
             <% else %>
                 <li role="presentation" class=<%= 'active' if current_page?(wallets_show_path) %>><%= link_to "Wallet", wallets_login_path %></li>
             <% end %>
@@ -69,7 +69,7 @@
 
       <footer class="footer">
         <div class="footer-content">
-          <a href="/nodes/index" class="text-muted inline" id="node_status_wrapper">Node status: <i class="fa fa-circle" id="node_status_symbol" aria-hidden="true"></i></a>
+          <a href="/nodes/index" class="text-muted inline" id="node_status_wrapper" title="Not connected">Node status: <i class="fa fa-circle" id="node_status_symbol" aria-hidden="true"></i></a>
           <p style="padding: 10px">Want to show your support? <a href="/page/donate">Donations</a> are much appreciated</p>
         </div>
       </footer>

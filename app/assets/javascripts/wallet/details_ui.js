@@ -29,10 +29,6 @@ function onDownloadBackupClick(){
     download('seed.txt', getSeed());
 }
 
-function onEnable2FAClick(){
-
-}
-
 function onGetBalancesCallback(e, res){
     $("#loading").spin(false);
     $(document).find('#loading').hide();

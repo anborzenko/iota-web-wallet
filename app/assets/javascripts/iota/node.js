@@ -43,5 +43,5 @@ function onGetNodeStatusFinished(e, res){
     }
 
     // Periodically update the state
-    setTimeout(function(){ onGetNodeStatusFinished(); }, 3000);
+    setTimeout(function(){ onGetNodeStatusFinished(); }, 10000);
 }

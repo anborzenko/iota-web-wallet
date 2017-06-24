@@ -12,12 +12,13 @@
     });
 </script>
 
+<div><%= link_to "Back to wallet", wallets_show_path %></div>
+<br>
 <div id="wallet_options_notifications"></div>
 
 <ul class="nav nav-tabs">
   <li role="presentation" class="active"><a data-toggle="tab" href="#addresses"><span class="glyphicon glyphicon-list"></span>  Addresses</a></li>
   <li role="presentation"><a data-toggle="tab" href="#backup"><span class="glyphicon glyphicon-save"></span>  Backup</a></li>
-  <li role="presentation"><a data-toggle="tab" href="#2fa"><span class="glyphicon glyphicon-lock"></span>  2FA</a></li>
 </ul>
 
 <div class="tab-content">
@@ -41,10 +42,5 @@
   <div id="backup" class="tab-pane">
     <div style="padding-top: 2em;padding-bottom: 0.5em;"><button class="btn btn-primary" onclick="onDownloadBackupClick()">Download backup</button></div>
     <div class="text-muted">This will download your seed as a text file. Keep it somewhere safe</div>
-  </div>
-
-  <div id="2fa" class="tab-pane">
-    <h3>2-factor authentication</h3>
-    <div id="2fa_div"></div>
   </div>
 </div>

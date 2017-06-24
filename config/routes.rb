@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get 'page/donate'
 
   get 'wallets/show'
-  get 'wallets/options'
+  get 'wallets/details'
   get 'wallets/login'
   get 'wallets/signup'
   get 'wallets/get_next_pending_transaction'
