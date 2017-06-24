@@ -1,5 +1,6 @@
 class WalletsController < ApplicationController
   def login
+    @wallet = Wallet.new
     unless params.key?(:username)
       return
     end
@@ -79,8 +80,9 @@ class WalletsController < ApplicationController
 
   def create_wallet(wallet_params)
     @wallet = Wallet.create(username: wallet_params[:username],
-                            encrypted_seed: wallet_params[:encrypted_seed],
-                            otp_secret_key: nil)
+                            encrypted_seed: wallet_params[:encrypted_seed])
+    @wallet.otp_secret_key = nil
+    @wallet.save
     !@wallet.errors.any?
   end
 
