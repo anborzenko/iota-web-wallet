@@ -228,10 +228,33 @@ function bundlesFromAddresses (addresses, callback) {
                 var bundles = mergeCommon(bundleObjects, txInSameBundleComparer);
                 for (i = 0; i < bundles.length; i++){
                     bundles[i].sort(sortTx);
+                    bundles[i][0].numReplays = count(bundles[i][0], bundles[i], function (a, b) {
+                        return a.currentIndex === b.currentIndex
+                    });
                 }
 
                 callback(null, bundles);
             });
         })
+    })
+}
+
+function replayBundleWrapper(tailHash, callback){
+    if (!iota.valid.isHash(tailHash)) {
+
+        return callback('Invalid tail');
+    }
+
+    iota.api.getBundle(tailHash, function(error, bundle) {
+
+        if (error) return callback(error);
+
+        var bundleTrytes = [];
+
+        bundle.forEach(function(bundleTx) {
+            bundleTrytes.push(iota.utils.transactionTrytes(bundleTx));
+        });
+
+        return sendTrytesWrapper(bundleTrytes.reverse(), window.depth, window.minWeightMagnitude, callback);
     })
 }

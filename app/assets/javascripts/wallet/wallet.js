@@ -216,10 +216,6 @@ function isDoubleSpend(transfer, callback){
     });
 }
 
-function replayBundle(tail_hash, callback){
-    window.iota.api.replayBundle(tail_hash, window.depth, window.minWeightMagnitude, callback);
-}
-
 function loadNodeInfoCached(callback){
     if (!window.nodeInfo){
         loadNodeInfo(callback);

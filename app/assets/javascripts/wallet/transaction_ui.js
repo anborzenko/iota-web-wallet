@@ -26,7 +26,7 @@ function populateTransactions(data){
         });
 
         transactionsToHtmlTable((document).getElementById('transaction_list'), tflat);
-        $(".clickable-row").click(function() {
+        $(".clickable-row").off().click(function() {
             openTransactionWindow($(this).attr("bundle_id"));
         });
 
@@ -106,6 +106,9 @@ function openTransactionWindow(bundle_id) {
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
     document.getElementById('status_div').innerHTML = persistence ? 'Completed' : 'Pending';
     document.getElementById('message_div').innerHTML = getMessage(tail);
+    if (tail.numReplays > 1){
+        document.getElementById('num_replays').innerHTML = 'This bundle has been reattached ' + (tail.numReplays - 1) + ' times';
+    }
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
     $('#replay').hide();
@@ -130,10 +133,14 @@ function replaySelectedTransfer(btn){
             "Could not load the transaction. Please contact support if this problem persists</div>";
     }
 
-    replayBundle(window.openTail.hash, onReplaySelectedTransferCallback);
-
     var l = Ladda.create(btn);
     l.start();
+
+    try {
+        replayBundleWrapper(window.openTail.hash, onReplaySelectedTransferCallback);
+    }catch(e){
+        alert(e);
+    }
 }
 
 function onReplaySelectedTransferCallback(e, res){

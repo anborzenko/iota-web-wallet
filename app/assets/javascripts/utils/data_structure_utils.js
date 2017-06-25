@@ -144,3 +144,14 @@ function getUnique(list, comparer){
 
     return unique;
 }
+
+// Counts the number of occurrences of a item in a list given a comparer
+function count(item, list, comparer){
+    var c = 0;
+    for (var i = 0; i < list.length; i++){
+        if (comparer(list[i], item)){
+            c++;
+        }
+    }
+    return c;
+}
