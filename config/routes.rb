@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   get 'wallets/show'
   get 'wallets/seed_checker'
+  get 'wallets/custom_send'
   get 'wallets/details'
   get 'wallets/login'
   get 'wallets/signup'

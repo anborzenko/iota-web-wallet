@@ -16,7 +16,7 @@ function check_seed(){
     $(document).find('#seed_checker_result').hide();
 
     setTimeout(function () {
-        var total = 100;
+        var total = 200;
         iota.api.getNewAddress(seed, {'index': 0, 'total': total, 'security': secLevel}, function (_, addresses) {
             window.iota.api.getBalances(addresses, 100, function (error, res) {
                 $("#loading").spin(false);

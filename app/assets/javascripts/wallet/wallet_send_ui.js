@@ -72,7 +72,6 @@ function onSendClick(btn){
     $("#cancel").hide();
     $("#abort_double_spend").hide();
 
-
     sendIotas(to_address, amount, message, onSendFinished, function (progress, text) {
         l.setProgress(progress);
         document.getElementById('progress_text').innerHTML = text;

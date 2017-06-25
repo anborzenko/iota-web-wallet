@@ -1,0 +1,51 @@
+<div id="custom_send_notifications"></div>
+
+<h1>Send IOTAs</h1>
+<div class="text-muted">This tool allows you to specify the inputs yourself. Please only use this if you know what you are doing.
+  Only one input is currently supported</div>
+<br>
+
+<form>
+  <div class="form-group">
+    <label class="control-label string required" for="seed_input"><abbr title="required">*</abbr> Seed</label>
+    <input class="form-control string required" required="required" aria-required="true" type="text" id="seed_input" />
+  </div>
+
+  <div class="form-group">
+    <label class="control-label string required" for="address_from_input"><abbr title="required">*</abbr> Address to send from</label>
+    <input class="form-control string required" required="required" aria-required="true" type="text" id="address_from_input" />
+  </div>
+
+  <div class="form-group">
+    <label class="control-label string required" for="address_to_input"><abbr title="required">*</abbr> Address to send to</label>
+    <input class="form-control string required" required="required" aria-required="true" type="text" id="address_to_input" />
+  </div>
+
+  <div class="inline" style="width: 100%">
+    <div class="form-group inline" >
+      <label class="control-label string required" for="sec_level"><abbr title="required">*</abbr> Security level</label>
+      <select class="form-control" id="sec_level">
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+      </select>
+    </div>
+
+    <div class="form-group inline" style="padding-right: 1em;padding-left: 1em">
+      <label class="control-label string required" for="index_input"><abbr title="required">*</abbr> Index</label>
+      <input class="form-control string required" required="required" aria-required="true" type="number" id="index_input" />
+    </div>
+
+    <div class="form-group inline" >
+      <label class="control-label string required" for="amount_input"><abbr title="required">*</abbr> Amount to send</label>
+      <input class="form-control string required" required="required" aria-required="true" type="number" id="amount_input" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <button class="ladda-button btn btn-primary btn" data-style="expand-right" onclick="onCustomTransferClick(this)">
+      <span class="ladda-label">Make transaction</span>
+    </button>
+    <div id="progress_text" class="text-muted"></div>
+  </div>
+</form>

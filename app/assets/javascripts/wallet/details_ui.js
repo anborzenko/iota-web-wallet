@@ -21,7 +21,9 @@ function loadAddresses(load_all){
         for (var i = last_address_index; i >= 0 && i >= end; i--){
             addresses.push(generateAddress(seed, i));
         }
-        window.iota.api.getBalances(addresses, 100, onGetBalancesCallback);
+        window.iota.api.getBalances(addresses, 100, function (e, res){
+            onGetBalancesCustomCallback(e, res, addresses);
+        });
     });
 }
 
@@ -29,7 +31,7 @@ function onDownloadBackupClick(){
     download('seed.txt', getSeed());
 }
 
-function onGetBalancesCallback(e, res){
+function onGetBalancesCustomCallback(e, res, addresses){
     $("#loading").spin(false);
     $(document).find('#loading').hide();
     $(document).find('#addresses_div').show();
@@ -41,7 +43,7 @@ function onGetBalancesCallback(e, res){
     var table = document.getElementById('address_list');
     table.innerHTML = '';
     for (var i = 0; i < res.balances.length; i++){
-        var a = window.walletData.addresses[i];
+        var a = addresses[i];
         var b = res.balances[i];
 
         var row = table.insertRow(-1);
