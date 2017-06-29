@@ -26,7 +26,7 @@ function loadWalletData(callback, onFinishedCallback){
 }
 
 function loadWalletDataRange(start, end, callback, onFinishedCallback){
-    setTimeout(function(){ getAccountData(getSeed(), {start: start, end: end}, callback, onFinishedCallback); }, 0);
+    setTimeout(function(){ getAccountData(getSeed(), {start: start, end: end}, callback, onFinishedCallback); }, 50);
 }
 
 function getPendingOut(){
@@ -164,7 +164,7 @@ function generateNewAddress(callback){
             if (e){
                 return callback(e);
             }
-            lastKnownAddressIndex = end+1;
+            lastKnownAddressIndex = end;
             setLastKnownAddressIndex(lastKnownAddressIndex);
             window.walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
             callback(null, window.walletData.latestAddress);
@@ -187,7 +187,7 @@ function attachAddress(addr, callback){
 }
 
 function shouldReplay(address, callback){
-    window.iota.api.shouldYouReplay(address, callback);
+    window.iota.api.isReattachable(address, callback);
 }
 
 function isDoubleSpend(transfer, callback){
@@ -273,7 +273,7 @@ function selflessReplay(tail_hash){
                 return notifyServerAboutNonReplayableTransaction(tail_hash);
             }
 
-            replayBundle(tail_hash, function(e, res){
+            replayBundleWrapper(tail_hash, function(e, res){
                 if (e){
                     return notifyServerAboutNonReplayableTransaction(tail_hash);
                 }

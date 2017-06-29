@@ -65,6 +65,7 @@ function onAttachBeforeGenerateAddressCallback(e, res){
     }
 
     document.getElementById('refresh_address').innerHTML = 'Generating. Please wait..';
+    setLastKnownAddressIndex(getLastKnownAddressIndex() + 1);
     generateNewAddress(onGenerateAddressCallback);
 }
 

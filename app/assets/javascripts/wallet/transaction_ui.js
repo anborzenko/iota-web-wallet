@@ -108,6 +108,8 @@ function openTransactionWindow(bundle_id) {
     document.getElementById('message_div').innerHTML = getMessage(tail);
     if (tail.numReplays > 1){
         document.getElementById('num_replays').innerHTML = 'This bundle has been reattached ' + (tail.numReplays - 1) + ' times';
+    }else{
+        document.getElementById('num_replays').innerHTML = '';
     }
     bundleToHtmlTable(document.getElementById('bundle_list'), b);
 
@@ -197,7 +199,7 @@ function showTxLoadUI(){
 
 function onTxLoadingFinished(){
     if (!window.isCurrentlyLoadingAll) {
-        window.loadingTimeout *= 0.05;   // Update less and lass frequently as the user becomes inactive
+        window.loadingTimeout *= 1.05;   // Update less and lass frequently as the user becomes inactive
         window.walletDataLoader = setTimeout(function () {
             loadWalletData(function(e, res, progress){
                 onGetWalletData(e, res);//Don't want to show progress for live loads

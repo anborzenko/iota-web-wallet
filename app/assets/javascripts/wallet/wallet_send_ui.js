@@ -66,11 +66,12 @@ function onSendClick(btn){
     var amount = convertToIotas(inputAmount, unit);
     var message = $('#message').val();
 
-    var l = Ladda.create(btn);
+    var l = Ladda.create(document.querySelector( '#confirm_button' ));
     $("#double_spend_confirmation_box").hide();
     $("#send_confirmation_message").hide();
     $("#cancel").hide();
     $("#abort_double_spend").hide();
+    $("#send_confirmation_box").show();
 
     sendIotas(to_address, amount, message, onSendFinished, function (progress, text) {
         l.setProgress(progress);
