@@ -6,7 +6,6 @@ git_source(:github) do |repo_name|
 end
 
 gem 'sprockets-rails', :require => 'sprockets/railtie'
-gem 'sqlite3'
 gem 'bootstrap-sass'
 gem 'spinjs-rails'
 gem 'clipboard-rails'
@@ -14,7 +13,7 @@ gem 'jquery-rails'
 gem 'ladda-rails'
 gem 'font-awesome-sass'
 gem 'js-routes'
-gem 'pg'
+gem 'rqrcode'
 gem 'uglifier'
 gem 'active_model_otp'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -36,3 +35,10 @@ gem 'jbuilder', '~> 2.5'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+group :development, :test do
+  gem 'sqlite3'
+end
+group :production do
+  gem 'pg'
+end

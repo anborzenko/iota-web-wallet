@@ -3,7 +3,15 @@ class WalletsController < ApplicationController
     if params.key?(:username)
       wallet = Wallet.find_by_username(params[:username])
       if wallet.nil?
-        render json: { success: false, message: 'Username not found' }
+        return render json: { success: false, message: 'Username not found' }
+      end
+
+      if wallet.has2fa
+        if params[:otp_key] && wallet.authenticate_otp(params[:otp_key])
+          render json: { success: true, encrypted_seed: wallet[:encrypted_seed] }
+        else
+          render json: { success: false, require_2fa: true }
+        end
       else
         render json: { success: true, encrypted_seed: wallet[:encrypted_seed] }
       end
@@ -19,11 +27,37 @@ class WalletsController < ApplicationController
       return
     end
 
+    params[:has2fa] = params[:has2fa] == 'true'
+
     if create_wallet(params)
-      render json: { success: true }
+      if @wallet.has2fa
+        qr = RQRCode::QRCode.new(@wallet.provisioning_uri(@wallet.username, issuer: 'IOTAWallet'),size: 10, level: :h)
+        render json: { success: true, qr: qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5)}
+      else
+        render json: { success: true }
+      end
     else
       render json: { success: false, message: @wallet.errors.full_messages.to_sentence }
     end
+  end
+
+  def validate2fa
+    if params[:otp_key]
+      if params[:username]
+        wallet = Wallet.find_by_username(params[:username])
+        success = wallet.authenticate_otp(params[:otp_key])
+        render json: { success: success, message: success ? '' : 'Invalid key. Try again' }
+      else
+        render json: { success: false, message: 'Something went wrong: Username not supplied' }
+      end
+    else
+      render json: { success: false, message: 'No key provided' }
+    end
+  end
+
+  def exists
+    wallet = Wallet.find_by_username(params[:username])
+    render json: { exists: !wallet.nil? }
   end
 
   def get_next_pending_transaction
@@ -61,7 +95,8 @@ class WalletsController < ApplicationController
 
   def create_wallet(wallet_params)
     @wallet = Wallet.create(username: wallet_params[:username],
-                            encrypted_seed: wallet_params[:encrypted_seed])
+                            encrypted_seed: wallet_params[:encrypted_seed],
+                            has2fa: wallet_params[:has2fa])
     !@wallet.errors.any?
   end
 

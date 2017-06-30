@@ -164,7 +164,7 @@ function generateNewAddress(callback){
             if (e){
                 return callback(e);
             }
-            lastKnownAddressIndex = end;
+            lastKnownAddressIndex = end+1;
             setLastKnownAddressIndex(lastKnownAddressIndex);
             window.walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
             callback(null, window.walletData.latestAddress);
