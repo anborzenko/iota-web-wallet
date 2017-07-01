@@ -98,6 +98,19 @@ class WalletsController < ApplicationController
     PendingTransaction.create(tail_hash: params[:tail_hash], last_replay: DateTime.current, num_replays: 0)
   end
 
+  def add_addresses
+    addresses = params[:addresses]
+    username = params[:username]
+
+    # Make sure we only have n addresses
+    n = 10
+    addresses = addresses.split(',')[0..n].join(',')
+
+    wallet = Wallet.find_by_username(username)
+    wallet.receive_addresses = addresses
+    wallet.save
+  end
+
   private
 
   def create_wallet(wallet_params)

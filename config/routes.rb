@@ -23,5 +23,7 @@ Rails.application.routes.draw do
 
   get 'nodes/index'
 
+  get '/transfer/:user', to: 'transfer#transfer'
+
   root 'page#index'
 end
