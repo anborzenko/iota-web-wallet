@@ -19,6 +19,7 @@
 <ul class="nav nav-tabs">
   <li role="presentation" class="active"><a data-toggle="tab" href="#addresses"><span class="glyphicon glyphicon-list"></span>  Addresses</a></li>
   <li role="presentation"><a data-toggle="tab" href="#backup"><span class="glyphicon glyphicon-save"></span>  Backup</a></li>
+  <li role="presentation"><a data-toggle="tab" href="#custom_send"><span class="glyphicon glyphicon-send"></span>  Advanced transfer</a></li>
 </ul>
 
 <div class="tab-content">
@@ -28,6 +29,7 @@
       <table class="table fixed-table">
         <thead>
         <tr>
+          <th style="width: 5em">Index</th>
           <th>Address</th>
           <th style="width: 6em">Balance</th>
         </tr>
@@ -42,5 +44,9 @@
   <div id="backup" class="tab-pane">
     <div style="padding-top: 2em;padding-bottom: 0.5em;"><button class="btn btn-primary" onclick="onDownloadBackupClick()">Download backup</button></div>
     <div class="text-muted">This will download your seed as a text file. Keep it somewhere safe</div>
+  </div>
+
+  <div id="custom_send" class="tab-pane">
+    <%= render 'custom_send' %>
   </div>
 </div>

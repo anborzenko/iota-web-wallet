@@ -11,9 +11,9 @@ function loadAddresses(load_all){
     $("#loading").spin(true);
     $(document).find('#loading').show();
     $(document).find('#addresses_div').hide();
+    var seed = getSeed();
 
     generateNewAddress(function(e, last_address){
-        var seed = getSeed();
         var last_address_index = getLastKnownAddressIndex();
         var end = load_all ? 0 : last_address_index - window.defaultNumAddessesToLoad;
 
@@ -22,7 +22,7 @@ function loadAddresses(load_all){
             addresses.push(generateAddress(seed, i));
         }
         window.iota.api.getBalances(addresses, 100, function (e, res){
-            onGetBalancesCustomCallback(e, res, addresses);
+            onGetBalancesCustomCallback(e, res, addresses, i+1);
         });
     });
 }
@@ -31,7 +31,7 @@ function onDownloadBackupClick(){
     download('seed.txt', getSeed());
 }
 
-function onGetBalancesCustomCallback(e, res, addresses){
+function onGetBalancesCustomCallback(e, res, addresses, start_index){
     $("#loading").spin(false);
     $(document).find('#loading').hide();
     $(document).find('#addresses_div').show();
@@ -47,8 +47,10 @@ function onGetBalancesCustomCallback(e, res, addresses){
         var b = res.balances[i];
 
         var row = table.insertRow(-1);
-        var address = row.insertCell(0);
-        var balance = row.insertCell(1);
+        var index = row.insertCell(0);
+        var address = row.insertCell(1);
+        var balance = row.insertCell(2);
+        index.innerHTML = start_index + (res.balances.length - i - 1);
         address.innerHTML = a;
         balance.innerHTML = b;
     }

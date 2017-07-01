@@ -3,7 +3,7 @@
  */
 
 function onCustomTransferClick(btn){
-    var seed = $("#seed_input").val();
+    var seed = getSeed();
     var addressFrom = $("#address_from_input").val();
     var index = parseInt($("#index_input").val());
     var secLev = parseInt($("#sec_level").val());
@@ -15,14 +15,14 @@ function onCustomTransferClick(btn){
 
     iota.api.getBalances([addressFrom], 100, function(e, res){
         if (e){
-            resetForm(l);
+            resetCustomTransferForm();
             document.getElementById('progress_text').innerHTML = '';
             return document.getElementById('custom_send_notifications').innerHTML = "<div class='alert alert-danger'>Something went wrong: " + e + "</div>";
         }
 
         var balance = parseInt(res.balances[0]);
         if (balance < amount){
-            resetForm(l);
+            resetCustomTransferForm();
             document.getElementById('progress_text').innerHTML = '';
             return document.getElementById('custom_send_notifications').innerHTML = "<div class='alert alert-danger'>The address only has a balance of " + balance + "</div>";
         }
@@ -48,7 +48,7 @@ function onCustomTransferClick(btn){
 }
 
 function onCustomTransferFinished(e, res){
-    resetForm();
+    resetCustomTransferForm();
 
     if (e){
         document.getElementById('progress_text').innerHTML = '';
@@ -58,12 +58,8 @@ function onCustomTransferFinished(e, res){
     document.getElementById('progress_text').innerHTML = 'Transfer succeeded';
 }
 
-function resetForm(laddaBtn){
-    if (laddaBtn){
-        laddaBtn.stop();
-    }else{
-        Ladda.stopAll();
-    }
+function resetCustomTransferForm(){
+    Ladda.stopAll();
 
     document.getElementById('custom_send_notifications').innerHTML = '';
 }

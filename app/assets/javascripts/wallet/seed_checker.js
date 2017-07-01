@@ -39,8 +39,10 @@ function check_seed(){
                     var b = res.balances[i];
 
                     var row = table.insertRow(-1);
-                    var address = row.insertCell(0);
-                    var balance = row.insertCell(1);
+                    var index = row.insertCell(0);
+                    var address = row.insertCell(1);
+                    var balance = row.insertCell(2);
+                    index.innerHTML = i;
                     address.innerHTML = a;
                     balance.innerHTML = b;
                 }

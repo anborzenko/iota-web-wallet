@@ -2,15 +2,12 @@
 
 <h1>Send IOTAs</h1>
 <div class="text-muted">This tool allows you to specify the inputs yourself. Please only use this if you know what you are doing.
-  Only one input is currently supported</div>
+  Only one input is currently supported. Please note that you will not get any errors if you provide the wrong inputs,
+  but the transaction will never be confirmed. If you get a invalid bundle error when trying to re-attach the transactions,
+  the inputs are wrong</div>
 <br>
 
 <form>
-  <div class="form-group">
-    <label class="control-label string required" for="seed_input"><abbr title="required">*</abbr> Seed</label>
-    <input class="form-control string required" required="required" aria-required="true" type="text" id="seed_input" />
-  </div>
-
   <div class="form-group">
     <label class="control-label string required" for="address_from_input"><abbr title="required">*</abbr> Address to send from</label>
     <input class="form-control string required" required="required" aria-required="true" type="text" id="address_from_input" />
@@ -32,7 +29,7 @@
     </div>
 
     <div class="form-group inline" style="padding-right: 1em;padding-left: 1em">
-      <label class="control-label string required" for="index_input"><abbr title="required">*</abbr> Index</label>
+      <label class="control-label string required" for="index_input"><abbr title="required">*</abbr> Address index</label>
       <input class="form-control string required" required="required" aria-required="true" type="number" id="index_input" />
     </div>
 
