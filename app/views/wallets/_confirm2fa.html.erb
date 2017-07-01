@@ -1,0 +1,26 @@
+<script>
+    $( document ).ready(function() {
+        $("#otp_key_signup").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#confirm2fa").click();
+            }
+        })
+    });
+</script>
+
+<h1>Confirm two-factor authentication</h1>
+
+<div id="qr">
+  <%= raw @qr_svg %>
+</div>
+
+<form class="form-inline" style="padding-top: 1em">
+  <div class="form-group">
+    <label for="otp_key_signup">Key:</label>
+    <input type="text" class="form-control" id="otp_key_signup" placeholder="Enter key" autofocus>
+  </div>
+  <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="confirm2fa" onclick="onConfirm2faClick(this)">
+    <span class="ladda-label">Confirm</span>
+  </button>
+  <div class="text-muted">Please scan the QR code above and enter the key provided by google authenticator</div>
+</form>

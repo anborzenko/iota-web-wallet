@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get 'wallets/details'
   get 'wallets/login'
   get 'wallets/exists'
-  get 'wallets/validate2fa'
+  get 'wallets/confirm2fa'
   get 'wallets/signup'
   get 'wallets/get_next_pending_transaction'
   get 'wallets/delete_pending_transaction'

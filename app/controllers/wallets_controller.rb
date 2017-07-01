@@ -1,19 +1,23 @@
 class WalletsController < ApplicationController
   def login
     if params.key?(:username)
-      wallet = Wallet.find_by_username(params[:username])
-      if wallet.nil?
+      @wallet = Wallet.find_by_username(params[:username])
+      if @wallet.nil?
         return render json: { success: false, message: 'Username not found' }
       end
 
-      if wallet.has2fa
-        if params[:otp_key] && wallet.authenticate_otp(params[:otp_key])
-          render json: { success: true, encrypted_seed: wallet[:encrypted_seed] }
+      if @wallet.has2fa
+        unless @wallet.has_confirmed_2fa
+          return render json: { success: false, require_2fa_confirmation: true,
+                                qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5) }
+        end
+        if params[:otp_key] && @wallet.authenticate_otp(params[:otp_key])
+          render json: { success: true, encrypted_seed: @wallet[:encrypted_seed] }
         else
           render json: { success: false, require_2fa: true }
         end
       else
-        render json: { success: true, encrypted_seed: wallet[:encrypted_seed] }
+        render json: { success: true, encrypted_seed: @wallet[:encrypted_seed] }
       end
     else
       @wallet = Wallet.new
@@ -31,8 +35,7 @@ class WalletsController < ApplicationController
 
     if create_wallet(params)
       if @wallet.has2fa
-        qr = RQRCode::QRCode.new(@wallet.provisioning_uri(@wallet.username, issuer: 'IOTAWallet'),size: 10, level: :h)
-        render json: { success: true, qr: qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5)}
+        render json: { success: true, qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5)}
       else
         render json: { success: true }
       end
@@ -41,17 +44,21 @@ class WalletsController < ApplicationController
     end
   end
 
-  def validate2fa
+  def confirm2fa
+    unless params[:username]
+      return render json: { success: false, message: 'Something went wrong: Username not supplied' }
+    end
+
+    @wallet = Wallet.find_by_username(params[:username])
     if params[:otp_key]
-      if params[:username]
-        wallet = Wallet.find_by_username(params[:username])
-        success = wallet.authenticate_otp(params[:otp_key])
-        render json: { success: success, message: success ? '' : 'Invalid key. Try again' }
+      success = @wallet.authenticate_otp(params[:otp_key])
+      if success
+        @wallet.has_confirmed_2fa = true
+        @wallet.save
+        render json: { success: true, encrypted_seed: @wallet[:encrypted_seed] }
       else
-        render json: { success: false, message: 'Something went wrong: Username not supplied' }
+        render json: { success: false, message: 'Invalid key. Try again' }
       end
-    else
-      render json: { success: false, message: 'No key provided' }
     end
   end
 
@@ -98,6 +105,10 @@ class WalletsController < ApplicationController
                             encrypted_seed: wallet_params[:encrypted_seed],
                             has2fa: wallet_params[:has2fa])
     !@wallet.errors.any?
+  end
+
+  def get_qr
+    RQRCode::QRCode.new(@wallet.provisioning_uri(@wallet.username, issuer: 'IOTAWallet'),size: 10, level: :h)
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

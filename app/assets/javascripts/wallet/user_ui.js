@@ -46,14 +46,10 @@ function openSignupConfirmation(btn){
     });
 }
 
-function cancelSignup(){
+function resetForm(){
     $('#loginTab').show();
     $('#signUpTab').hide();
     $('#confirm2fa').hide();
-}
-
-function cancel2faLogin(){
-    $('#loginTab').show();
     $('#login2faTab').hide();
 }
 
@@ -104,6 +100,8 @@ function signup(btn) {
 function onConfirm2faClick(btn){
     var otp_key = $('#otp_key_signup').val();
     var username = $('#wallet_username').val();
+    var password = $('#wallet_password').val();
+    validateUserInput(username, password);
 
     if (otp_key.length === 0){
         return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid key</div>";
@@ -114,12 +112,19 @@ function onConfirm2faClick(btn){
 
     $.ajax({
         type: "GET",
-        url: 'validate2fa',
+        url: 'confirm2fa',
         data: { 'otp_key': otp_key, 'username': username },
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();
             if (response.success){
+                try{
+                    var seed = decrypt(password, response.encrypted_seed);
+                    saveSeed(seed, password);
+                }catch(err){
+                    return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
+                }
+
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-success'>" +
                     "Two factor authentication has been successfully enabled. Redirecting to wallet in 3 seconds</div>";
                 setTimeout(function () {
@@ -152,11 +157,15 @@ function login (btn) {
                     saveSeed(seed, password);
                     document.location.href = 'show';
                 }catch(err){
-                    document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
+                    return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
                 }
             }else if (response.require_2fa) {
                 $('#login2faTab').show();
                 $('#loginTab').hide();
+            }else if (response.require_2fa_confirmation) {
+                $('#loginTab').hide();
+                $('#confirm2fa').show();
+                document.getElementById('qr').innerHTML = response.qr;
             }else{
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
             }

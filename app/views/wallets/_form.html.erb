@@ -51,6 +51,12 @@
               $("#openWithSeed").click();
           }
       });
+
+      $("#wallet_password_confirmation").keyup(function (event) {
+          if (event.keyCode === 13) {
+              $("#signupConfirm").click();
+          }
+      });
   });
 </script>
 
@@ -99,7 +105,7 @@
         <button class="ladda-button btn btn-primary btn" data-style="expand-right" onclick="on2faLoginClick(this)">
           <span class="ladda-label">Confirm</span>
         </button>
-        <button class="ladda-button btn btn-default btn" data-style="expand-right" onclick="cancel2faLogin()">
+        <button class="ladda-button btn btn-default btn" type="button" data-style="expand-right" onclick="resetForm()">
           <span class="ladda-label">Back</span>
         </button>
       </form>
@@ -114,28 +120,15 @@
           <label><input type="checkbox" id="enable2FaCheckbox">Enable two-factor identification</label>
         </div>
       </div>
-      <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="signup" onclick="signup(this)">
+      <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="signupConfirm" onclick="signup(this)">
         <span class="ladda-label">Sign up</span>
       </button>
-      <button class="ladda-button btn btn-default btn" data-style="expand-right" id="signup" onclick="cancelSignup()">
+      <button class="ladda-button btn btn-default btn" data-style="expand-right" onclick="resetForm()">
         <span class="ladda-label">Back</span>
       </button>
     </div>
     <div id="confirm2fa" hidden="hidden">
-      <h1>Confirm two-factor authentication</h1>
-
-      <div id="qr"></div>
-
-      <form class="form-inline" style="padding-top: 1em">
-        <div class="form-group">
-          <label for="otp_key_signup">Key:</label>
-          <input type="text" class="form-control" id="otp_key_signup" placeholder="Enter key">
-        </div>
-        <button class="ladda-button btn btn-primary btn" data-style="expand-right" onclick="onConfirm2faClick(this)">
-          <span class="ladda-label">Confirm</span>
-        </button>
-        <div class="text-muted">Please scan the QR code above and enter the key provided by google authenticator</div>
-      </form>
+      <%= render 'confirm2fa' %>
     </div>
   </div>
   <div class="tab-pane" id="seedTab">
@@ -148,7 +141,7 @@
         <span>Open</span>
       </button>
       <button class="btn btn-default btn" id="generateSeed" onclick="onGenerateSeedClick()">
-        <span>Generate random seed</span>
+        <span>Generate a new seed</span>
       </button>
     </div>
   </div>
