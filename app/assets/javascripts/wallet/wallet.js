@@ -132,10 +132,14 @@ function decrypt(key, data){
     return sjcl.decrypt(key, data);
 }
 
-function saveSeed(cvalue, password) {
+function saveLogin(cvalue, password, username) {
     sessionStorage.setItem("unnamed", password);
     sessionStorage.setItem("seed", encrypt(password, cvalue));
     document.cookie = 'isLoggedIn=;Path=/;';
+
+    if (username){
+        sessionStorage.setItem('username', username);
+    }
 }
 
 function getSeed() {
@@ -145,14 +149,15 @@ function getSeed() {
         return decrypt(password, seed);
     }
 
-    window.location = '/wallets/login';
+    redirect_to('login');
     throw('Seed not found');
 }
 
-function deleteSeed() {
+function deleteLogin() {
     document.cookie = 'isLoggedIn=; Path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     sessionStorage.removeItem('seed');
     sessionStorage.removeItem('unnamed');
+    sessionStorage.removeItem('username');
 }
 
 function generateNewAddress(callback){
@@ -314,4 +319,34 @@ function setLastKnownAddressIndex(value){
     if (seed !== null){
         localStorage.setItem('lkai' + getStringHash(seed), value);
     }
+}
+
+// Uploads a list of num unspent addresses to the server. This is executed async
+function uploadUnspentAddresses(num){
+    var username = sessionStorage.getItem('username');
+    if (!username || username.length === 0){
+        return;//Logged in using a seed
+    }
+    if (sessionStorage.getItem('haveUploadedUnspentAddresses') === 'true'){
+        return;
+    }
+
+    setTimeout(function(){
+        var lastKnownAddressIndex = getLastKnownAddressIndex();
+        var seed = getSeed();
+        var addresses = [];
+        for (var i = lastKnownAddressIndex; i < lastKnownAddressIndex + num; i++) {
+            addresses.push(generateAddress(seed, i));
+        }
+
+        $.ajax({
+            type: "GET",
+            url: 'add_addresses',
+            data: {'username': username, 'addresses': addresses},
+            dataType: "JSON",
+            success: function (response) {
+                sessionStorage.setItem('haveUploadedUnspentAddresses', true);
+            },
+        });
+    }, 50);
 }

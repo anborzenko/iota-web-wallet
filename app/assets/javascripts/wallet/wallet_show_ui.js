@@ -6,7 +6,13 @@ function onGetWalletData(e, accountData, progress) {
     if (window.location.href.indexOf('wallets/show') === -1){
         return;
     }
-    $("#loading").spin(false);
+    var spinner = $("#loading");
+
+    if (spinner.is(':visible')){
+        spinner.spin(false);
+        $(document).find('#loading').hide();
+        onFirstLoadFinished();
+    }
 
     if (e){
         document.getElementById('loading').innerHTML = "<div class='alert alert-danger'>Could not load your wallet. Please check the node health. " + e.message + "</div>";
@@ -14,7 +20,6 @@ function onGetWalletData(e, accountData, progress) {
     }
     addWalletData(accountData);
 
-    $(document).find('#loading').hide();
     $(document).find('#wallet-data').show();
 
     if (progress) {
@@ -29,6 +34,7 @@ function populateWallet(data){
     document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(getSeedBalance());
     document.getElementById("wallet_balance").innerHTML = '<b>' + getSeedBalance() + '</b> IOTAs';
     $('#address_box').val(addChecksum(data.latestAddress));
+    document.getElementById('send_balance').innerHTML = 'Limit: ' + getSeedBalance() + ' IOTAs';
 }
 
 function convertIotaValuesToHtml(value){
@@ -65,6 +71,7 @@ function onAttachBeforeGenerateAddressCallback(e, res){
     }
 
     document.getElementById('refresh_address').innerHTML = 'Generating. Please wait..';
+    alert(getLastKnownAddressIndex());
     setLastKnownAddressIndex(getLastKnownAddressIndex() + 1);
     generateNewAddress(onGenerateAddressCallback);
 }
@@ -88,5 +95,12 @@ function resetAddressGenerationInput(){
     status.onclick = function() {onGenerateAddressClick()};
 
     status.innerHTML = 'Generate new address';
-    onTxLoadingFinished();
+    onTxLoadingFinishedFirstTime();
+}
+
+function onFirstLoadFinished(){
+    // Pre fill the send form if everything needed is supplied in the url
+    if (window.location.href.indexOf('recipient') !== -1){
+        openSendWindowAndPrefill();
+    }
 }

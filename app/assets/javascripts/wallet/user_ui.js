@@ -12,8 +12,8 @@ function openWithSeed() {
         return;
     }
 
-    saveSeed(seed, generateRandomSeed());
-    document.location.href = 'show';
+    saveLogin(seed, generateRandomSeed());
+    redirect_to('show');
 }
 
 function onGenerateSeedClick() {
@@ -81,14 +81,14 @@ function signup(btn) {
         success: function (response) {
             Ladda.stopAll();
             if (response.success){
-                saveSeed(seed, password);
+                saveLogin(seed, password, username);
                 if (enable_2fa){
                     $('#loginTab').hide();
                     $('#signUpTab').hide();
                     $('#confirm2fa').show();
                     document.getElementById('qr').innerHTML = response.qr;
                 }else {
-                    document.location.href = 'show';
+                    redirect_to('show');
                 }
             }else{
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
@@ -120,7 +120,7 @@ function onConfirm2faClick(btn){
             if (response.success){
                 try{
                     var seed = decrypt(password, response.encrypted_seed);
-                    saveSeed(seed, password);
+                    saveLogin(seed, password, username);
                 }catch(err){
                     return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
                 }
@@ -128,7 +128,7 @@ function onConfirm2faClick(btn){
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-success'>" +
                     "Two factor authentication has been successfully enabled. Redirecting to wallet in 3 seconds</div>";
                 setTimeout(function () {
-                    document.location.href = 'show';
+                    redirect_to('show');
                 }, 3000)
             }else{
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
@@ -154,8 +154,8 @@ function login (btn) {
             if (response.success){
                 try{
                     var seed = decrypt(password, response.encrypted_seed);
-                    saveSeed(seed, password);
-                    document.location.href = 'show';
+                    saveLogin(seed, password, username);
+                    redirect_to('show');
                 }catch(err){
                     return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
                 }
@@ -190,8 +190,8 @@ function on2faLoginClick(btn){
             if (response.success){
                 try{
                     var seed = decrypt(password, response.encrypted_seed);
-                    saveSeed(seed, password);
-                    document.location.href = 'show';
+                    saveLogin(seed, password, username);
+                    redirect_to('show');
                 }catch(err){
                     document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
                 }
@@ -207,7 +207,7 @@ function on2faLoginClick(btn){
 }
 
 function signout(){
-    deleteSeed();
+    deleteLogin();
     window.location = '/';
 }
 

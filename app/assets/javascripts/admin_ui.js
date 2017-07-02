@@ -5,7 +5,7 @@
 
 function loginAdmin(){
     sessionStorage.setItem('private_key', $('#privkey').val());
-    document.location.href = 'dashboard';
+    redirect_to('dashboard');
 }
 
 function loadAdminDashboardData(){

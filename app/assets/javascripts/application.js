@@ -29,6 +29,7 @@ function loadGlobal(){
     // The asset preprocessing in rails don't allow global variables, so
     // have to attach them to window
     window.loadingTimeout = 10000;
+    window.numAddressesToSaveOnServer = 10;
 
     window.iota = new window.IOTA({
         //'provider': 'https://d4spftjljtef9.cloudfront.net'

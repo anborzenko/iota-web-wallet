@@ -186,7 +186,7 @@ function loadAllTransactions(){
             document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>Failed to load all. " + (e.hasOwnProperty('message') ? e.message : e) + "</div>";
         }
         window.isCurrentlyLoadingAll = false;
-        onTxLoadingFinished();
+        onTxLoadingFinishedFirstTime();
         $('#txLoadingWrapper').hide();
     });
 }
@@ -197,16 +197,29 @@ function showTxLoadUI(){
     $('#loadAllTransactionsDiv').hide();
 }
 
+// Called the first time the txs has finished loading
+function onTxLoadingFinishedFirstTime(){
+    onTxLoadingFinished();
+
+    $('#tx_loading_notification').hide();
+    $('#loadAllTransactionsDiv').show();
+
+    // Pre fill the send form if everything needed is supplied in the url
+    if (window.location.href.indexOf('recipient') !== -1){
+        try {
+            openSendWindowAndPrefill();
+        }catch(err){}
+    }
+
+    uploadUnspentAddresses(window.numAddressesToSaveOnServer)
+}
+
+// Called every time the txs has finished loading
 function onTxLoadingFinished(){
-    if (!window.isCurrentlyLoadingAll) {
         window.loadingTimeout *= 1.05;   // Update less and lass frequently as the user becomes inactive
         window.walletDataLoader = setTimeout(function () {
             loadWalletData(function(e, res, progress){
                 onGetWalletData(e, res);//Don't want to show progress for live loads
             }, onTxLoadingFinished);
         }, Math.floor(window.loadingTimeout));
-
-        $('#tx_loading_notification').hide();
-        $('#loadAllTransactionsDiv').show();
-    }
 }

@@ -20,10 +20,10 @@ Rails.application.routes.draw do
   get 'wallets/get_next_pending_transaction'
   get 'wallets/delete_pending_transaction'
   get 'wallets/add_pending_transaction'
+  get 'wallets/add_addresses'
+  get 'wallets/receive_addresses'
 
   get 'nodes/index'
-
-  get '/transfer/:user', to: 'transfer#transfer'
 
   root 'page#index'
 end

@@ -68,7 +68,7 @@ class WalletsController < ApplicationController
   end
 
   def get_next_pending_transaction
-    max_allowed_replays = 3
+    max_allowed_replays = 5
 
     oldest = PendingTransaction.order(:last_replay).first
     while oldest.num_replays > max_allowed_replays
@@ -111,13 +111,17 @@ class WalletsController < ApplicationController
     wallet.save
   end
 
+  def receive_addresses
+    render json: { addresses: Wallet.find_by_username(params[:username]).receive_addresses }
+  end
+
   private
 
   def create_wallet(wallet_params)
     @wallet = Wallet.create(username: wallet_params[:username],
                             encrypted_seed: wallet_params[:encrypted_seed],
                             has2fa: wallet_params[:has2fa])
-    !@wallet.errors.any?
+    @wallet.errors.none?
   end
 
   def get_qr
