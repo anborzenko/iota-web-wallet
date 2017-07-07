@@ -32,8 +32,8 @@ function loadGlobal(){
     window.numAddressesToSaveOnServer = 10;
 
     window.iota = new window.IOTA({
-        //'provider': 'https://d4spftjljtef9.cloudfront.net'
-        'provider': 'https://d3j4w674fijhi2.cloudfront.net'
+        'provider': 'http://104.155.132.130:14265'
+        //'provider': 'https://d3j4w674fijhi2.cloudfront.net'
     });
 
     window.depth = 4;

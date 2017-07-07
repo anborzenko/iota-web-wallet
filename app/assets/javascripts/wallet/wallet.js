@@ -158,6 +158,7 @@ function deleteLogin() {
     sessionStorage.removeItem('seed');
     sessionStorage.removeItem('unnamed');
     sessionStorage.removeItem('username');
+    sessionStorage.removeItem('haveUploadedUnspentAddresses')
 }
 
 function generateNewAddress(callback){

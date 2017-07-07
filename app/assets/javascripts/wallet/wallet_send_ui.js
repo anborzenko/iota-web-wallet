@@ -6,14 +6,13 @@ function openSendWindow(){
 }
 
 function openSendWindowAndPrefill(){
-    args = window.location.href.split('?')[1].split('&');
-    mappings = {};
+    var args = window.location.href.split('?')[1].split('&');
+    var mappings = {};
     for (var i = 0; i < args.length; i++){
         var s = args[i].split('=');
         mappings[s[0]] = s[1];
     }
 
-    document.getElementById('send_balance').innerHTML = 'Limit: ' + getSeedBalance() + ' IOTAs';
     $('#send_address').val(mappings['recipient']);
 
     if ('amount' in mappings){
@@ -128,7 +127,7 @@ function onSendFinished(e, response){
     window.walletData.maxAddressIndex += 1;
     Ladda.create( document.querySelector( '#send_button' ) ).stop();
     if (e){
-        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-danger'>Transfer failed: " + e.message + "</div>";
+        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-danger'>Transfer failed: " + e.message ? e.message : e + "</div>";
     }else{
         document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>Transfer succeeded</div>";
         loadWalletData(onGetWalletData);

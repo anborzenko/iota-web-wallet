@@ -68,7 +68,7 @@ class WalletsController < ApplicationController
   end
 
   def get_next_pending_transaction
-    max_allowed_replays = 5
+    max_allowed_replays = 10
 
     oldest = PendingTransaction.order(:last_replay).first
     while oldest.num_replays > max_allowed_replays
@@ -76,7 +76,7 @@ class WalletsController < ApplicationController
       oldest = PendingTransaction.order(:last_replay).first
     end
 
-    min_wait_time = 10 # The minimum number of minutes between each replay
+    min_wait_time = 5 # The minimum number of minutes between each replay
     if (DateTime.current.to_i - oldest.last_replay.to_i) / 60.0 < min_wait_time
       raise 'It\'s too soon'
     end
