@@ -3,6 +3,10 @@
  */
 function openSendWindow(){
     $('#sendModal').modal('show');
+
+    document.getElementById('send-notifications').innerHTML = '';
+
+    $('#send_address').val('');
 }
 
 function openDonationWindow(){
