@@ -1,7 +1,8 @@
 <script>
     // Clipboard
+    var clipboard = new Clipboard('.copy-button');
 
-    $('.btn').tooltip({
+    $('.copy-button').tooltip({
         trigger: 'click',
         placement: 'bottom'
     });
@@ -17,8 +18,6 @@
             $(btn).tooltip('hide');
         }, 1000);
     }
-
-    var clipboard = new Clipboard('.btn');
 
     clipboard.on('success', function(e) {
         setTooltip(e.trigger, 'Copied!');
@@ -73,7 +72,7 @@
         <input id="seed_box" class="form-control overflow-elipsis" type="password" onclick="showSeed()" readonly>
 
         <span class="input-group-btn">
-          <button class="btn" type=button style="background-color: #dddddd" onclick="showSeed()" data-clipboard-target="#seed_box">
+          <button class="btn copy-button" type=button style="background-color: #dddddd" onclick="showSeed()" data-clipboard-target="#seed_box">
             <%= image_tag('clippy.svg', size: '16') %>
           </button>
         </span>
@@ -89,7 +88,7 @@
         <input id="address_box" class="form-control overflow-elipsis" readonly>
 
         <span class="input-group-btn">
-          <button class="btn" type=button style="background-color: #dddddd" data-clipboard-target="#address_box" title="Click to copy">
+          <button class="btn copy-button" type=button style="background-color: #dddddd" data-clipboard-target="#address_box" title="Click to copy">
             <%= image_tag('clippy.svg', size: '16') %>
           </button>
         </span>
@@ -98,13 +97,17 @@
 
     <h2>Full balance</h2>
       <div class="input-group">
-        <div id="wallet_balance"></div>
-        <span class="input-group-btn">
+        <div>
+          <span id="wallet_balance"></span>
+          <span id="wallet_balance_pending" hidden="hidden"><span> (</span><span id="wallet_balance_pending_amount">0</span><span> IOTAs pending)</span></span>
+        </div>
+        <div class="input-group-btn" style="text-align: center">
           <button class="btn btn-primary" type=button title="Send iotas" onclick="openSendWindow()">Make transfer</button>
-        </span>
+          <br>
+          <button class="btn btn-link" title="Send iotas" onclick="openDonationWindow()">Donate</button>
+        </div>
       </div>
     </div>
-
   </div>
 
   <div id="wallet-transactions">

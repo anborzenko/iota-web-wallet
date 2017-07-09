@@ -324,7 +324,7 @@ function setLastKnownAddressIndex(value){
 
 // Uploads a list of num unspent addresses to the server. This is executed async
 function uploadUnspentAddresses(num){
-    var username = sessionStorage.getItem('username');
+    var username = getUsername();
     if (!username || username.length === 0){
         return;//Logged in using a seed
     }
@@ -343,11 +343,22 @@ function uploadUnspentAddresses(num){
         $.ajax({
             type: "GET",
             url: 'add_addresses',
-            data: {'username': username, 'addresses': addresses},
+            data: {'username': username, 'addresses': addresses, 'password_hash': getPasswordHash()},
             dataType: "JSON",
             success: function (response) {
                 sessionStorage.setItem('haveUploadedUnspentAddresses', true);
             },
         });
     }, 50);
+}
+
+function getPasswordHash(){
+    var pass = sessionStorage.getItem('unnamed');
+    if (pass){
+        return sjcl.hash.sha256.hash(pass).join('');
+    }
+}
+
+function getUsername(){
+    return sessionStorage.getItem('username');
 }

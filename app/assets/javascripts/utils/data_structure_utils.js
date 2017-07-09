@@ -50,6 +50,14 @@ function getDictValues(dict){
     return values;
 }
 
+function getDictKeys(dict){
+    var keys = [];
+    for(var key in dict){
+        keys.push(key);
+    }
+    return keys;
+}
+
 function sumList(list){
     var sum = 0;
     for (var i = 0; i < list.length; i++){

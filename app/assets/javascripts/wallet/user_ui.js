@@ -76,7 +76,12 @@ function signup(btn) {
     $.ajax({
         type: "GET",
         url: 'signup',
-        data: {'username': username, 'encrypted_seed': encryptedSeed, 'has2fa': enable_2fa},
+        data: {'username': username,
+               'encrypted_seed': encryptedSeed,
+               'has2fa': enable_2fa,
+               'password_hash': sjcl.hash.sha256.hash(password).join('')
+        },
+
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();
@@ -137,17 +142,29 @@ function onConfirm2faClick(btn){
     });
 }
 
-function login (btn) {
-    var username = $('#wallet_username').val();
-    var password = $('#wallet_password').val();
-    validateUserInput(username, password);
+function login (btn, require_first_time_proof) {
+    try {
+        var username = $('#wallet_username').val();
+        var password = $('#wallet_password').val();
+        validateUserInput(username, password);
 
-    var l = Ladda.create(btn);
-    l.start();
+        var data = {'username': username, 'password_hash': sjcl.hash.sha256.hash(password).join('')};
+        if (require_first_time_proof) {
+            // This is only required once. The password is never stored. See the
+            // wallet controller for an in depth description about this.
+            data['password'] = password;
+        }
+
+        var l = Ladda.create(btn);
+        l.start();
+    }catch(err){
+        return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: " + err + "</div>";
+    }
+
     $.ajax({
         type: "GET",
         url: 'login',
-        data: {'username': username},
+        data: data,
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();
@@ -166,6 +183,8 @@ function login (btn) {
                 $('#loginTab').hide();
                 $('#confirm2fa').show();
                 document.getElementById('qr').innerHTML = response.qr;
+            }else if (response.require_first_time_proof){
+                login(btn, true)
             }else{
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
             }
@@ -178,12 +197,14 @@ function on2faLoginClick(btn){
     var password = $('#wallet_password').val();
     var otp_key = $('#otp_key_login').val();
 
+    var data = {'username': username, 'password_hash': sjcl.hash.sha256.hash(password).join(''), otp_key: otp_key};
+
     var l = Ladda.create(btn);
     l.start();
     $.ajax({
         type: "GET",
         url: 'login',
-        data: {'username': username, otp_key: otp_key},
+        data: data,
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();

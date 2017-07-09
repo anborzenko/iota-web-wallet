@@ -14,11 +14,11 @@
 //= require jquery_ujs
 //= require rails-ujs
 //= require turbolinks
-//= require bootstrap-sprockets
 //= require clipboard
 //= require spin
 //= require jquery.spin
 //= require "ladda"
+//= require bootstrap-sprockets
 //= require_tree .
 //= stub "vendor/iota.min"
 //= stub "vendor/curl.min"
@@ -32,8 +32,7 @@ function loadGlobal(){
     window.numAddressesToSaveOnServer = 10;
 
     window.iota = new window.IOTA({
-        'provider': 'http://104.155.132.130:14265'
-        //'provider': 'https://d3j4w674fijhi2.cloudfront.net'
+        'provider': 'https://d3j4w674fijhi2.cloudfront.net'
     });
 
     window.depth = 4;
@@ -92,4 +91,6 @@ function loadGlobal(){
     window.TRUNK_TRANSACTION_TRINARY_SIZE = 243;
     window.BRANCH_TRANSACTION_TRINARY_OFFSET = 7533;
     window.BRANCH_TRANSACTION_TRINARY_SIZE = 243;
+
+    window.iotaDonationAddress = 'PRADUTNZ99BATVWNMCEHTUXATWVLTPVCQQBJYDIAHPQDAQDDQELWKS9PLHTCLNJYVB9ENJAINLQWOFVLXTHAHMKKFF';
 }

@@ -5,6 +5,16 @@ function openSendWindow(){
     $('#sendModal').modal('show');
 }
 
+function openDonationWindow(){
+    $('#sendModal').modal('show');
+
+    document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>" +
+        "<p>If you are happy with our services, donations are very much appreciated. The address field has been pre-filled with our donation address.</p>" +
+        "</div>";
+
+    $('#send_address').val(window.iotaDonationAddress);
+}
+
 function openSendWindowAndPrefill(){
     var args = window.location.href.split('?')[1].split('&');
     var mappings = {};
@@ -129,7 +139,8 @@ function onSendFinished(e, response){
     if (e){
         document.getElementById('send-notifications').innerHTML = "<div class='alert alert-danger'>Transfer failed: " + e.message ? e.message : e + "</div>";
     }else{
-        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>Transfer succeeded</div>";
+        var message = $('#send_address').val() === window.iotaDonationAddress ? 'Thank you :)' : 'Transfer succeeded';
+        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>" + message + "</div>";
         loadWalletData(onGetWalletData);
         savePendingTransaction(response[0].hash);
     }
@@ -147,6 +158,8 @@ function onChooseUnit(btn){
 function getToAddress(input, callback){
     if(validateAddress(input)){
         callback(null, input);
+    }else if (input === getUsername()){
+        callback(null, window.walletData['latestAddress']);
     }else{
         $.ajax({
             type: "GET",

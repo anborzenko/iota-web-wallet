@@ -42,9 +42,15 @@ function populateTransactions(data){
 function transactionsToHtmlTable(table, transactions){
     for (var i = 0; i < transactions.length; i++){
         var tail = transactions[i][0];
+
+        if(getUnique(transactions[i], addressComparer).length === 1){
+            // Address attachment. Ignore
+            continue;
+        }
+
         var persistence = getPersistence(transactions[i]);
 
-        var rowIndex = getArrayIndex(table.rows, tail, compareTableRowAndTail);
+        var rowIndex = getArrayIndex(table.rows, tail, compareTableRowAndTx);
         var row;
         if (rowIndex === -1){
             row = table.insertRow(findTableRowIndex(tail, table));
@@ -64,13 +70,9 @@ function transactionsToHtmlTable(table, transactions){
         var value = row.cells[2];
         var status = row.cells[3];
 
-        if (getUnique(transactions[i], txAddressComparer).length === 1){
-            direction.innerHTML = "<i class='fa fa-thumb-tack' title='Address was attached to tangle' aria-hidden='true'></i>";
-        }else{
-            direction.innerHTML = tail.direction === 'in' ?
-                "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
-                "<i class='fa fa-angle-left' style='color:#FF0000' aria-hidden='true' title='Outgoing'></i>";
-        }
+        direction.innerHTML = tail.direction === 'in' ?
+            "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
+            "<i class='fa fa-angle-left' style='color:#FF0000' aria-hidden='true' title='Outgoing'></i>";
 
         var d = new Date(tail.timestamp*1000);
         var today = new Date().toDateString();
@@ -79,6 +81,46 @@ function transactionsToHtmlTable(table, transactions){
         value.innerHTML = convertIotaValuesToHtml(findTxAmount(transactions[i]));
         status.innerHTML = persistence ? 'Completed' : 'Pending';
     }
+
+    manageDoubleSpends(transactions);
+}
+
+function manageDoubleSpends(transactions){
+    var sendAddresses = [];
+    var txs = [];
+    var tails = [];
+
+    for (var i = 0; i < transactions.length; i++){
+        for (var j = 0; j < transactions[i].length; j++){
+            var tx = transactions[i][j];
+            if (tx.value < 0 && !getPersistence(transactions[i])){
+                sendAddresses.push(tx.address);
+                txs.push(tx);
+                tails.push(transactions[i][0]);
+            }
+        }
+    }
+
+    window.iota.api.getBalances(sendAddresses, 100, function(e, balances){
+        var table = document.getElementById('transaction_list');
+        for (var i = 0; i < balances.balances.length; i++){
+            var tx = txs[i];
+            var tail = tails[i];
+            if (Math.abs(tx.value) > parseInt(balances.balances[i])){
+                // Double spend
+                // Set icon
+                var row = table.rows[getArrayIndex(table.rows, tx, compareTableRowAndTx)];
+                var direction = row.cells[0];
+                var status = row.cells[3];
+                status.innerHTML = 'Failed';
+                direction.innerHTML = tail.direction === 'in' ?
+                    "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>" :
+                    "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>";
+            }else{
+                addPendingToBalance(tail.address, Math.abs(tail.value));
+            }
+        }
+    });
 }
 
 function openTransactionWindow(bundle_id) {

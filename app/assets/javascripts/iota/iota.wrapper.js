@@ -26,7 +26,38 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
         if (error) {
             return callback(error)
         }
+/*
+        $.ajax({
+            type: "GET",
+            url: 'http://127.0.0.1:5000/attach_to_tangle',
+            data: {
+                'trunk': toApprove.trunkTransaction,
+                'branch': toApprove.branchTransaction,
+                'min_weight_magnitude': minWeightMagnitude,
+                'tx_trytes': trytes.join(',')
+            },
+            dataType: "JSON",
+            success: function(response) {
+                var attached = response.result.split(',');
+                iota.api.storeAndBroadcast(attached, function(error, success) {
+                    if (error) {
+                        return callback(error);
+                    }
 
+                    var finalTxs = [];
+
+                    attached.forEach(function(trytes) {
+                        finalTxs.push(window.iota.utils.transactionObject(trytes));
+                    });
+
+                    return callback(null, finalTxs);
+                })
+            },
+            error: function(err) {
+                alert(err.message);
+            }
+        });
+*/
         attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback, function(error, attached) {
             if (error) {
                 return callback(error)
@@ -112,19 +143,19 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
             'inputs': []
         };
 
-        var addresses = [];
+        var userAddresses = [];
         for (var i = 0; i < end - start; i++) {
-            addresses.push(generateAddress(seed, end - i));
+            userAddresses.push(generateAddress(seed, end - i));
         }
 
-        bundlesFromAddresses(addresses, function (error, bundles) {
+        bundlesFromAddresses(userAddresses, function (error, bundles) {
             if (error) return onFinishedCallback(error);
 
             for (i = 0; i < bundles.length; i++) {
                 valuesToReturn.transfers.push(bundles[i]);
             }
 
-            window.iota.api.getBalances(addresses, 100, function (error, balances) {
+            window.iota.api.getBalances(userAddresses, 100, function (error, balances) {
                 if (error) return onFinishedCallback(error);
 
                 balances.balances.forEach(function (balance, index) {
@@ -132,8 +163,8 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
 
                     if (balance > 0) {
                         var newInput = {
-                            'address': addresses[index],
-                            'keyIndex': getIndexOfAddress(addresses[index]),
+                            'address': userAddresses[index],
+                            'keyIndex': getIndexOfAddress(userAddresses[index]),
                             'security': security,
                             'balance': balance
                         };

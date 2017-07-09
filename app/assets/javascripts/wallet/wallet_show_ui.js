@@ -37,6 +37,25 @@ function populateWallet(data){
     document.getElementById('send_balance').innerHTML = 'Limit: ' + getSeedBalance() + ' IOTAs';
 }
 
+function addPendingToBalance(receiving_address, amount){
+    var dom = $('#wallet_balance_pending');
+
+    if (getArrayIndex(window.walletData.addresses, receiving_address, plainComparer) === -1){
+        // Outgoing tx
+        amount *= -1;
+    }
+
+    var summary = document.getElementById("wallet_balance_pending_amount");
+    var existingAmount = parseInt(summary.innerHTML);
+
+    if (existingAmount + amount === 0){
+        dom.hide();
+    }else{
+        dom.show();
+        summary.innerHTML = existingAmount + amount;
+    }
+}
+
 function convertIotaValuesToHtml(value){
     value = value.toString();
     var minNumBeforeDecimal = 1;
@@ -71,7 +90,6 @@ function onAttachBeforeGenerateAddressCallback(e, res){
     }
 
     document.getElementById('refresh_address').innerHTML = 'Generating. Please wait..';
-    alert(getLastKnownAddressIndex());
     setLastKnownAddressIndex(getLastKnownAddressIndex() + 1);
     generateNewAddress(onGenerateAddressCallback);
 }
@@ -103,4 +121,48 @@ function onFirstLoadFinished(){
     if (window.location.href.indexOf('recipient') !== -1){
         openSendWindowAndPrefill();
     }
+}
+
+function addWalletData(data) {
+    var tToRemove = [];
+    var walletTToRemove = [];
+    for (var i = 0; i < data.transfers.length; i++) {
+        if (!isInArray(window.walletData.transfers, data.transfers[i], transferComparer)) {
+            window.walletData.transfers.push(data.transfers[i]);
+        } else {
+            tToRemove.push(i);
+        }
+        // Remove transactions that have changed persistence
+        if (isInArray(window.walletData.transfers, data.transfers[i], transferChangedPersistenceComparer)) {
+            walletTToRemove.push(getArrayIndex(window.walletData.transfers, data.transfers[i], transferChangedPersistenceComparer));
+            // Update the pending account balance
+            addPendingToBalance(data.transfers[i][0].address, -data.transfers[i][0].value)
+        }
+    }
+    var iToRemove = [];
+    for (i = 0; i < data.inputs.length; i++) {
+        if (isInArray(window.walletData.inputs, data.inputs[i], addressComparer)){
+            window.walletData.inputs[getArrayIndex(window.walletData.inputs, data.inputs[i], addressComparer)] = data.inputs[i];
+        } else if (!isInArray(window.walletData.inputs, data.inputs[i], inputComparer)) {
+            window.walletData.inputs.push(data.inputs[i]);
+        } else {
+            iToRemove.push(i);
+        }
+    }
+
+    // Remove any inputs that are now used in a confirmed send
+    var walletIToRemove = [];
+    var confirmedOut = getConfirmedOut();
+    for (i = 0; i < window.walletData.inputs.length; i++) {
+        if (isInArray(confirmedOut, window.walletData.inputs[i], senderInputAddressComparer)){
+            walletIToRemove.push(i);
+        }
+    }
+
+    window.walletData.inputs = removeIndexes(window.walletData.inputs, walletIToRemove);
+    window.walletData.transfers = removeIndexes(window.walletData.transfers, walletTToRemove);
+    data.transfers = removeIndexes(data.transfers, tToRemove);
+    data.inputs = removeIndexes(data.inputs, iToRemove);
+
+    return data;
 }
