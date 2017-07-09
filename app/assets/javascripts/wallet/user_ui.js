@@ -220,7 +220,7 @@ function on2faLoginClick(btn){
                 if (response.require_2fa){
                     document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid authentication key. Try again</div>";
                 }else{
-                    document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
+                    document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + getDictKeys(response) + "</div>";
                 }
             }
         },

@@ -64,6 +64,8 @@ class WalletsController < ApplicationController
       else
         render json: { success: false, message: 'Invalid key. Try again' }
       end
+    else
+      render json: { success: false, message: 'OTP key not supplied' }
     end
   end
 
