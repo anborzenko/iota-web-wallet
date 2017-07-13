@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'users/show'
+
+  get 'users/update'
+
   get 'admin/dashboard'
   get 'admin/index'
   get 'admin/login'
