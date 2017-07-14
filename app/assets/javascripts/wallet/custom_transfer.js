@@ -17,14 +17,14 @@ function onCustomTransferClick(btn){
         if (e){
             resetCustomTransferForm();
             document.getElementById('progress_text').innerHTML = '';
-            return document.getElementById('custom_send_notifications').innerHTML = "<div class='alert alert-danger'>Something went wrong: " + e + "</div>";
+            return renderDangerAlert('custom_send_notifications', "Something went wrong: " + e);
         }
 
         var balance = parseInt(res.balances[0]);
         if (balance < amount){
             resetCustomTransferForm();
             document.getElementById('progress_text').innerHTML = '';
-            return document.getElementById('custom_send_notifications').innerHTML = "<div class='alert alert-danger'>The address only has a balance of " + balance + "</div>";
+            return renderDangerAlert('custom_send_notifications', "The address only has a balance of " + balance);
         }
 
         var inputs = [{
@@ -52,7 +52,7 @@ function onCustomTransferFinished(e, res){
 
     if (e){
         document.getElementById('progress_text').innerHTML = '';
-        return document.getElementById('custom_send_notifications').innerHTML = "<div class='alert alert-danger'>Something went wrong: " + e + "</div>";
+        return renderDangerAlert('custom_send_notifications', "Something went wrong: " + e);
     }
 
     document.getElementById('progress_text').innerHTML = 'Transfer succeeded';
@@ -61,5 +61,5 @@ function onCustomTransferFinished(e, res){
 function resetCustomTransferForm(){
     Ladda.stopAll();
 
-    document.getElementById('custom_send_notifications').innerHTML = '';
+    removeAlert('custom_send_notifications');
 }

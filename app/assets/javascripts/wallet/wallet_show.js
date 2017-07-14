@@ -15,8 +15,7 @@ function onGetWalletData(e, accountData, progress) {
     }
 
     if (e){
-        document.getElementById('loading').innerHTML = "<div class='alert alert-danger'>Could not load your wallet. Please check the node health. " + e.message + "</div>";
-        return;
+        return renderDangerAlert('loading', 'Could not load your wallet. Please check the node health. ');
     }
     addWalletData(accountData);
 
@@ -85,8 +84,7 @@ function onGenerateAddressClick(){
 function onAttachBeforeGenerateAddressCallback(e, res){
     if (e){
         resetAddressGenerationInput();
-        return document.getElementById('wallet_show_notifications').innerHTML =
-            "<div class='alert alert-danger'>Failed to generate new address. " + e.message + "</div>";
+        return renderDangerAlert('wallet_show_notifications', "Failed to generate new address. " + e.message);
     }
 
     document.getElementById('refresh_address').innerHTML = 'Generating. Please wait..';
@@ -98,14 +96,13 @@ function onGenerateAddressCallback(e, res){
     resetAddressGenerationInput();
 
     if (e){
-        return document.getElementById('wallet_show_notifications').innerHTML =
-            "<div class='alert alert-danger'>Failed to generate new address. " + e.message + "</div>";
+        return renderDangerAlert('wallet_show_notifications', "Failed to generate new address. " + e.message);
     }
 
     res = addChecksum(res);
     $('#address_box').val(res);
     window.walletData.latestAddress = res;
-    document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-success'>A new address was generated</div>";
+    renderSuccessAlert('wallet_show_notifications', 'A new address was generated');
 }
 
 function resetAddressGenerationInput(){

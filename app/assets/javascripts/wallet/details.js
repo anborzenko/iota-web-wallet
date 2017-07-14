@@ -37,7 +37,7 @@ function onGetBalancesCustomCallback(e, res, addresses, start_index){
     $(document).find('#addresses_div').show();
 
     if (e){
-        return document.getElementById('wallet_options_notifications').innerHTML = "<div class='alert alert-danger'>Something went wrong: " + e + "</div>";
+        return renderDangerAlert('wallet_options_notifications', "Something went wrong: " + e);
     }
 
     var table = document.getElementById('address_list');

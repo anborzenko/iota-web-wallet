@@ -6,9 +6,9 @@ function check_seed(){
     var seed = $("#seed_input").val();
     var secLevel = parseInt($("#sec_level").val());
     if (seed.length === 0){
-        return document.getElementById('seed_checker_notifications').innerHTML = "<div class='alert alert-danger'>Invalid seed</div>";
+        return renderDangerAlert('seed_checker_notifications', 'Invalid seed');
     }
-    document.getElementById('seed_checker_notifications').innerHTML = '';
+    removeAlert('seed_checker_notifications');
 
     $("#loading").spin(true);
     $(document).find('#loading').show();
@@ -25,7 +25,7 @@ function check_seed(){
                 $(document).find('#seed_checker_result').show();
 
                 if (error) {
-                    return document.getElementById('seed_checker_notifications').innerHTML = "<div class='alert alert-danger'>Something went wrong: " + e + "</div>";
+                    return renderDangerAlert('seed_checker_notifications', 'Something went wrong: ' + e);
                 }
 
                 var totalBalance = 0;
@@ -47,7 +47,8 @@ function check_seed(){
                     balance.innerHTML = b;
                 }
 
-                document.getElementById('seed_checker_result').innerHTML = 'Searched ' + total + ' addresses. Found a total balance of ' + totalBalance.toString();
+                document.getElementById('seed_checker_result').innerHTML =
+                    'Searched ' + total + ' addresses. Found a total balance of ' + totalBalance.toString();
             })
         })
     }, 50);

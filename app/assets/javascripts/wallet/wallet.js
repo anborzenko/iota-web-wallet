@@ -20,8 +20,10 @@ function loadWalletData(callback, onFinishedCallback){
         if (e){
             return callback(e);
         }
+
         var lastKnownAddressIndex = getLastKnownAddressIndex();
-        getAccountData(getSeed(), {start: lastKnownAddressIndex - window.defaultNumAddessesToLoad, end: lastKnownAddressIndex},callback, onFinishedCallback);
+        getAccountData(getSeed(), {start: lastKnownAddressIndex - window.defaultNumAddessesToLoad,
+            end: lastKnownAddressIndex}, callback, onFinishedCallback);
     });
 }
 
@@ -347,7 +349,7 @@ function uploadUnspentAddresses(num){
             dataType: "JSON",
             success: function (response) {
                 sessionStorage.setItem('haveUploadedUnspentAddresses', true);
-            },
+            }
         });
     }, 50);
 }

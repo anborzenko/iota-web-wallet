@@ -4,7 +4,7 @@
 function openSendWindow(){
     $('#sendModal').modal('show');
 
-    document.getElementById('send-notifications').innerHTML = '';
+    removeAlert('send-notifications');
 
     $('#send_address').val('');
 }
@@ -12,9 +12,9 @@ function openSendWindow(){
 function openDonationWindow(){
     $('#sendModal').modal('show');
 
-    document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>" +
-        "<p>If you are happy with our services, donations are very much appreciated. The address field has been pre-filled with our donation address.</p>" +
-        "</div>";
+    renderSuccessAlert('send-notifications',
+        "<p>If you are happy with our services, donations are very much appreciated. The address field has been " +
+        "pre-filled with our donation address.</p>");
 
     $('#send_address').val(window.iotaDonationAddress);
 }
@@ -42,28 +42,28 @@ function moveBalanceToSendAmount(){
 }
 
 function onMakeTransactionClick(){
-    var n_div = document.getElementById('send-notifications');
     var send_address = $('#send_address');
     var amount_input = $('#amount');
 
     var inputAmount = parseFloat(amount_input.val());
     if (!inputAmount){
-        return n_div.innerHTML = "<div class='alert alert-danger'>Invalid amount</div>";
+        return renderDangerAlert('send-notifications', 'Invalid amount');
     }
 
     var unit = document.getElementById('unitDropdownValue').innerHTML;
     var amount = convertToIotas(inputAmount, unit);
 
-    n_div.innerHTML = "";
+    removeAlert('send-notifications');
     if (amount > getSeedBalance()) {
-        return n_div.innerHTML = "<div class='alert alert-danger'>Balance is too low</div>";
+        return renderDangerAlert('send-notifications', 'Balance is too low');
     }else if (amount.toString().indexOf('.') !== -1){
-        return n_div.innerHTML = "<div class='alert alert-danger'>Cannot send fractions of IOTAs</div>";
+        return renderDangerAlert('send-notifications', 'Cannot send fractions of IOTAs');
     }
 
     var inputs = findInputs(amount);
     if (inputs === null){
-        return n_div.innerHTML = "<div class='alert alert-danger'>Not able to load your wallet data. Please contact support if this problem persists</div>";
+        return renderDangerAlert('send-notifications',
+            'Not able to load your wallet data. Please contact support if this problem persists');
     }
 
     // Check for double spends
@@ -86,7 +86,7 @@ function onMakeTransactionClick(){
 
     getToAddress(send_address.val(), function(e, res){
         if (e){
-            n_div.innerHTML = "<div class='alert alert-danger'><b>Error: </b>" + e + "</div>";
+            renderDangerAlert('send-notifications', "<b>Error: </b>" + e);
             return restoreSendForm();
         }
 
@@ -141,10 +141,10 @@ function onSendFinished(e, response){
     window.walletData.maxAddressIndex += 1;
     Ladda.create( document.querySelector( '#send_button' ) ).stop();
     if (e){
-        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-danger'>Transfer failed: " + e.message ? e.message : e + "</div>";
+        renderDangerAlert('send-notifications', "Transfer failed: " + e.message ? e.message : e);
     }else{
         var message = $('#send_address').val() === window.iotaDonationAddress ? 'Thank you :)' : 'Transfer succeeded';
-        document.getElementById('send-notifications').innerHTML = "<div class='alert alert-success'>" + message + "</div>";
+        renderSuccessAlert('send-notifications', message);
         loadWalletData(onGetWalletData);
         savePendingTransaction(response[0].hash);
     }

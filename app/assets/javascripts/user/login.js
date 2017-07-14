@@ -5,11 +5,11 @@
 function openWithSeed() {
     var seed = $('#wallet_seed').val();
     if (seed.length !== 81){
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Your seed is too short. It must be exactly 81 characters long</div>";
-        return;
+        return renderDangerAlert('notifications',
+            'Your seed is too short. It must be exactly 81 characters long')
     } else if (!validateSeed(seed)){
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: Invalid seed. It can only contain capital letters A to Z and the number 9</div>";
-        return;
+        return renderDangerAlert('notifications',
+            'Error: Invalid seed. It can only contain capital letters A to Z and the number 9');
     }
 
     saveLogin(seed, generateRandomSeed());
@@ -40,11 +40,11 @@ function openSignupConfirmation(btn){
                 $('#signUpTab').show();
                 $('#confirm2fa').hide();
             }else{
-                document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>The username is already taken</div>";
+                renderDangerAlert('notifications', 'The username is already taken');
             }
         },
         error: function(error){
-            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+            renderDangerAlert('notifications', error);
         }
     });
 }
@@ -64,7 +64,7 @@ function signup(btn) {
 
     validateUserInput(username, password);
     if (password !== password_confirmation){
-        return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Passwords do not match</div>";
+        return renderDangerAlert('notifications', 'Passwords do not match');
     }
 
     var l = Ladda.create(btn);
@@ -73,7 +73,7 @@ function signup(btn) {
         var seed = generateRandomSeed();
         var encryptedSeed = encrypt(password, seed);
     }catch(err){
-        return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + err + "</div>";
+        return renderDangerAlert('notifications', err);
     }
 
     $.ajax({
@@ -99,11 +99,11 @@ function signup(btn) {
                     redirect_to('show');
                 }
             }else{
-                document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
+                renderDangerAlert('notifications', response.message);
             }
         },
         error: function(error){
-            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+            renderDangerAlert('notifications', error);
         }
     });
 }
@@ -115,7 +115,7 @@ function onConfirm2faClick(btn){
     validateUserInput(username, password);
 
     if (otp_key.length === 0){
-        return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid key</div>";
+        return renderDangerAlert('notifications', 'Invalid key');
     }
 
     var l = Ladda.create(btn);
@@ -133,20 +133,21 @@ function onConfirm2faClick(btn){
                     var seed = decrypt(password, response.encrypted_seed);
                     saveLogin(seed, password, username);
                 }catch(err){
-                    return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
+                    return renderDangerAlert('notifications', 'Invalid password');
                 }
 
-                document.getElementById('notifications').innerHTML = "<div class='alert alert-success'>" +
-                    "Two factor authentication has been successfully enabled. Redirecting to wallet in 3 seconds</div>";
+                renderSuccessAlert('notifications',
+                    'Two factor authentication has been successfully enabled. Redirecting to wallet in 3 seconds');
+
                 setTimeout(function () {
                     redirect_to('show');
                 }, 3000)
             }else{
-                document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
+                renderDangerAlert('notifications', response.message);
             }
         },
         error: function(error){
-            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+            renderDangerAlert('notifications', error);
         }
     });
 }
@@ -167,7 +168,7 @@ function login (btn, require_first_time_proof) {
         var l = Ladda.create(btn);
         l.start();
     }catch(err){
-        return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Error: " + err + "</div>";
+        return renderDangerAlert('notifications', "Error: " + err);
     }
 
     $.ajax({
@@ -183,7 +184,7 @@ function login (btn, require_first_time_proof) {
                     saveLogin(seed, password, username);
                     redirect_to('show');
                 }catch(err){
-                    return document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
+                    return renderDangerAlert('notifications', 'Invalid password');
                 }
             }else if (response.require_2fa) {
                 $('#login2faTab').show();
@@ -195,11 +196,11 @@ function login (btn, require_first_time_proof) {
             }else if (response.require_first_time_proof){
                 login(btn, true)
             }else{
-                document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
+                renderDangerAlert('notifications', response.message);
             }
         },
         error: function(error){
-            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+            renderDangerAlert('notifications', error);
         }
     });
 }
@@ -226,18 +227,18 @@ function on2faLoginClick(btn){
                     saveLogin(seed, password, username);
                     redirect_to('show');
                 }catch(err){
-                    document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid password</div>";
+                    renderDangerAlert('notifications', 'Invalid password');
                 }
             }else{
                 if (response.require_2fa){
-                    document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Invalid authentication key. Try again</div>";
+                    renderDangerAlert('notifications', 'Invalid authentication key. Try again');
                 }else{
-                    document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
+                    renderDangerAlert('notifications', response.message);
                 }
             }
         },
         error: function(error){
-            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+            renderDangerAlert('notifications', error);
         }
     });
 }
@@ -251,13 +252,14 @@ function validateUserInput(username, password){
     var minPasswordLength = 8;
 
     if (password.length < minPasswordLength){
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Your password must be at least " + minPasswordLength + " characters long</div>";
+        renderDangerAlert('notifications',
+            "Your password must be at least " + minPasswordLength + " characters long");
         throw('Invalid input');
     }else if (username.length === 0){
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>Your username cannot be empty</div>";
+        renderDangerAlert('notifications', 'Your username cannot be empty');
         throw('Invalid input');
     }else{
-        document.getElementById('notifications').innerHTML = "<div class='alert alert-warning'>" +
-            "<b>Important</b>: Remember to backup your credentials, including your seed. They cannot be recovered once they are lost!</div>";
+        renderWarningAlert('notifications',
+            "<b>Important</b>: Remember to backup your credentials, including your seed. They cannot be recovered once they are lost!")
     }
 }

@@ -8,17 +8,17 @@ function onGetNodeInfoFinished(e, res){
     $(document).find('#loading').hide();
     $(document).find('#node-data').show();
 
-    var status_text = document.getElementById('node-status');
     var status_symbol = document.getElementById('node_status_symbol');
     if (e){
         status_symbol.style.color = "red";
-        return status_text.innerHTML = "<div class='alert alert-danger'>The node is offline</div>";
+        return renderDangerAlert('node-status', 'The node is offline');
     }
 
     if (res.latestMilestoneIndex === res.latestSolidSubtangleMilestoneIndex){
         status_symbol.style.color = "green";
     }else{
-        status_text.innerHTML = "<div class='alert alert-warning'>The node is out of sync. Please wait for it to be synced up with the network</div>";
+        renderWarningAlert('node-status',
+            'The node is out of sync. Please wait for it to be synced up with the network');
         status_symbol.style.color = "yellow";
     }
 

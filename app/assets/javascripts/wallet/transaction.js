@@ -33,9 +33,12 @@ function populateTransactions(data){
         var pager = $('.pager');
         pager.empty();
         var currPage = pager.data('curr') || 0;
-        $('#transaction_list').pageMe({pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10, pageNum: currPage});
+
+        $('#transaction_list').pageMe({
+            pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10, pageNum: currPage
+        });
     }catch (err){
-        (document).getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>" + err + "</div>";
+        renderDangerAlert('wallet_show_notifications', err);
     }
 }
 
@@ -137,7 +140,7 @@ function openTransactionWindow(bundle_id) {
     }
 
     if (b === null){
-        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>Bundle \'" + hash + "\' not found</div>";
+        return renderDangerAlert('transaction-notifications', "Bundle \'" + hash + "\' not found");
     }
 
     var tail = b[0];
@@ -173,8 +176,8 @@ function isDoubleSpendCallback(e, res){
 function replaySelectedTransfer(btn){
     var tail_hash = document.getElementById('bundle_div').innerHTML;
     if (!tail_hash){
-        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-danger'>" +
-            "Could not load the transaction. Please contact support if this problem persists</div>";
+        return renderDangerAlert('transaction-notifications',
+            'Could not load the transaction. Please contact support if this problem persists');
     }
 
     var l = Ladda.create(btn);
@@ -191,9 +194,9 @@ function onReplaySelectedTransferCallback(e, res){
     Ladda.stopAll();
 
     if (e){
-        return document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-danger'>Failed to re-attach. " + e.message + "</div>";
+        return renderDangerAlert('transaction-notifications', "Failed to re-attach. " + e.message);
     }
-    document.getElementById('transaction-notifications').innerHTML = "<div class='alert alert-success'>The transaction was re-attached</div>";;
+    renderSuccessAlert('transaction-notifications', 'The transaction was re-attached');
 }
 
 function bundleToHtmlTable(table, bundle){
@@ -225,7 +228,8 @@ function loadAllTransactions(){
     showTxLoadUI();
     loadWalletDataRange(0, getLastKnownAddressIndex() - window.defaultNumAddessesToLoad, onGetWalletData, function(e, res){
         if (e){
-            document.getElementById('wallet_show_notifications').innerHTML = "<div class='alert alert-danger'>Failed to load all. " + (e.hasOwnProperty('message') ? e.message : e) + "</div>";
+            renderDangerAlert('wallet_show_notifications',
+                "Failed to load all. " + (e.hasOwnProperty('message') ? e.message : e));
         }
         window.isCurrentlyLoadingAll = false;
         onTxLoadingFinishedFirstTime();
