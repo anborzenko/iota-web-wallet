@@ -43,6 +43,9 @@ function openSignupConfirmation(btn){
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>The username is already taken</div>";
             }
         },
+        error: function(error){
+            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+        }
     });
 }
 
@@ -99,6 +102,9 @@ function signup(btn) {
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
             }
         },
+        error: function(error){
+            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+        }
     });
 }
 
@@ -139,6 +145,9 @@ function onConfirm2faClick(btn){
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
             }
         },
+        error: function(error){
+            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+        }
     });
 }
 
@@ -189,6 +198,9 @@ function login (btn, require_first_time_proof) {
                 document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + response.message + "</div>";
             }
         },
+        error: function(error){
+            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+        }
     });
 }
 
@@ -224,6 +236,9 @@ function on2faLoginClick(btn){
                 }
             }
         },
+        error: function(error){
+            document.getElementById('notifications').innerHTML = "<div class='alert alert-danger'>" + error + "</div>";
+        }
     });
 }
 

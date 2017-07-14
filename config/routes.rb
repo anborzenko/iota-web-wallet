@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   get 'users/show'
-
   get 'users/update'
+  get 'users/login'
+  get 'users/exists'
+  get 'users/confirm2fa'
+  get 'users/signup'
 
   get 'admin/dashboard'
   get 'admin/index'
@@ -17,10 +20,6 @@ Rails.application.routes.draw do
   get 'wallets/seed_checker'
   get 'wallets/custom_send'
   get 'wallets/details'
-  get 'wallets/login'
-  get 'wallets/exists'
-  get 'wallets/confirm2fa'
-  get 'wallets/signup'
   get 'wallets/get_next_pending_transaction'
   get 'wallets/delete_pending_transaction'
   get 'wallets/add_pending_transaction'
