@@ -14,6 +14,10 @@ function renderSuccessAlert(elem_id, message){
     _renderAlert('success', elem_id, message);
 }
 
+function renderInfoAlert(elem_id, message){
+    _renderAlert('info', elem_id, message);
+}
+
 function _renderAlert(type, elem_id, message){
     document.getElementById(elem_id).innerHTML = "<div class='alert alert-" + type + "'>" + message + "</div>";
 }

@@ -75,6 +75,7 @@ class UsersController < ApplicationController
   end
 
   def show
+    @user = User.find_by_username(cookies[:username])
   end
 
   def update
@@ -125,7 +126,7 @@ class UsersController < ApplicationController
     if !@user.password_hash.nil? && @user.password_hash == params[:password_hash]
       true
     elsif @user.password_hash.nil? && is_valid_password?(params[:password], @user.wallet.encrypted_seed)
-      # Save the hashed password for later so we don't need to do this ever again
+      # Save the hashed password for later so we don't need to do this again
       @user.password_hash = params[:password_hash]
       @user.save
       true

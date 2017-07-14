@@ -13,7 +13,7 @@ function openWithSeed() {
     }
 
     saveLogin(seed, generateRandomSeed());
-    redirect_to('show');
+    redirect_to('/wallets/show');
 }
 
 function onGenerateSeedClick() {
@@ -44,7 +44,7 @@ function openSignupConfirmation(btn){
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error);
+            renderDangerAlert('notifications', error.responseText.slice(0, 200));
         }
     });
 }
@@ -96,14 +96,14 @@ function signup(btn) {
                     $('#confirm2fa').show();
                     document.getElementById('qr').innerHTML = response.qr;
                 }else {
-                    redirect_to('show');
+                    redirect_to('/wallets/show');
                 }
             }else{
                 renderDangerAlert('notifications', response.message);
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error);
+            renderDangerAlert('notifications', error.responseText.slice(0, 200));
         }
     });
 }
@@ -140,14 +140,14 @@ function onConfirm2faClick(btn){
                     'Two factor authentication has been successfully enabled. Redirecting to wallet in 3 seconds');
 
                 setTimeout(function () {
-                    redirect_to('show');
+                    redirect_to('/wallets/show');
                 }, 3000)
             }else{
                 renderDangerAlert('notifications', response.message);
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error);
+            renderDangerAlert('notifications', error.responseText.slice(0, 200));
         }
     });
 }
@@ -182,7 +182,7 @@ function login (btn, require_first_time_proof) {
                 try{
                     var seed = decrypt(password, response.encrypted_seed);
                     saveLogin(seed, password, username);
-                    redirect_to('show');
+                    redirect_to('/wallets/show');
                 }catch(err){
                     return renderDangerAlert('notifications', 'Invalid password');
                 }
@@ -200,7 +200,7 @@ function login (btn, require_first_time_proof) {
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error);
+            renderDangerAlert('notifications', error.responseText.slice(0, 200));
         }
     });
 }
@@ -225,7 +225,7 @@ function on2faLoginClick(btn){
                 try{
                     var seed = decrypt(password, response.encrypted_seed);
                     saveLogin(seed, password, username);
-                    redirect_to('show');
+                    redirect_to('/wallets/show');
                 }catch(err){
                     renderDangerAlert('notifications', 'Invalid password');
                 }
@@ -238,13 +238,13 @@ function on2faLoginClick(btn){
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error);
+            renderDangerAlert('notifications', error.responseText.slice(0, 200));
         }
     });
 }
 
 function signout(){
-    deleteLogin();
+    logOut();
     window.location = '/';
 }
 

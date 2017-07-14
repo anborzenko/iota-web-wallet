@@ -1,5 +1,6 @@
 class Wallet < ApplicationRecord
-  validates :encrypted_seed, presence: true
-
   belongs_to :user
+
+  validates :encrypted_seed, presence: true
+  validates :user, presence: true
 end

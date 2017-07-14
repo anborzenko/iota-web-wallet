@@ -14,8 +14,8 @@
     <p>A secure and user friendly wallet for IOTA</p>
     <% if !cookies.key?('isLoggedIn') %>
         <div id="sign_in">
-          <%= link_to "Sign in", wallets_login_path, :class=>"btn btn-primary", :type=>"button" %>
-          <%= link_to "New user", wallets_login_path, :class=>"btn btn-default", :type=>"button" %>
+          <%= link_to "Sign in", users_login_path, :class=>"btn btn-primary", :type=>"button" %>
+          <%= link_to "New user", users_login_path, :class=>"btn btn-default", :type=>"button" %>
         </div>
     <% else %>
       <div id="open_wallet">

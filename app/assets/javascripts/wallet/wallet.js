@@ -134,35 +134,6 @@ function decrypt(key, data){
     return sjcl.decrypt(key, data);
 }
 
-function saveLogin(cvalue, password, username) {
-    sessionStorage.setItem("unnamed", password);
-    sessionStorage.setItem("seed", encrypt(password, cvalue));
-    document.cookie = 'isLoggedIn=;Path=/;';
-
-    if (username){
-        sessionStorage.setItem('username', username);
-    }
-}
-
-function getSeed() {
-    var password = sessionStorage.getItem('unnamed');
-    var seed = getEncryptedSeed();
-    if (seed !== null){
-        return decrypt(password, seed);
-    }
-
-    redirect_to('login');
-    throw('Seed not found');
-}
-
-function deleteLogin() {
-    document.cookie = 'isLoggedIn=; Path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    sessionStorage.removeItem('seed');
-    sessionStorage.removeItem('unnamed');
-    sessionStorage.removeItem('username');
-    sessionStorage.removeItem('haveUploadedUnspentAddresses')
-}
-
 function generateNewAddress(callback){
     var seed = getSeed();
     var lastKnownAddressIndex = getLastKnownAddressIndex();
@@ -305,10 +276,6 @@ function notifyServerAboutNonReplayableTransaction(tail_hash){
     });
 }
 
-function getEncryptedSeed(){
-    return sessionStorage.getItem('seed');
-}
-
 function getLastKnownAddressIndex(){
     var seed = getEncryptedSeed();
     if (seed !== null){
@@ -352,15 +319,4 @@ function uploadUnspentAddresses(num){
             }
         });
     }, 50);
-}
-
-function getPasswordHash(){
-    var pass = sessionStorage.getItem('unnamed');
-    if (pass){
-        return sjcl.hash.sha256.hash(pass).join('');
-    }
-}
-
-function getUsername(){
-    return sessionStorage.getItem('username');
 }

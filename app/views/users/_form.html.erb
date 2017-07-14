@@ -61,9 +61,9 @@
 </script>
 
 <div id="notifications">
-  <% if @wallet.errors.full_messages.any? %>
+  <% if @user.errors.full_messages.any? %>
       <div class="alert alert-danger">
-        <%= @wallet.errors.full_messages.first %>
+        <%= @user.errors.full_messages.first %>
       </div>
   <% else %>
       <div class="alert alert-warning"><b>Important</b>: Remember to backup your credentials, including your seed. They cannot be recovered once they are lost!</div>
