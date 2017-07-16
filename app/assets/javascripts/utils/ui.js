@@ -25,3 +25,7 @@ function _renderAlert(type, elem_id, message){
 function removeAlert(elem_id){
     document.getElementById(elem_id).innerHTML = '';
 }
+
+function renderAjaxError(elem_id, error){
+    renderDangerAlert(elem_id, '<b>Error: </b>' + error.responseText.slice(0, 200));
+}

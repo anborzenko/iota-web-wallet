@@ -9,6 +9,7 @@
 body {
   padding-top: 20px;
   padding-bottom: 20px;
+  background-color: #F7F7F7;
 }
 
 .main-content {
@@ -46,16 +47,16 @@ h2 {
   border-top: 1px solid #e5e5e5;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 968px) {
   .container {
-    max-width: 730px;
+    max-width: 930px;
   }
 }
 .container-narrow > hr {
   margin: 30px 0;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 968px) {
   .header,
   .marketing,
   .footer {

@@ -37,6 +37,8 @@ function populateWallet(data){
 }
 
 function addPendingToBalance(receiving_address, amount){
+    // TODO: At both places that calls this: Find all tx in the bundle that references any address in the account.
+    // TODO cont: Amount is the sum of those
     var dom = $('#wallet_balance_pending');
 
     if (getArrayIndex(window.walletData.addresses, receiving_address, plainComparer) === -1){
@@ -114,10 +116,7 @@ function resetAddressGenerationInput(){
 }
 
 function onFirstLoadFinished(){
-    // Pre fill the send form if everything needed is supplied in the url
-    if (window.location.href.indexOf('recipient') !== -1){
-        openSendWindowAndPrefill();
-    }
+
 }
 
 function addWalletData(data) {

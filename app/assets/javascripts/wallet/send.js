@@ -19,23 +19,6 @@ function openDonationWindow(){
     $('#send_address').val(window.iotaDonationAddress);
 }
 
-function openSendWindowAndPrefill(){
-    var args = window.location.href.split('?')[1].split('&');
-    var mappings = {};
-    for (var i = 0; i < args.length; i++){
-        var s = args[i].split('=');
-        mappings[s[0]] = s[1];
-    }
-
-    $('#send_address').val(mappings['recipient']);
-
-    if ('amount' in mappings){
-        $('#amount').val(mappings['amount']);
-    }
-
-    $('#sendModal').modal('show');
-}
-
 function moveBalanceToSendAmount(){
     $('#amount').val(getSeedBalance());
     document.getElementById('unitDropdownValue').innerHTML = 'i';

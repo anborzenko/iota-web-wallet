@@ -44,7 +44,7 @@ function openSignupConfirmation(btn){
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error.responseText.slice(0, 200));
+            renderAjaxError('notifications', error);
         }
     });
 }
@@ -103,7 +103,7 @@ function signup(btn) {
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error.responseText.slice(0, 200));
+            renderAjaxError('notifications', error);
         }
     });
 }
@@ -147,7 +147,7 @@ function onConfirm2faClick(btn){
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error.responseText.slice(0, 200));
+            renderAjaxError('notifications', error);
         }
     });
 }
@@ -200,7 +200,7 @@ function login (btn, require_first_time_proof) {
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error.responseText.slice(0, 200));
+            renderAjaxError('notifications', error);
         }
     });
 }
@@ -238,28 +238,42 @@ function on2faLoginClick(btn){
             }
         },
         error: function(error){
-            renderDangerAlert('notifications', error.responseText.slice(0, 200));
+            renderAjaxError('notifications', error);
         }
     });
 }
 
 function signout(){
     logOut();
-    window.location = '/';
+    $.ajax({
+        type: "GET",
+        url: '/users/logout',
+        success: function(response){
+            redirect_to('/');
+        },error: function(err){
+            renderAjaxError('mainNotifiactionArea', err);
+        }
+    });
 }
 
 function validateUserInput(username, password){
-    var minPasswordLength = 8;
-
-    if (password.length < minPasswordLength){
+    if (!isValidPassword(password)){
         renderDangerAlert('notifications',
-            "Your password must be at least " + minPasswordLength + " characters long");
+            "Your password must be at least " + window.minPasswordLength + " characters long");
         throw('Invalid input');
-    }else if (username.length === 0){
+    }else if (!isValudUsername(username)){
         renderDangerAlert('notifications', 'Your username cannot be empty');
         throw('Invalid input');
     }else{
         renderWarningAlert('notifications',
             "<b>Important</b>: Remember to backup your credentials, including your seed. They cannot be recovered once they are lost!")
     }
+}
+
+function isValidPassword(password){
+    return password.length >= window.minPasswordLength;
+}
+
+function isValudUsername(username){
+    return username.length !== 0;
 }

@@ -1,0 +1,45 @@
+<div class="well">
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="settings_username">Username:</label>
+      <div class="col-sm-9">
+        <input type="text" class="form-control" id="settings_username" value="<%= @user.username %>">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="settings_2fa_toggle">Two factor authentication:</label>
+      <div class="col-sm-9">
+        <% if @user.has2fa %>
+            <button class="btn btn-danger" id="settings_2fa_toggle" onclick="onDisable2faClick()">Disable</button>
+        <% else %>
+            <button class="btn btn-success" id="settings_2fa_toggle" onclick="onEnable2faClick()">Enable</button>
+        <% end %>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="settings_pwd">Confirm password:</label>
+      <div class="col-sm-9">
+        <input type="password" class="form-control" id="settings_pwd" placeholder="Current password">
+      </div>
+    </div>
+
+    <% if @user.has2fa %>
+        <div class="form-group">
+          <label class="control-label col-sm-3" for="settings_otp_key">Two-factor key:</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="settings_otp_key" placeholder="Two-factor authentication key">
+          </div>
+        </div>
+    <% end %>
+
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-10">
+        <button type="button" class="btn btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </form>
+</div>

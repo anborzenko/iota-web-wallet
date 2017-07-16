@@ -6,31 +6,20 @@ class UsersController < ApplicationController
         return render json: { success: false, message: 'Username not found' }
       end
 
-      return unless authenticate_user
+      return unless authenticate_login_credentials
+      return unless authenticate_2fa
 
-      if @user.has2fa
-        unless @user.has_confirmed_2fa
-          return render json: { success: false, require_2fa_confirmation: true,
-                                qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5) }
-        end
-        if params[:otp_key] && @user.authenticate_otp(params[:otp_key])
-          render json: { success: true, encrypted_seed: @user.wallet[:encrypted_seed] }
-        else
-          render json: { success: false, require_2fa: true }
-        end
-      else
-        render json: { success: true, encrypted_seed: @user.wallet[:encrypted_seed] }
-      end
+      render json: { success: true, encrypted_seed: @user.wallet[:encrypted_seed] }
+      save_session
     else
       @user = User.new
     end
   end
 
   def signup
-    user = User.find_by_username(params[:username])
-    unless user.nil?
-      render json: { success: false, message: 'Username is taken' }
-      return
+    @user = User.find_by_username(params[:username])
+    unless @user.nil?
+      return render json: { success: false, message: 'Username is taken' }
     end
 
     params[:has2fa] = params[:has2fa] == 'true'
@@ -41,6 +30,7 @@ class UsersController < ApplicationController
                        qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5)}
       else
         render json: { success: true }
+        save_session
       end
     else
       render json: { success: false, message: @user.errors.full_messages.to_sentence }
@@ -48,15 +38,10 @@ class UsersController < ApplicationController
   end
 
   def confirm2fa
-    unless params[:username]
-      return render json: { success: false, message: 'Something went wrong: Username not supplied' }
-    end
+    return unless validate_required_params(['otp_key'])
+    return unless authenticate_session
 
-    unless params[:otp_key]
-      return render json: { success: false, message: 'Something went wrong: OTP key not supplied' }
-    end
-
-    @user = User.find_by_username(params[:username])
+    @user = User.find_by_username(session[:username])
 
     if @user.authenticate_otp(params[:otp_key])
       @user.has_confirmed_2fa = true
@@ -64,6 +49,8 @@ class UsersController < ApplicationController
       render json: { success: @user.save,
                      encrypted_seed: @user.wallet[:encrypted_seed],
                      message: @user.errors.full_messages.to_sentence }
+
+      save_session unless @user.errors.any?
     else
       render json: { success: false, message: 'Invalid key. Try again' }
     end
@@ -75,10 +62,34 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find_by_username(cookies[:username])
+    @user = User.find_by_username(session[:username])
+    authenticate_session
   end
 
   def update
+    @user = User.find_by_username(session[:username])
+    return unless authenticate_session
+    return unless authenticate_2fa
+
+    attribs = params.permit(:username, :has2fa)
+
+    render json: { success: @user.update(attribs), message: @user.errors.full_messages.to_sentence }
+  end
+
+  def delete
+    @user = User.find_by_username(session[:username])
+    return unless authenticate_session
+    return unless authenticate_2fa
+
+    if @user.destroy
+      render json: { success: true }
+    else
+      render json: { success: false, message: @user.errors.full_messages.to_sentence }
+    end
+  end
+
+  def logout
+    reset_session
   end
 
   private
@@ -100,7 +111,7 @@ class UsersController < ApplicationController
     RQRCode::QRCode.new(@user.provisioning_uri(@user.username, issuer: 'IOTAWallet'),size: 10, level: :h)
   end
 
-  def authenticate_user
+  def authenticate_login_credentials
 =begin
     This method contains a lot of legacy patching. The server did not store
     the hashed password from the beginning, so if we don't have it, be need
@@ -136,6 +147,36 @@ class UsersController < ApplicationController
     end
   end
 
+  def authenticate_session
+    if !@user.nil? && @user.password_hash == session[:password_hash] && @user.username == session[:username] &&
+        (!@user.has2fa || (@user.has2fa && @user.has_confirmed_2fa))
+      true
+    else
+      redirect_to users_login_path
+      false
+    end
+  end
+
+  def save_session
+    session[:username] = params[:username]
+    session[:password_hash] = params[:password_hash]
+  end
+
+  def authenticate_2fa
+    return true unless @user.has2fa
+
+    unless @user.has_confirmed_2fa
+      render json: { success: false, require_2fa_confirmation: true,
+                            qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5) }
+      return false
+    end
+
+    return true if params[:otp_key] && @user.authenticate_otp(params[:otp_key])
+
+    render json: { success: false, require_2fa: true }
+    false
+  end
+
   def is_valid_password?(pass, enc_seed)
 =begin
     First of all: I'm really sorry about this code. There is really no excuse
@@ -158,5 +199,16 @@ class UsersController < ApplicationController
     rescue
       false
     end
+  end
+
+  def validate_required_params(keys)
+    keys.each do |key|
+      unless params.key?(key)
+        render json: { success: false, message: 'Missing ' + key }
+        return false
+      end
+    end
+
+    true
   end
 end

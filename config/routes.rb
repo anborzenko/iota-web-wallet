@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   get 'users/show'
-  get 'users/update'
+  post 'users/update'
+  post 'users/delete'
   get 'users/login'
+  get 'users/logout'
   get 'users/exists'
   get 'users/confirm2fa'
   get 'users/signup'

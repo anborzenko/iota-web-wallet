@@ -5,12 +5,16 @@
 function getPasswordHash(){
     var pass = sessionStorage.getItem('unnamed');
     if (pass){
-        return sjcl.hash.sha256.hash(pass).join('');
+        return hashPassword(pass);
     }
 }
 
+function hashPassword(pass){
+    return sjcl.hash.sha256.hash(pass).join('');
+}
+
 function getUsername(){
-    return readCookie('username');
+    return sessionStorage.getItem('username');
 }
 
 function getEncryptedSeed(){
@@ -21,12 +25,8 @@ function saveLogin(cvalue, password, username) {
     sessionStorage.setItem("unnamed", password);
     sessionStorage.setItem("seed", encrypt(password, cvalue));
 
-    // The backend code need this to determine if the user is logged in
-    // Stay "logged in" for 1 hour
-    createCookie('isLoggedIn', true, 1 / 24.0);
-
     if (username){
-        createCookie('username', username, 1 / 24.0);
+        sessionStorage.setItem('username', username);
     }
 }
 
@@ -41,10 +41,17 @@ function getSeed() {
     throw('Seed not found');
 }
 
+function redirectToLoginIfNotLoggedIn(){
+    var seed = getEncryptedSeed();
+    if (seed === null) {
+        redirect_to('/users/login');
+        throw('Not logged in');
+    }
+}
+
 function logOut() {
-    eraseCookie('isLoggedIn');
-    eraseCookie('username');
+    sessionStorage.removeItem('username');
     sessionStorage.removeItem('seed');
     sessionStorage.removeItem('unnamed');
-    sessionStorage.removeItem('haveUploadedUnspentAddresses')
+    sessionStorage.removeItem('haveUploadedUnspentAddresses');
 }

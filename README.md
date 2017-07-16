@@ -1,6 +1,6 @@
 # IOTA web wallet
 
-A web wallet for the blockless distributed ledger IOTA. See iotatoken.com for more information about the project.
+A web wallet for the blockless distributed ledger IOTA. It's hosted at https://iota-wallet.org
 
 The wallet runs on top of Ruby on Rails.
 

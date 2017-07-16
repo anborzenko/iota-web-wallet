@@ -30,6 +30,7 @@ function loadGlobal(){
     // have to attach them to window
     window.loadingTimeout = 10000;
     window.numAddressesToSaveOnServer = 10;
+    window.minPasswordLength = 8;
 
     window.iota = new window.IOTA({
         'provider': 'https://d3j4w674fijhi2.cloudfront.net'

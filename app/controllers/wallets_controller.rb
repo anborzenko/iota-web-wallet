@@ -38,7 +38,7 @@ class WalletsController < ApplicationController
     username = params[:username]
 
     @wallet = Wallet.find_by_username(username)
-    return unless authenticate_user
+    return unless authenticate_login_credentials
 
     # Make sure we only have n addresses
     n = 10

@@ -52,9 +52,12 @@
             <% else %>
                 <li role="presentation" class=<%= 'active' if current_page?(wallets_show_path) %>><%= link_to "Wallet", users_login_path %></li>
             <% end %>
+            <% if session.key?('username') %>
+                <li role="presentation" class=<%= 'active' if current_page?(users_show_path) %>><%= link_to "Account", users_show_path %></li>
+          <% end %>
             <li role="presentation" class=<%= 'active' if current_page?(page_help_path) %>><%= link_to "Help", page_help_url %></li>
             <li role="presentation" class=<%= 'active' if current_page?(page_about_path) %>><%= link_to "About", page_about_url %></li>
-            <% if cookies.key?('isLoggedIn') %>
+            <% if session.key?('username') %>
               <li id="sign_out" role='presentation' ><a href='javascript:signout();' ><span class='glyphicon glyphicon-log-out'></span></a></li>
             <% end %>
           </ul>

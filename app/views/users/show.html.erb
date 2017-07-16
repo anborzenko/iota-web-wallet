@@ -1,76 +1,110 @@
+<script>
+    $(document).ready(function() {
+        redirectToLoginIfNotLoggedIn();
+
+        if (getParam('updated')){
+            renderSuccessAlert('user_show_notification', 'Your settings has been updated');
+        }
+    });
+</script>
+
 <div class="container">
+  <div id="user_show_notification"></div>
+
   <% if @user.nil? %>
       <h1>Access denied</h1>
   <% else %>
-    <h1><%= @user.username %></h1>
 
-    <div class="row">
-      <div class="col-sm-2">
-        <nav class="nav-sidebar">
-          <ul class="nav">
-            <li class="active"><a href="#home" data-toggle="tab">Account</a></li>
-            <li><a href="#settings">Settings</a></li>
-            <li class="nav-divider"></li>
-            <li><a href="#merchant">Merchant</a></li>
-          </ul>
-        </nav>
+      <div class="row profile">
+        <div class="col-md-3">
+          <div class="profile-sidebar">
+            <div class="profile-usermenu">
+              <ul class="nav">
+                <li class="active">
+                  <a href="#account" role="tab" data-toggle="tab">
+                    <i class="glyphicon glyphicon-user"></i>
+                    Account </a>
+                </li>
+                <li>
+                  <a href="#settings" role="tab" data-toggle="tab">
+                    <i class="glyphicon glyphicon-cog"></i>
+                    Settings </a>
+                </li>
+                <li>
+                  <a href="#advanced" role="tab" data-toggle="tab">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    Advanced </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-9 tab-content">
+          <div id="account" class="tab-pane active">
+            <%= render 'account' %>
+          </div>
+          <div id="settings" class="tab-pane">
+            <%= render 'settings' %>
+          </div>
+          <div id="advanced" class="tab-pane">
+            <%= render 'advanced' %>
+          </div>
+        </div>
       </div>
-      <div class="col-sm-2 col-sm-offset-8">
-        <div id="home">
-          Account
-        </div>
-        <div id="settings">
-          Settings
-        </div>
-        <div id="merchant">
-          Merchant
-        </div>
-      </div>
-    </div>
   <% end %>
 </div>
 
 <style>
-  .nav-sidebar {
-    width: 100%;
-    padding: 8px 0;
-    border-right: 1px solid #ddd;
-  }
-  .nav-sidebar a {
-    color: #333;
-    -webkit-transition: all 0.08s linear;
-    -moz-transition: all 0.08s linear;
-    -o-transition: all 0.08s linear;
-    transition: all 0.08s linear;
-    -webkit-border-radius: 4px 0 0 4px;
-    -moz-border-radius: 4px 0 0 4px;
-    border-radius: 4px 0 0 4px;
-  }
-  .nav-sidebar .active a {
-    cursor: default;
-    background-color: #428bca;
-    color: #fff;
-    text-shadow: 1px 1px 1px #666;
-  }
-  .nav-sidebar .active a:hover {
-    background-color: #428bca;
-  }
-  .nav-sidebar .text-overflow a,
-  .nav-sidebar .text-overflow .media-body {
-    white-space: nowrap;
-    overflow: hidden;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-  }
+/* Profile sidebar */
+.profile-sidebar {
+  padding: 0px 0 10px 0;
 
-  /* Right-aligned sidebar */
-  .nav-sidebar.pull-right {
-    border-right: 0;
-    border-left: 1px solid #ddd;
-  }
-  .nav-sidebar.pull-right a {
-    -webkit-border-radius: 0 4px 4px 0;
-    -moz-border-radius: 0 4px 4px 0;
-    border-radius: 0 4px 4px 0;
-  }
+}
+
+.profile-usermenu {
+  border-right: 1px solid #999999;
+}
+
+.profile-usermenu ul li {
+  border-bottom: 1px solid #f0f4f7;
+}
+
+.profile-usermenu ul li:last-child {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li a {
+  color: #93a3b5;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.profile-usermenu ul li a i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.profile-usermenu ul li a:hover {
+  background-color: #fafcfd;
+  color: #5b9bd1;
+}
+
+.profile-usermenu ul li.active {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li.active a {
+  color: #5b9bd1;
+  background-color: #f6f9fb;
+  border-left: 2px solid #5b9bd1;
+  margin-left: -2px;
+}
+
+.tab-content{
+  padding: 0px 0 10px 0;
+}
+
+hr {
+  border-color: #BBBBBB;
+}
 </style>

@@ -1,0 +1,22 @@
+<ul class="list-group">
+  <li class="list-group-item text-muted"><h2>Your account</h2></li>
+  <li class="list-group-item text-right">
+    <span class="pull-left">
+      <strong>Username</strong>
+    </span><%= @user.username %></li>
+  <li class="list-group-item text-right">
+    <span class="pull-left">
+      <strong>Joined</strong>
+    </span> <%= @user.created_at.localtime %></li>
+  <li class="list-group-item text-right">
+    <span class="pull-left">
+      <strong>Two-factor authentication</strong>
+    </span> <%= if @user.has2fa then 'Enabled' else 'Disabled' end %></li>
+</ul>
+
+<style>
+  .list-group-item{
+    background-color: transparent;
+    max-width: 30em;
+  }
+</style>
