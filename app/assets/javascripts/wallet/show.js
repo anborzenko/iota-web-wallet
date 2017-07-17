@@ -36,15 +36,8 @@ function populateWallet(data){
     document.getElementById('send_balance').innerHTML = 'Limit: ' + getSeedBalance() + ' IOTAs';
 }
 
-function addPendingToBalance(receiving_address, amount){
-    // TODO: At both places that calls this: Find all tx in the bundle that references any address in the account.
-    // TODO cont: Amount is the sum of those
+function addPendingToBalance(amount){
     var dom = $('#wallet_balance_pending');
-
-    if (getArrayIndex(window.walletData.addresses, receiving_address, plainComparer) === -1){
-        // Outgoing tx
-        amount *= -1;
-    }
 
     var summary = document.getElementById("wallet_balance_pending_amount");
     var existingAmount = parseInt(summary.innerHTML);
@@ -130,9 +123,10 @@ function addWalletData(data) {
         }
         // Remove transactions that have changed persistence
         if (isInArray(window.walletData.transfers, data.transfers[i], transferChangedPersistenceComparer)) {
-            walletTToRemove.push(getArrayIndex(window.walletData.transfers, data.transfers[i], transferChangedPersistenceComparer));
+            walletTToRemove.push(getArrayIndex(window.walletData.transfers, data.transfers[i],
+                transferChangedPersistenceComparer));
             // Update the pending account balance
-            addPendingToBalance(data.transfers[i][0].address, -data.transfers[i][0].value)
+            addPendingToBalance(-findTxAmount(data.transfers[i]));
         }
     }
     var iToRemove = [];

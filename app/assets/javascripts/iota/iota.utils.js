@@ -1,13 +1,7 @@
 /**
  * Created by Daniel on 13.06.2017.
  */
-function getSenderAddress(bundle){
-    for (var j = 0; j < bundle.length; j++){
-        if (bundle[j].value < 0 || j >= bundle.length - 1){
-            return bundle[j].address;
-        }
-    }
-}
+
 
 function getSenderAddresses(bundle){
     var addresses = [];
@@ -81,7 +75,7 @@ function categorizeTransactions(transactions){
     var minLoaded = getLastKnownAddressIndex();
     for (i = minLoaded - 1; i >= 0 && unknownTx.length > 0; i--){
         generateAddress(seed, i);
-        c = window.iota.utils.categorizeTransfers(unknownTx, window.walletData.addresses);
+        var c = window.iota.utils.categorizeTransfers(unknownTx, window.walletData.addresses);
         for (var j = c.sent.length - 1; j >= 0; j--){
             res.sent.push(c.sent[j]);
             unknownTx.splice(j, 1);
@@ -108,12 +102,9 @@ function convertToIotas(value, unit){
 }
 
 function findTxAmount(bundle){
-    if (bundle[0].direction === 'out'){
-        return bundle[0].value;
-    }
-
+    // TODO: Test
     for (var i = 0; i < bundle.length; i++) {
-        if (bundle[i].value > 0 && isInArray(window.walletData.addresses, bundle[i].address, plainComparer)) {
+        if (Math.abs(bundle[i].value) > 0 && isInArray(window.walletData.addresses, bundle[i].address, plainComparer)) {
             return bundle[i].value;
         }
     }

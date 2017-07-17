@@ -120,7 +120,7 @@ function manageDoubleSpends(transactions){
                     "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>" :
                     "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>";
             }else{
-                addPendingToBalance(tail.address, Math.abs(tail.value));
+                addPendingToBalance(findTxAmount(tx));
             }
         }
     });

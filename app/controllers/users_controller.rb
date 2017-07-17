@@ -117,7 +117,7 @@ class UsersController < ApplicationController
   def authenticate_login_credentials
 =begin
     This method contains a lot of legacy patching. The server did not store
-    the hashed password from the beginning, so if we don't have it, be need
+    the hashed password from the beginning, so if we don't have it, we need
     to request the real password from the user and use it to decrypt the seed.
     This has to be done server side to ensure that the identity is real. The
     seed or the password is of course never stored during this process,

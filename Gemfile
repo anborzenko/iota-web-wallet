@@ -38,6 +38,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 group :development, :test do
   gem 'sqlite3'
+  gem 'rspec-rails'
+  gem 'capybara'
 end
 group :production do
   gem 'pg'
