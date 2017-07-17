@@ -30,13 +30,7 @@ function populateTransactions(data){
             openTransactionWindow($(this).attr("bundle_id"));
         });
 
-        var pager = $('.pager');
-        pager.empty();
-        var currPage = pager.data('curr') || 0;
-
-        $('#transaction_list').pageMe({
-            pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10, pageNum: currPage
-        });
+        addPager();
     }catch (err){
         renderDangerAlert('wallet_show_notifications', err);
     }
@@ -81,14 +75,14 @@ function transactionsToHtmlTable(table, transactions){
         var today = new Date().toDateString();
         date.innerHTML = today === d.toDateString() ? d.toLocaleTimeString() : d.toLocaleDateString();
         date.setAttribute('timestamp', tail.timestamp);
-        value.innerHTML = convertIotaValuesToHtml(findTxAmount(transactions[i]));
+        value.innerHTML = convertIotaValuesToHtml(Math.abs(findTxAmount(transactions[i])));
         status.innerHTML = persistence ? 'Completed' : 'Pending';
     }
 
-    manageDoubleSpends(transactions);
+    checkForDoubleSpends(transactions);
 }
 
-function manageDoubleSpends(transactions){
+function checkForDoubleSpends(transactions){
     var sendAddresses = [];
     var txs = [];
     var tails = [];
@@ -105,13 +99,14 @@ function manageDoubleSpends(transactions){
     }
 
     window.iota.api.getBalances(sendAddresses, 100, function(e, balances){
+        var addedBundleIndexes = [];
         var table = document.getElementById('transaction_list');
+
         for (var i = 0; i < balances.balances.length; i++){
             var tx = txs[i];
             var tail = tails[i];
             if (Math.abs(tx.value) > parseInt(balances.balances[i])){
                 // Double spend
-                // Set icon
                 var row = table.rows[getArrayIndex(table.rows, tx, compareTableRowAndTx)];
                 var direction = row.cells[0];
                 var status = row.cells[3];
@@ -120,7 +115,13 @@ function manageDoubleSpends(transactions){
                     "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>" :
                     "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>";
             }else{
-                addPendingToBalance(findTxAmount(tx));
+                // Not double spend. Add the tx to the balance if it has not been added before
+                var bIndex = getArrayIndex(transactions, tx, txInBundleComparer);
+                if (bIndex !== -1 && !isInArray(addedBundleIndexes, bIndex, plainComparer)) {
+                    var bundle = transactions[bIndex];
+                    addedBundleIndexes.push(bIndex);
+                    addPendingToBalance(findTxAmount(bundle));
+                }
             }
         }
     });
@@ -147,7 +148,8 @@ function openTransactionWindow(bundle_id) {
     var persistence = getPersistence(b);
     window.openTail = tail;
     document.getElementById('bundle_div').innerHTML = tail.bundle;
-    document.getElementById('amount_div').innerHTML = 'You ' + (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + findTxAmount(b) + '</b> IOTAs';
+    document.getElementById('amount_div').innerHTML = 'You ' +
+        (tail.direction === 'in' ? 'received' : 'sent') + ' <b>' + Math.abs(findTxAmount(b)) + '</b> IOTAs';
     document.getElementById('datetime_div').innerHTML = 'At ' + new Date(tail.timestamp*1000).toLocaleString();
     document.getElementById('status_div').innerHTML = persistence ? 'Completed' : 'Pending';
     document.getElementById('message_div').innerHTML = getMessage(tail);
@@ -268,4 +270,14 @@ function onTxLoadingFinished(){
                 onGetWalletData(e, res);//Don't want to show progress for live loads
             }, onTxLoadingFinished);
         }, Math.floor(window.loadingTimeout));
+}
+
+function addPager(){
+    var pager = $('.pager');
+    pager.empty();
+    var currPage = pager.data('curr') || 0;
+
+    $('#transaction_list').pageMe({
+        pagerSelector:'#transaction_pager',showPrevNext:true,hidePageNumbers:false,perPage:10, pageNum: currPage
+    });
 }

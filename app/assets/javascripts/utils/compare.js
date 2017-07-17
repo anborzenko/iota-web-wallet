@@ -21,10 +21,6 @@ function addressComparer(a, b){
     return a.address === b.address;
 }
 
-function stringToAddressComparer(a, b){
-    return b.address === a;
-}
-
 function compareTableRowAndTx(tail, row){
     return row.getAttribute('bundle_id') === tail.bundle;
 }
@@ -39,6 +35,11 @@ function senderInputAddressComparer(input, tx){
 }
 
 function txInSameBundleComparer(a, b){
+    return a.bundle === b.bundle;
+}
+
+function txInBundleComparer(a, b){
+    b = b[0];
     return a.bundle === b.bundle;
 }
 

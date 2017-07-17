@@ -48,19 +48,37 @@ function onDeleteAccountClick(){
             'Your balance is larger than 0. Please move all your funds to a new seed before deleting your account');
     }
 
+    $('#delete_account_group').hide();
     $('#delete_account_confirmation_group').show();
 }
 
-function onDeleteAccountConfirmation(){
-    if (getSeedBalance() > 0){
-        return renderDangerAlert('user_show_notification',
-            'Your balance is larger than 0. Please move all your funds to a new seed before deleting your account');
-    }
+function onDeleteAccountConfirmation(btn){
+    var l = Ladda.create(btn);
+    l.start();
 
-    if (hashPassword($('advanced_pwd').val()) !== getPasswordHash()){
-        return renderDangerAlert('user_show_notification', 'Invalid password');
-    }
+    try {
+        var pwd_confirmation = $('#advanced_pwd').val();
+        if (!pwd_confirmation || hashPassword(pwd_confirmation) !== getPasswordHash()) {
+            l.stop();
+            return renderDangerAlert('user_show_notification', 'Invalid password');
+        }
 
+        loadSeedBalance(function(balance){
+            if (balance > 0){
+                l.stop();
+                return renderDangerAlert('user_show_notification',
+                    'Your balance is larger than 0. Please move all your funds to a new seed before deleting your account');
+            }
+            deleteAccount();
+        });
+    }catch(err){
+        l.stop();
+        return renderFailureNotification(err);
+
+    }
+}
+
+function deleteAccount(){
     var otp_key = $('#advanced_otp_key').val() || '';
 
     $.ajax({
@@ -68,19 +86,22 @@ function onDeleteAccountConfirmation(){
         url: 'delete',
         data: {otp_key: otp_key},
         dataType: "JSON",
-        success: function(response) {
-            if (!response.success){
+        success: function (response) {
+            Ladda.stopAll();
+
+            if (!response.success) {
                 return renderFailureNotification(response);
             }
 
-            renderSuccessAlert('user_show_notification', 'Your account has been deleted. Redirecting in 5 seconds');
+            renderSuccessAlert('user_show_notification', 'Your account has been deleted');
             logOut();
 
             setTimeout(function () {
                 redirect_to('/');
             }, 5000)
         },
-        error: function(err) {
+        error: function (err) {
+            Ladda.stopAll();
             renderAjaxError('user_show_notification', err);
         }
     });

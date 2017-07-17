@@ -112,9 +112,13 @@ function onFirstLoadFinished(){
 
 }
 
+// Responsible for taking all new wallet data, and updating the existing wallet data with the new information.
+// It also removes outdated information, such as confirmed txs.
 function addWalletData(data) {
     var tToRemove = [];
     var walletTToRemove = [];
+
+    // Update transactions
     for (var i = 0; i < data.transfers.length; i++) {
         if (!isInArray(window.walletData.transfers, data.transfers[i], transferComparer)) {
             window.walletData.transfers.push(data.transfers[i]);
@@ -129,14 +133,16 @@ function addWalletData(data) {
             addPendingToBalance(-findTxAmount(data.transfers[i]));
         }
     }
+
+    // Update inputs
     var iToRemove = [];
     for (i = 0; i < data.inputs.length; i++) {
         if (isInArray(window.walletData.inputs, data.inputs[i], addressComparer)){
+            // Update existing input
             window.walletData.inputs[getArrayIndex(window.walletData.inputs, data.inputs[i], addressComparer)] = data.inputs[i];
         } else if (!isInArray(window.walletData.inputs, data.inputs[i], inputComparer)) {
+            // Add new input (address with balance not existing)
             window.walletData.inputs.push(data.inputs[i]);
-        } else {
-            iToRemove.push(i);
         }
     }
 

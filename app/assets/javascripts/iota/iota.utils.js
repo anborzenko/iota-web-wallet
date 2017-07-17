@@ -14,12 +14,26 @@ function getSenderAddresses(bundle){
     return addresses;
 }
 
+// Returns the seed balance from the cached inputs
 function getSeedBalance(){
     var balance = 0;
     for (var i = 0; i < window.walletData.inputs.length; i++){
         balance += window.walletData.inputs[i].balance;
     }
     return balance;
+}
+
+// Loads the seed balance without cached values
+function loadSeedBalance(callback){
+    var balance = 0;
+
+    loadWalletData(function(data){
+        for (var i = 0; i < data.inputs.length; i++) {
+            balance += data.inputs[i].balance;
+        }
+    }, function() {
+        callback(balance);
+    });
 }
 
 function generateAddress(seed, index){
@@ -102,12 +116,17 @@ function convertToIotas(value, unit){
 }
 
 function findTxAmount(bundle){
-    // TODO: Test
+    var amount = 0;
+    var tx_ids = [];
+
     for (var i = 0; i < bundle.length; i++) {
         if (Math.abs(bundle[i].value) > 0 && isInArray(window.walletData.addresses, bundle[i].address, plainComparer)) {
-            return bundle[i].value;
+            if (!isInArray(tx_ids, bundle[i].bundle + bundle[i].currentIndex.toString(), plainComparer)){
+                amount += bundle[i].value;
+                tx_ids.push(bundle[i].bundle + bundle[i].currentIndex.toString());
+            }
         }
     }
 
-    return bundle[0].value;
+    return amount;
 }

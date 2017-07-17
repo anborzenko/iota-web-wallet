@@ -16,7 +16,7 @@
       </div>
     <% end %>
 
-    <div class="form-group">
+    <div class="form-group" id="delete_account_group">
       <div class="col-sm-offset-3 col-sm-10">
         <button type="button" class="btn btn-danger" onclick="onDeleteAccountClick()">Delete account</button>
       </div>
@@ -25,7 +25,8 @@
     <div class="form-group" hidden="hidden" id="delete_account_confirmation_group">
       <div class="col-sm-offset-3 col-sm-10">
         <div>Are you sure you want to delete the account? You will no longer be able to log in using this account</div>
-        <button type="button" class="btn btn-danger" onclick="onDeleteAccountConfirmation()">Yes, delete it</button>
+        <button type="button" class="ladda-button btn btn-danger" data-style="expand-right"
+                onclick="onDeleteAccountConfirmation(this)">Yes, delete it</button>
         <button type="button" class="btn btn-default" onclick="onAbortDeletionClick()">No, cancel</button>
       </div>
     </div>

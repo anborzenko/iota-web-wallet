@@ -13,7 +13,13 @@ function openWithSeed() {
     }
 
     saveLogin(seed, generateRandomSeed());
-    redirect_to('/wallets/show');
+    $.ajax({
+        type: "GET",
+        url: 'seed_login',
+        success: function (response) {
+            redirect_to('/wallets/show');
+        }
+    });
 }
 
 function onGenerateSeedClick() {
@@ -147,6 +153,7 @@ function onConfirm2faClick(btn){
             }
         },
         error: function(error){
+            Ladda.stopAll();
             renderAjaxError('notifications', error);
         }
     });
@@ -238,20 +245,8 @@ function on2faLoginClick(btn){
             }
         },
         error: function(error){
+            Ladda.stopAll();
             renderAjaxError('notifications', error);
-        }
-    });
-}
-
-function signout(){
-    logOut();
-    $.ajax({
-        type: "GET",
-        url: '/users/logout',
-        success: function(response){
-            redirect_to('/');
-        },error: function(err){
-            renderAjaxError('mainNotifiactionArea', err);
         }
     });
 }

@@ -49,9 +49,21 @@ function redirectToLoginIfNotLoggedIn(){
     }
 }
 
-function logOut() {
+function logOut(redirect_url) {
+    redirect_url = redirect_url || '/';
+
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('seed');
     sessionStorage.removeItem('unnamed');
     sessionStorage.removeItem('haveUploadedUnspentAddresses');
+
+    $.ajax({
+        type: "GET",
+        url: '/users/logout',
+        success: function(response){
+            redirect_to(redirect_url);
+        },error: function(err){
+            renderAjaxError('mainNotifiactionArea', err);
+        }
+    });
 }
