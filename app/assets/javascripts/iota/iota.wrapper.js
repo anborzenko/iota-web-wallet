@@ -58,25 +58,26 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
             }
         });
 */
-        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback, function(error, attached) {
-            if (error) {
-                return callback(error)
-            }
-
-            iota.api.storeAndBroadcast(attached, function(error, success) {
+        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback,
+            function(error, attached) {
                 if (error) {
-                    return callback(error);
+                    return callback(error)
                 }
 
-                var finalTxs = [];
+                iota.api.storeAndBroadcast(attached, function(error, success) {
+                    if (error) {
+                        return callback(error);
+                    }
 
-                attached.forEach(function(trytes) {
-                    finalTxs.push(window.iota.utils.transactionObject(trytes));
+                    var finalTxs = [];
+
+                    attached.forEach(function(trytes) {
+                        finalTxs.push(window.iota.utils.transactionObject(trytes));
+                    });
+
+                    return callback(null, finalTxs);
                 });
-
-                return callback(null, finalTxs);
-            })
-        })
+        });
     })
 }
 
@@ -104,8 +105,10 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
             }
 
             var transactionTrits = trits(trytes_in[i]);
-            arrayCopy(prevTransaction === null ? trunkTransaction : prevTransaction, 0, transactionTrits, window.TRUNK_TRANSACTION_TRINARY_OFFSET, window.TRUNK_TRANSACTION_TRINARY_SIZE);
-            arrayCopy(prevTransaction === null ? branchTransaction : trunkTransaction, 0, transactionTrits, window.BRANCH_TRANSACTION_TRINARY_OFFSET, window.BRANCH_TRANSACTION_TRINARY_SIZE);
+            arrayCopy(prevTransaction === null ? trunkTransaction : prevTransaction, 0, transactionTrits,
+                window.TRUNK_TRANSACTION_TRINARY_OFFSET, window.TRUNK_TRANSACTION_TRINARY_SIZE);
+            arrayCopy(prevTransaction === null ? branchTransaction : trunkTransaction, 0, transactionTrits,
+                window.BRANCH_TRANSACTION_TRINARY_OFFSET, window.BRANCH_TRANSACTION_TRINARY_SIZE);
 
             var transactionTrytes = trytes(transactionTrits);
 

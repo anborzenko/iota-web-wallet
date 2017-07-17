@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+  before_action authenticate_user, only: [:update, :delete]
+  before_action authenticate_session, only: [:confirm2fa, :show]
+
   def login
     if params.key?(:username)
       @user = User.find_by_username(params[:username])
@@ -39,9 +42,6 @@ class UsersController < ApplicationController
 
   def confirm2fa
     return unless validate_required_params(['otp_key'])
-    return unless authenticate_session
-
-    @user = User.find_by_username(session[:username])
 
     if @user.authenticate_otp(params[:otp_key])
       @user.has_confirmed_2fa = true
@@ -62,24 +62,23 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find_by_username(session[:username])
-    authenticate_session
   end
 
   def update
-    @user = User.find_by_username(session[:username])
-    return unless authenticate_session
-    return unless authenticate_2fa
-
     attribs = params.permit(:username, :has2fa)
+
+    hash.each do |key, value|
+      @user.user_change_logs.build(old_value: @user[key], new_value: value, column_name: key)
+    end
 
     render json: { success: @user.update(attribs), message: @user.errors.full_messages.to_sentence }
   end
 
   def delete
-    @user = User.find_by_username(session[:username])
-    return unless authenticate_session
-    return unless authenticate_2fa
+    deleted_user = DeletedUser.new(username: @user.username, pasword_hash: @user.password_hash, wallet: @user.wallet)
+    unless deleted_user.save
+      return render json: { success: false, message: deleted_user.errors.full_messages.to_sentence }
+    end
 
     if @user.destroy
       render json: { success: true }
@@ -93,6 +92,10 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def authenticate_user
+    authenticate_session && authenticate_2fa
+  end
 
   def create_user(user_params)
     @user = User.new(username: user_params[:username],
@@ -148,6 +151,8 @@ class UsersController < ApplicationController
   end
 
   def authenticate_session
+    @user = User.find_by_username(session[:username]) if @user.nil?
+
     if !@user.nil? && @user.password_hash == session[:password_hash] && @user.username == session[:username] &&
         (!@user.has2fa || (@user.has2fa && @user.has_confirmed_2fa))
       true
@@ -163,6 +168,8 @@ class UsersController < ApplicationController
   end
 
   def authenticate_2fa
+    @user = User.find_by_username(session[:username]) if @user.nil?
+
     return true unless @user.has2fa
 
     unless @user.has_confirmed_2fa

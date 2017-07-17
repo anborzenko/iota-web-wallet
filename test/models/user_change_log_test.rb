@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class NodeTest < ActiveSupport::TestCase
+class UserChangeLogTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
