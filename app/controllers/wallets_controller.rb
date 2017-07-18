@@ -35,10 +35,12 @@ class WalletsController < ApplicationController
 
   def add_addresses
     addresses = params[:addresses]
-    username = params[:username]
+    username = session[:username]
 
     @wallet = Wallet.find_by_username(username)
-    return unless authenticate_login_credentials
+    if @wallet.user.password_hash != session[:password_hash]
+      return render file: 'public/401.html', status: :unauthorized
+    end
 
     # Make sure we only have n addresses
     n = 10

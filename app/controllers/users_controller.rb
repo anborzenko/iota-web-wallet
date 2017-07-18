@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
   def seed_login
-    save_session
+    save_session(params)
   end
 
   def login
@@ -15,7 +15,7 @@ class UsersController < ApplicationController
       @user = User.find_by_username(params[:username])
       return unless authenticate_2fa
 
-      save_session
+      save_session(params)
 
       render json: { success: true, encrypted_seed: @user.wallet[:encrypted_seed] }
     else
@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     params[:has2fa] = params[:has2fa] == 'true'
 
     if create_user(params)
-      save_session
+      save_session(params)
 
       if @user.has2fa
         render json: { success: true,
@@ -46,11 +46,11 @@ class UsersController < ApplicationController
   end
 
   def confirm2fa
-    return unless validate_required_params(['otp_key'])
+    return unless validate_required_params(['otp_key', 'username', 'password_hash'])
 
-    @user = User.find_by_username(session[:username]) if @user.nil?
-    if @user.nil? || @user.password_hash != session[:password_hash] || @user.username != session[:username]
-      return render json: { success: false, message: 'Invalid session' }
+    @user = User.find_by_username(params[:username]) if @user.nil?
+    if @user.password_hash != params[:password_hash]
+      return render json: {success: false, message: 'Invalid password'}
     end
 
     if @user.authenticate_otp(params[:otp_key])
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
                      encrypted_seed: @user.wallet.encrypted_seed,
                      message: @user.errors.full_messages.to_sentence }
 
-      save_session unless @user.errors.any?
+      save_session(params) unless @user.errors.any?
     else
       render json: { success: false, message: 'Invalid key. Try again' }
     end
@@ -81,10 +81,16 @@ class UsersController < ApplicationController
     attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
 
     attribs.each do |key, value|
-      @user.user_change_logs.build(old_value: @user[key], new_value: value, column_name: key)
+      @user.user_change_logs.create(old_value: @user[key], new_value: value, column_name: key)
+      session[key] = value if session.key?(key)
     end
 
-    render json: { success: @user.update(attribs), message: @user.errors.full_messages.to_sentence }
+    if @user.update(attribs)
+      save_session(attribs)
+      render json: { success: true }
+    else
+      render json: { success: false, message: @user.errors.full_messages.to_sentence }
+    end
   end
 
   def delete
@@ -168,6 +174,7 @@ class UsersController < ApplicationController
 
   def authenticate_session
     @user = User.find_by_username(session[:username]) if @user.nil?
+    s = session
 
     if !@user.nil? && @user.password_hash == session[:password_hash] && @user.username == session[:username] &&
         (!@user.has2fa || (@user.has2fa && @user.has_confirmed_2fa))
@@ -178,10 +185,12 @@ class UsersController < ApplicationController
     end
   end
 
-  def save_session
+  def save_session(parameters)
     session[:isLoggedIn] = true
-    session[:username] = params[:username]
-    session[:password_hash] = params[:password_hash]
+
+    [:username, :password_hash].each do |key|
+      session[key] = parameters[key] if parameters.key?(key)
+    end
   end
 
   def authenticate_2fa

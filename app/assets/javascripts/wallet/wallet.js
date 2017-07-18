@@ -77,7 +77,7 @@ function findInputs(amount){
     for (var i = 0; i < inputs.length; i++){
         var isAddressInUse = false;
         for (var j = 0; j < pendingOut.length; j++){
-            if (isInArray(getSenderAddresses(pendingOut[j]), inputs[i], addressComparer)){
+            if (isInArray(getSenderAddresses(pendingOut[j]), inputs[i], addressComparer)){//
                 isAddressInUse = true;
                 break;
             }
@@ -312,7 +312,7 @@ function uploadUnspentAddresses(num){
         $.ajax({
             type: "GET",
             url: 'add_addresses',
-            data: {'username': username, 'addresses': addresses, 'password_hash': getPasswordHash()},
+            data: { 'addresses': addresses },
             dataType: "JSON",
             success: function (response) {
                 sessionStorage.setItem('haveUploadedUnspentAddresses', true);

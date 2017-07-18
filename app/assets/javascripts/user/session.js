@@ -30,6 +30,14 @@ function saveLogin(cvalue, password, username) {
     }
 }
 
+function updateSession(params){
+    Object.keys(params).forEach(function (key) {
+        if (sessionStorage.getItem(key)){
+            sessionStorage.setItem(key, params[key]);
+        }
+    });
+}
+
 function getSeed() {
     var password = sessionStorage.getItem('unnamed');
     var seed = getEncryptedSeed();

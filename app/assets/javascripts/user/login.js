@@ -130,7 +130,7 @@ function onConfirm2faClick(btn){
     $.ajax({
         type: "GET",
         url: 'confirm2fa',
-        data: { 'otp_key': otp_key, 'username': username },
+        data: { 'otp_key': otp_key, 'username': username, 'password_hash': hashPassword(password) },
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();

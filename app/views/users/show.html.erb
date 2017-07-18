@@ -4,7 +4,7 @@
 
         var success = getParam('success');
         if (success){
-            renderSuccessAlert('user_show_notification', btoa(success));
+            renderSuccessAlert('user_show_notification', atob(success));
         }
     });
 </script>

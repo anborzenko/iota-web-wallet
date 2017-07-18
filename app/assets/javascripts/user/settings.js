@@ -15,6 +15,12 @@ function saveSettings(){
         data['username'] = new_username;
     }
 
+    var tfaInput = document.getElementById('settings_2fa_toggle');
+    if (tfaInput.defaultChecked !== tfaInput.checked){
+        data['has2fa'] = tfaInput.checked;
+        data['has_confirmed_2fa'] = false;
+    }
+
     if (getDictKeys(data).length === 0) {
         // Nothing has been changed
         return renderInfoAlert('user_show_notification', 'No changes has been made');
@@ -32,7 +38,14 @@ function saveSettings(){
                 return renderFailureNotification(response);
             }
 
-            redirect_to('show', 'success=' + atob('Update was successful'));
+            updateSession(data);
+            if (data['has2fa']){
+                // Enabling 2fa requires the user to confirm the code. This is easiest accomplished by logging back in.
+                renderSuccessAlert('user_show_notification',
+                    'Update was successful. Please log back in to complete the process');
+            }else{
+                redirect_to('/users/show', 'success=' + btoa('Update was successful'));
+            }
         },
         error: function(err) {
             renderAjaxError('user_show_notification', err);
@@ -115,66 +128,8 @@ function renderFailureNotification(response){
     }
 }
 
-function onEnable2faClick(btn){
-    var l = Ladda.create(btn);
-    l.start();
-
-    validateConfirmationPassword($('#settings_pwd').val());
-    var otp_key = $('#settings_otp_key').val() || '';
-
-    $.ajax({
-        type: "POST",
-        url: 'update',
-        data: {otp_key: otp_key, 'has2fa': true, 'has_confirmed_2fa': false},
-        dataType: "JSON",
-        success: function (response) {
-            Ladda.stopAll();
-
-            if (!response.success) {
-                return renderFailureNotification(response);
-            }
-
-            renderSuccessAlert('user_show_notification',
-                'Two-factor authentications has been enabled. Please log back in to complete the process');
-        },
-        error: function (err) {
-            Ladda.stopAll();
-            renderAjaxError('user_show_notification', err);
-        }
-    });
-}
-
-function onDisable2faClick(btn){
-    var l = Ladda.create(btn);
-    l.start();
-
-    validateConfirmationPassword($('#settings_pwd').val());
-    var otp_key = $('#settings_otp_key').val() || '';
-
-    $.ajax({
-        type: "POST",
-        url: 'update',
-        data: {otp_key: otp_key, 'has2fa': false, 'has_confirmed_2fa': false},
-        dataType: "JSON",
-        success: function (response) {
-            Ladda.stopAll();
-
-            if (!response.success) {
-                return renderFailureNotification(response);
-            }
-
-            redirect_to('show', 'success=' + atob('Two-factor authentication has been disabled'));
-        },
-        error: function (err) {
-            Ladda.stopAll();
-            renderAjaxError('user_show_notification', err);
-        }
-    });
-}
-
 function validateConfirmationPassword (pwd_confirmation){
     if (!pwd_confirmation || hashPassword(pwd_confirmation) !== getPasswordHash()) {
-        Ladda.stopAll();
         renderDangerAlert('user_show_notification', 'Invalid password');
         throw 'Invalid password';
     }
