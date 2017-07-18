@@ -57,6 +57,8 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+    childprocess (0.7.1)
+      ffi (~> 1.0, >= 1.0.11)
     chunky_png (1.3.8)
     clipboard-rails (1.6.1)
     coffee-rails (4.2.2)
@@ -67,9 +69,11 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.5)
+    database_cleaner (1.6.1)
     diff-lcs (1.3)
     erubi (1.6.0)
     execjs (2.7.0)
+    ffi (1.9.18-x86-mingw32)
     font-awesome-sass (4.7.0)
       sass (>= 3.2)
     globalid (0.4.0)
@@ -150,6 +154,7 @@ GEM
       rspec-mocks (~> 3.6.0)
       rspec-support (~> 3.6.0)
     rspec-support (3.6.0)
+    rubyzip (1.2.1)
     sass (3.4.24)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -157,6 +162,9 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    selenium-webdriver (3.4.4)
+      childprocess (~> 0.5)
+      rubyzip (~> 1.0)
     spinjs-rails (1.4)
       rails (>= 3.1)
     sprockets (3.7.1)
@@ -194,6 +202,7 @@ DEPENDENCIES
   capybara
   clipboard-rails
   coffee-rails (~> 4.2)
+  database_cleaner
   font-awesome-sass
   jbuilder (~> 2.5)
   jquery-rails
@@ -205,6 +214,7 @@ DEPENDENCIES
   rqrcode
   rspec-rails
   sass-rails (~> 5.0)
+  selenium-webdriver
   spinjs-rails
   sprockets-rails
   sqlite3
