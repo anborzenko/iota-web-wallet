@@ -2,8 +2,9 @@
     $(document).ready(function() {
         redirectToLoginIfNotLoggedIn();
 
-        if (getParam('updated')){
-            renderSuccessAlert('user_show_notification', 'Your settings has been updated');
+        var success = getParam('success');
+        if (success){
+            renderSuccessAlert('user_show_notification', btoa(success));
         }
     });
 </script>

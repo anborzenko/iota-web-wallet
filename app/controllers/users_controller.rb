@@ -78,7 +78,7 @@ class UsersController < ApplicationController
   def update
     return unless authenticate_user
 
-    attribs = params.permit(:username, :has2fa)
+    attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
 
     attribs.each do |key, value|
       @user.user_change_logs.build(old_value: @user[key], new_value: value, column_name: key)

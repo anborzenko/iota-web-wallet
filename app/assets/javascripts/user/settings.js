@@ -3,10 +3,8 @@
  */
 
 function saveSettings(){
-    var curr_pass_hash = getPasswordHash();
-    if (hashPassword($('#settings_pwd').val()) !== curr_pass_hash) {
-        return renderDangerAlert('user_show_notification', 'Invalid confirmation password')
-    }
+    var pwd_confirmation = $('#settings_pwd').val();
+    validateConfirmationPassword(pwd_confirmation);
 
     var new_username = $('#settings_username').val();
 
@@ -34,7 +32,7 @@ function saveSettings(){
                 return renderFailureNotification(response);
             }
 
-            redirect_to('show', 'updated=true');
+            redirect_to('show', 'success=' + atob('Update was successful'));
         },
         error: function(err) {
             renderAjaxError('user_show_notification', err);
@@ -56,13 +54,9 @@ function onDeleteAccountConfirmation(btn){
     var l = Ladda.create(btn);
     l.start();
 
+    var pwd_confirmation = $('#advanced_pwd').val();
+    validateConfirmationPassword(pwd_confirmation);
     try {
-        var pwd_confirmation = $('#advanced_pwd').val();
-        if (!pwd_confirmation || hashPassword(pwd_confirmation) !== getPasswordHash()) {
-            l.stop();
-            return renderDangerAlert('user_show_notification', 'Invalid password');
-        }
-
         loadSeedBalance(function(balance){
             if (balance > 0){
                 l.stop();
@@ -73,12 +67,14 @@ function onDeleteAccountConfirmation(btn){
         });
     }catch(err){
         l.stop();
-        return renderFailureNotification(err);
-
+        renderFailureNotification(err);
     }
 }
 
-function deleteAccount(){
+function deleteAccount(btn){
+    var l = Ladda.create(btn);
+    l.start();
+
     var otp_key = $('#advanced_otp_key').val() || '';
 
     $.ajax({
@@ -93,11 +89,10 @@ function deleteAccount(){
                 return renderFailureNotification(response);
             }
 
-            renderSuccessAlert('user_show_notification', 'Your account has been deleted');
-            logOut();
+            renderSuccessAlert('user_show_notification', 'Your account has been deleted. Redirecting in 5 seconds');
 
             setTimeout(function () {
-                redirect_to('/');
+                logOut();
             }, 5000)
         },
         error: function (err) {
@@ -109,6 +104,7 @@ function deleteAccount(){
 
 function onAbortDeletionClick(){
     $('#delete_account_confirmation_group').hide();
+    $('#delete_account_group').show();
 }
 
 function renderFailureNotification(response){
@@ -119,21 +115,67 @@ function renderFailureNotification(response){
     }
 }
 
-function onEnable2faClick(){
+function onEnable2faClick(btn){
+    var l = Ladda.create(btn);
+    l.start();
 
+    validateConfirmationPassword($('#settings_pwd').val());
+    var otp_key = $('#settings_otp_key').val() || '';
+
+    $.ajax({
+        type: "POST",
+        url: 'update',
+        data: {otp_key: otp_key, 'has2fa': true, 'has_confirmed_2fa': false},
+        dataType: "JSON",
+        success: function (response) {
+            Ladda.stopAll();
+
+            if (!response.success) {
+                return renderFailureNotification(response);
+            }
+
+            renderSuccessAlert('user_show_notification',
+                'Two-factor authentications has been enabled. Please log back in to complete the process');
+        },
+        error: function (err) {
+            Ladda.stopAll();
+            renderAjaxError('user_show_notification', err);
+        }
+    });
 }
 
-function onDisable2faClick(){
+function onDisable2faClick(btn){
+    var l = Ladda.create(btn);
+    l.start();
 
+    validateConfirmationPassword($('#settings_pwd').val());
+    var otp_key = $('#settings_otp_key').val() || '';
+
+    $.ajax({
+        type: "POST",
+        url: 'update',
+        data: {otp_key: otp_key, 'has2fa': false, 'has_confirmed_2fa': false},
+        dataType: "JSON",
+        success: function (response) {
+            Ladda.stopAll();
+
+            if (!response.success) {
+                return renderFailureNotification(response);
+            }
+
+            redirect_to('show', 'success=' + atob('Two-factor authentication has been disabled'));
+        },
+        error: function (err) {
+            Ladda.stopAll();
+            renderAjaxError('user_show_notification', err);
+        }
+    });
 }
 
-function validateNewUserInput(username, password){
-    if (!isValidPassword(password)){
-        renderDangerAlert('user_show_notification',
-            "Your password must be at least " + window.minPasswordLength + " characters long");
-        throw('Invalid input');
-    }else if (!isValudUsername(username)){
-        renderDangerAlert('user_show_notification', 'Your username cannot be empty');
-        throw('Invalid input');
+function validateConfirmationPassword (pwd_confirmation){
+    if (!pwd_confirmation || hashPassword(pwd_confirmation) !== getPasswordHash()) {
+        Ladda.stopAll();
+        renderDangerAlert('user_show_notification', 'Invalid password');
+        throw 'Invalid password';
     }
 }
