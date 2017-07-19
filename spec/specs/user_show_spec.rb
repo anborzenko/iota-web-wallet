@@ -36,7 +36,8 @@ feature 'Show user', js: true do
     click_button 'Save'
     wait_for_ajax
 
-    expect(page).to have_content 'Success'
+    expect(page).to have_content 'Updated'
+    expect(page).to have_content 'test2'
   end
 
   scenario 'should not be able to change username with wrong password' do

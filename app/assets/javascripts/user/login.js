@@ -100,7 +100,7 @@ function login (btn, require_first_time_proof) {
                 document.getElementById('qr').innerHTML = response.qr;
             }else if (response.require_first_time_proof){
                 $('#loginModal').modal('hide');
-                $('#requireOneTImeProofModal').modal('show');
+                $('#requireOneTimeProofModal').modal('show');
             }else{
                 renderDangerAlert('notifications', response.message);
             }

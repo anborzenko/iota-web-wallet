@@ -59,7 +59,7 @@ function getConfirmedOut(){
 
 /*
 * Finds a list of inputs such that no inputs currently have any pending
-* transactions and the total balance across the inputs are >= amount
+* transactions and the total balance across the inputs are >= amount.
 * If no combination if inputs matches those criteria, an empty list
 * is returned, signalling a double spend. If the wallet data is not
 * available, null is returned

@@ -23,6 +23,8 @@ class UsersController < ApplicationController
   end
 
   def login_without_proof
+    # See authenticate_login_credentials() for some background
+
     @user = User.find_by_username(params[:username])
     if @user.nil?
       return render json: { success: false, message: 'Username not found' }
