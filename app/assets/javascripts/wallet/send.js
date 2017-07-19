@@ -29,7 +29,7 @@ function onMakeTransactionClick(){
     var amount_input = $('#amount');
 
     var inputAmount = parseFloat(amount_input.val());
-    if (!inputAmount){
+    if (!inputAmount || inputAmount <= 0){
         return renderDangerAlert('send-notifications', 'Invalid amount');
     }
 

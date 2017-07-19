@@ -64,6 +64,9 @@ function convertIotaValuesToHtml(value){
 
 function showSeed(){
     document.getElementById('seed_box').type = 'text';
+    setTimeout(function () {
+        document.getElementById('seed_box').type = 'password';
+    }, 2000);
 }
 
 function onGenerateAddressClick(){

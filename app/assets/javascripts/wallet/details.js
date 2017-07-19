@@ -27,8 +27,12 @@ function loadAddresses(load_all){
     });
 }
 
-function onDownloadBackupClick(){
-    download('seed.txt', getSeed());
+function onEncryptedDownloadBackupClick(){
+    download("{'seed': '" + getSeed() + "'}", 'iota.json');
+}
+
+function onDecryptedDownloadBackupClick(){
+    download(getEncryptedSeed(), 'iota.json');
 }
 
 function onGetBalancesCustomCallback(e, res, addresses, start_index){
@@ -55,10 +59,10 @@ function onGetBalancesCustomCallback(e, res, addresses, start_index){
         balance.innerHTML = b;
     }
 }
-
+/*
 function download(filename, text) {
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
 
     element.style.display = 'none';
@@ -67,4 +71,4 @@ function download(filename, text) {
     element.click();
 
     document.body.removeChild(element);
-}
+}*/

@@ -12,8 +12,6 @@
     });
 </script>
 
-<div><%= link_to "Back to wallet", wallets_show_path %></div>
-<br>
 <div id="wallet_options_notifications"></div>
 
 <ul class="nav nav-tabs">
@@ -42,11 +40,53 @@
   </div>
 
   <div id="backup" class="tab-pane">
-    <div style="padding-top: 2em;padding-bottom: 0.5em;"><button class="btn btn-primary" onclick="onDownloadBackupClick()">Download backup</button></div>
-    <div class="text-muted">This will download your seed as a text file. Keep it somewhere safe</div>
+    <div class="well inline">
+      <h2>Encrypted</h2>
+      <div class="text-muted text-explanation">
+        Download an encrypted version of your seed. It can be decrypted using your password
+      </div>
+      <button class="btn btn-primary download-button" onclick="onEncryptedDownloadBackupClick()">
+        Download
+      </button>
+    </div>
+
+    <div class="well inline">
+      <h2>Decrypted</h2>
+      <div class="text-muted text-explanation">
+        Download a copy of your seed in plain text. Please use this option with caution.
+      </div>
+      <button class="btn btn-danger download-button" onclick="onDecryptedDownloadBackupClick()">
+        Download
+      </button>
+    </div>
   </div>
 
   <div id="custom_send" class="tab-pane">
     <%= render 'custom_send' %>
   </div>
 </div>
+
+<style>
+  .well{
+    background-color: white;
+    padding-top: 0;
+    position: relative;
+    width: 49%;
+    display: table-cell;
+  }
+
+  .download-button{
+    position: absolute;
+    bottom: 1em;
+  }
+
+  .text-explanation{
+    padding-bottom: 3em;
+  }
+
+  #backup{
+    display:table;
+    border-collapse:separate;
+    border-spacing:1em;
+  }
+</style>
