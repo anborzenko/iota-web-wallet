@@ -15,9 +15,15 @@
 <div id="wallet_options_notifications"></div>
 
 <ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a data-toggle="tab" href="#addresses"><span class="glyphicon glyphicon-list"></span>  Addresses</a></li>
-  <li role="presentation"><a data-toggle="tab" href="#backup"><span class="glyphicon glyphicon-save"></span>  Backup</a></li>
-  <li role="presentation"><a data-toggle="tab" href="#custom_send"><span class="glyphicon glyphicon-send"></span>  Advanced transfer</a></li>
+  <li role="presentation" class="active">
+    <a data-toggle="tab" href="#addresses"><span class="glyphicon glyphicon-list"></span>  Addresses</a>
+  </li>
+  <li role="presentation">
+    <a data-toggle="tab" href="#backup"><span class="glyphicon glyphicon-save"></span>  Backup</a>
+  </li>
+  <li role="presentation">
+    <a data-toggle="tab" href="#custom_send"><span class="glyphicon glyphicon-send"></span>  Advanced transfer</a>
+  </li>
 </ul>
 
 <div class="tab-content">
@@ -35,29 +41,33 @@
         <tbody id="address_list">
         </tbody>
       </table>
-      <div id="loadAllTransactionsDiv" style="text-align: center"><a class="text-muted" href="javascript:loadAddresses(true);">Load all</a></div>
+      <div id="loadAllTransactionsDiv" style="text-align: center">
+        <a class="text-muted" href="javascript:loadAddresses(true);">Load all</a>
+      </div>
     </div>
   </div>
 
   <div id="backup" class="tab-pane">
-    <div class="well inline">
-      <h2>Encrypted</h2>
-      <div class="text-muted text-explanation">
-        Download an encrypted version of your seed. It can be decrypted using your password
+    <div class="table-view">
+      <div class="well inline">
+        <h2>Encrypted</h2>
+        <div class="text-muted text-explanation">
+          Download an encrypted version of your seed. It can be decrypted using your password
+        </div>
+        <button class="btn btn-primary download-button" onclick="onEncryptedDownloadBackupClick()">
+          Download
+        </button>
       </div>
-      <button class="btn btn-primary download-button" onclick="onEncryptedDownloadBackupClick()">
-        Download
-      </button>
-    </div>
 
-    <div class="well inline">
-      <h2>Decrypted</h2>
-      <div class="text-muted text-explanation">
-        Download a copy of your seed in plain text. Please use this option with caution.
+      <div class="well inline">
+        <h2>Decrypted</h2>
+        <div class="text-muted text-explanation">
+          Download a copy of your seed in plain text. Please use this option with caution.
+        </div>
+        <button class="btn btn-danger download-button" onclick="onDecryptedDownloadBackupClick()">
+          Download
+        </button>
       </div>
-      <button class="btn btn-danger download-button" onclick="onDecryptedDownloadBackupClick()">
-        Download
-      </button>
     </div>
   </div>
 
@@ -84,7 +94,7 @@
     padding-bottom: 3em;
   }
 
-  #backup{
+  .table-view{
     display:table;
     border-collapse:separate;
     border-spacing:1em;

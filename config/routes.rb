@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   post 'users/update'
   post 'users/delete'
   get 'users/login'
+  get 'users/login_without_proof'
   get 'users/seed_login'
   get 'users/logout'
   get 'users/exists'

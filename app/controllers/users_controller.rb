@@ -12,14 +12,29 @@ class UsersController < ApplicationController
       end
 
       return unless authenticate_login_credentials
-      @user = User.find_by_username(params[:username])
       return unless authenticate_2fa
 
       save_session(params)
 
-      render json: { success: true, encrypted_seed: @user.wallet[:encrypted_seed] }
+      render json: { success: true, encrypted_seed: @user.wallet.encrypted_seed }
     else
       @user = User.new
+    end
+  end
+
+  def login_without_proof
+    @user = User.find_by_username(params[:username])
+    if @user.nil?
+      return render json: { success: false, message: 'Username not found' }
+    end
+
+    if @user.password_hash.nil?
+      # Only allow users that have refused to do the proof.
+      # For everyone else it is safer to require the password as well
+      session[:isLoggedIn] = true
+      render json: { success: true, encrypted_seed: @user.wallet.encrypted_seed }
+    else
+      render json: { success: false, message: 'No access' }
     end
   end
 
@@ -174,7 +189,6 @@ class UsersController < ApplicationController
 
   def authenticate_session
     @user = User.find_by_username(session[:username]) if @user.nil?
-    s = session
 
     if !@user.nil? && @user.password_hash == session[:password_hash] && @user.username == session[:username] &&
         (!@user.has2fa || (@user.has2fa && @user.has_confirmed_2fa))

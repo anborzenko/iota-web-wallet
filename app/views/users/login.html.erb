@@ -1,11 +1,11 @@
 <script>
     $( document ).ready(function() {
-        $('#myModal').modal('show')
+        $('#loginModal').modal('show')
     });
 </script>
 
 <%= render 'page/index' %>
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+<div class="modal fade" tabindex="-1" role="dialog" id="loginModal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -22,5 +22,4 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-
-
+<%= render 'confirm_one_time_proof' %>
