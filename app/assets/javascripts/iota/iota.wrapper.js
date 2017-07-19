@@ -26,7 +26,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
         if (error) {
             return callback(error)
         }
-
+/*
         $.ajax({
             type: "GET",
             url: 'http://127.0.0.1:5000/attach_to_tangle',
@@ -39,6 +39,12 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
             dataType: "JSON",
             success: function(response) {
                 var attached = response.result.split(',');
+
+                console.log('Server');
+                for (var i = 0; i < attached.length; i++){
+                    console.log(attached[i]);
+                }
+
                 iota.api.storeAndBroadcast(attached, function(error, success) {
                     if (error) {
                         return callback(error);
@@ -57,7 +63,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
                 alert(err.message);
             }
         });
-/*
+*/
         attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback,
             function(error, attached) {
                 if (error) {
@@ -77,7 +83,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
 
                     return callback(null, finalTxs);
                 });
-        });*/
+        });
     })
 }
 
