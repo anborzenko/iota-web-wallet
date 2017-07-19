@@ -61,7 +61,7 @@ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
 Install, build, and run iota-web-wallet
 ```
 # Clone the repository and navigate to the bin directory
-git clone https://github.com/rajivshah3/iota-web-wallet.git
+git clone https://github.com/danilind/iota-web-wallet.git
 cd iota-web-wallet/bin
 
 # Add execute permissions to each file
