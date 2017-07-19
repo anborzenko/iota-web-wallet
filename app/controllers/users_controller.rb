@@ -110,21 +110,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def delete
-    return unless authenticate_user
-
-    deleted_user = DeletedUser.new(username: @user.username, password_hash: @user.password_hash, wallet: @user.wallet)
-    unless deleted_user.save
-      return render json: { success: false, message: deleted_user.errors.full_messages.to_sentence }
-    end
-
-    if @user.destroy
-      render json: { success: true }
-    else
-      render json: { success: false, message: @user.errors.full_messages.to_sentence }
-    end
-  end
-
   def logout
     reset_session
   end

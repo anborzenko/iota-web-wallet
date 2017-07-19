@@ -26,7 +26,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
         if (error) {
             return callback(error)
         }
-/*
+
         $.ajax({
             type: "GET",
             url: 'http://127.0.0.1:5000/attach_to_tangle',
@@ -57,7 +57,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
                 alert(err.message);
             }
         });
-*/
+/*
         attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback,
             function(error, attached) {
                 if (error) {
@@ -77,7 +77,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
 
                     return callback(null, finalTxs);
                 });
-        });
+        });*/
     })
 }
 
@@ -129,25 +129,24 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
 }
 
 function getAccountData (seed, options, liveCallback, onFinishedCallback) {
-    if (options.start < 0){
-        options.start = 0;
-    }
-    if (options.end < 0){
-        options.end = 0;
-    }
+    options.start = Math.max(options.start, 0);
+    options.end = Math.max(options.end, 0);
 
     var end = options.end || null;
     var security = options.security || 2;
     var bulkSize = 5;
 
     var loader = function (start, end) {
+        start = Math.max(start, 0);
+        end = Math.max(end, 0);
+
         var valuesToReturn = {
             'transfers': [],
             'inputs': []
         };
 
         var userAddresses = [];
-        for (var i = 0; i < end - start; i++) {
+        for (var i = 0; i <= end - start; i++) {
             userAddresses.push(generateAddress(seed, end - i));
         }
 
@@ -179,7 +178,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
                     liveCallback(null, valuesToReturn, progress >= 100 ? 99 : Math.floor(progress));
                 } catch (err) {
                     // Happens when a new address is generated or iotas are transferred during the update
-                    return onFinishedCallback()
+                    return onFinishedCallback();
                 }
                 if (end > options.start) {
                     loader(start - bulkSize, end - bulkSize);

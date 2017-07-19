@@ -23,17 +23,21 @@ function getSeedBalance(){
     return balance;
 }
 
-// Loads the seed balance without cached values
-function loadSeedBalance(callback){
-    var balance = 0;
+// Returns true of the seed has a balance != 0, false if it is 0
+function seedHaveFunds(callback){
+    var hasBalance = false;
 
-    loadWalletData(function(data){
-        for (var i = 0; i < data.inputs.length; i++) {
-            balance += data.inputs[i].balance;
+    loadWalletData(
+        function(error, data){
+            if (data.inputs.length !== 0) {
+                // If we have a input then the balance is positive
+                hasBalance = true;
+                throw('Has balance. Stop load');
+            }
+        }, function() {
+            callback(hasBalance);
         }
-    }, function() {
-        callback(balance);
-    });
+    );
 }
 
 function generateAddress(seed, index){

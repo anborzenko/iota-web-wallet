@@ -37,7 +37,7 @@ class WalletsController < ApplicationController
     addresses = params[:addresses]
     username = session[:username]
 
-    @wallet = Wallet.find_by_username(username)
+    @wallet = User.find_by_username(username).wallet
     if @wallet.user.password_hash != session[:password_hash]
       return render file: 'public/401.html', status: :unauthorized
     end
@@ -51,6 +51,6 @@ class WalletsController < ApplicationController
   end
 
   def receive_addresses
-    render json: { addresses: Wallet.find_by_username(params[:username]).receive_addresses }
+    render json: { addresses: User.find_by_username(params[:username]).wallet.receive_addresses }
   end
 end
