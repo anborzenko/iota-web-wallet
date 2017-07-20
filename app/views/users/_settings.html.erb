@@ -3,15 +3,15 @@
     <div class="form-group">
       <label class="control-label col-sm-3" for="settings_username">Username:</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="settings_username" value="<%= @user.username %>">
+        <input type="text" class="form-control" id="settings_username" value="<%= current_user.username %>">
       </div>
     </div>
 
     <div class="form-group">
       <label class="control-label col-sm-3" for="settings_2fa_toggle">Two factor authentication:</label>
       <div class="col-sm-9">
-        <input type="checkbox" style="margin-top: 1em;" id="settings_2fa_toggle" <%= 'checked' if @user.has2fa %>>
-        <%= if @user.has2fa then 'Select to disable' else 'Select to enable' end %>
+        <input type="checkbox" style="margin-top: 1em;" id="settings_2fa_toggle" <%= 'checked' if current_user.has2fa %>>
+        <%= if current_user.has2fa then 'Select to disable' else 'Select to enable' end %>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <% if @user.has2fa %>
+    <% if current_user.has2fa %>
         <div class="form-group">
           <label class="control-label col-sm-3" for="settings_otp_key">Two-factor key:</label>
           <div class="col-sm-9">

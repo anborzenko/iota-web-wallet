@@ -16,8 +16,8 @@ Execute the following commands to setup and run the wallet
 bundle
 rake db:migrate 
 rails s
-
 ```
+Please refer to https://github.com/codahale/bcrypt-ruby/issues/139 if you are experiencing problems with bcrypt on windows
 
 ## macOS Instructions (requires Homebrew)
 Install dependencies:

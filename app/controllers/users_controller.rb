@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
 
   def seed_login
-    save_session(params)
+    # Used for UI related stuff
+    session[:isLoggedIn] = true
   end
 
   def login
@@ -11,10 +12,10 @@ class UsersController < ApplicationController
         return render json: { success: false, message: 'Username not found' }
       end
 
-      return unless authenticate_login_credentials
-      return unless authenticate_2fa
+      return unless authenticate_login_credentials(@user)
+      return unless authenticate_2fa(@user)
 
-      save_session(params)
+      self.current_user = @user
 
       render json: { success: true, encrypted_seed: @user.wallet.encrypted_seed }
     else
@@ -31,7 +32,7 @@ class UsersController < ApplicationController
     params[:has2fa] = params[:has2fa] == 'true'
 
     if create_user(params)
-      save_session(params)
+      self.current_user = @user
 
       if @user.has2fa
         render json: { success: true,
@@ -45,12 +46,8 @@ class UsersController < ApplicationController
   end
 
   def confirm2fa
-    return unless validate_required_params(['otp_key', 'username', 'password'])
-
     @user = User.find_by_username(params[:username]) if @user.nil?
-    if @user.authenticate(params[:password])
-      return render json: {success: false, message: 'Invalid password'}
-    end
+    return unless authenticate_login_credentials(@user)
 
     if @user.authenticate_otp(params[:otp_key])
       @user.has_confirmed_2fa = true
@@ -59,7 +56,7 @@ class UsersController < ApplicationController
                      encrypted_seed: @user.wallet.encrypted_seed,
                      message: @user.errors.full_messages.to_sentence }
 
-      save_session(params) unless @user.errors.any?
+      self.current_user = @user unless @user.errors.any?
     else
       render json: { success: false, message: 'Invalid key. Try again' }
     end
@@ -75,17 +72,15 @@ class UsersController < ApplicationController
   end
 
   def update
-    return unless authenticate_user
+    return unless authenticate_user(current_user)
 
     attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
 
     attribs.each do |key, value|
-      @user.user_change_logs.create(old_value: @user[key], new_value: value, column_name: key)
-      session[key] = value if session.key?(key)
+      current_user.user_change_logs.create(old_value: current_user[key], new_value: value, column_name: key)
     end
 
-    if @user.update(attribs)
-      save_session(attribs)
+    if current_user.update(attribs)
       render json: { success: true }
     else
       render json: { success: false, message: @user.errors.full_messages.to_sentence }
@@ -93,37 +88,30 @@ class UsersController < ApplicationController
   end
 
   def logout
+    if logged_in?
+      # Will be false if the user is using a seed only.
+      auth_session.invalidate!
+    end
     reset_session
   end
 
   private
 
-  def authenticate_login_credentials
-    if @user.authenticate(params[:password])
+  def authenticate_login_credentials(user)
+    if user.authenticate(params[:password])
       true
     else
-      render json: { success: false, message: 'Wrong password' }
+      render json: { success: false, message: 'Invalid password' }
       false
     end
   end
 
-  def authenticate_user
-    authenticate_session && authenticate_2fa
-  end
-
-  def save_session(parameters)
-    session[:isLoggedIn] = true
-
-    [:username, :password].each do |key|
-      session[key] = parameters[key] if parameters.key?(key)
-    end
+  def authenticate_user(user)
+    authenticate_session && authenticate_2fa(user)
   end
 
   def authenticate_session
-    @user = User.find_by_username(session[:username]) if @user.nil?
-
-    if !@user.nil? && @user.authenticate(session[:password]) &&
-        @user.username == session[:username] && (!@user.has2fa || @user.has_confirmed_2fa)
+    if logged_in?
       true
     else
       render json: { success: false, message: 'Invalid session' }
@@ -143,22 +131,20 @@ class UsersController < ApplicationController
     end
   end
 
-  def get_qr
-    RQRCode::QRCode.new(@user.provisioning_uri(@user.username, issuer: 'IOTAWallet'),size: 10, level: :h)
+  def get_qr(user)
+    RQRCode::QRCode.new(user.provisioning_uri(user.username, issuer: 'IOTAWallet'),size: 10, level: :h)
   end
 
-  def authenticate_2fa
-    @user = User.find_by_username(session[:username]) if @user.nil?
+  def authenticate_2fa(user)
+    return true unless user.has2fa
 
-    return true unless @user.has2fa
-
-    unless @user.has_confirmed_2fa
+    unless user.has_confirmed_2fa
       render json: { success: false, require_2fa_confirmation: true,
-                            qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5) }
+                            qr: get_qr(user).as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5) }
       return false
     end
 
-    return true if params[:otp_key] && @user.authenticate_otp(params[:otp_key])
+    return true if params[:otp_key] && user.authenticate_otp(params[:otp_key])
 
     render json: { success: false, require_2fa: true }
     false

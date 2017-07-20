@@ -12,39 +12,34 @@
 <div class="container">
   <div id="user_show_notification"></div>
 
-  <% if @user.nil? %>
-      <h1>Access denied</h1>
-  <% else %>
-
-      <div class="row profile">
-        <div class="col-md-3">
-          <div class="profile-sidebar">
-            <div class="profile-usermenu">
-              <ul class="nav">
-                <li class="active">
-                  <a href="#account" role="tab" data-toggle="tab">
-                    <i class="glyphicon glyphicon-user"></i>
-                    Account </a>
-                </li>
-                <li>
-                  <a href="#settings" role="tab" data-toggle="tab">
-                    <i class="glyphicon glyphicon-cog"></i>
-                    Settings </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-9 tab-content">
-          <div id="account" class="tab-pane active">
-            <%= render 'account' %>
-          </div>
-          <div id="settings" class="tab-pane">
-            <%= render 'settings' %>
+    <div class="row profile">
+      <div class="col-md-3">
+        <div class="profile-sidebar">
+          <div class="profile-usermenu">
+            <ul class="nav">
+              <li class="active">
+                <a href="#account" role="tab" data-toggle="tab">
+                  <i class="glyphicon glyphicon-user"></i>
+                  Account </a>
+              </li>
+              <li>
+                <a href="#settings" role="tab" data-toggle="tab">
+                  <i class="glyphicon glyphicon-cog"></i>
+                  Settings </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-  <% end %>
+      <div class="col-md-9 tab-content">
+        <div id="account" class="tab-pane active">
+          <%= render 'account' %>
+        </div>
+        <div id="settings" class="tab-pane">
+          <%= render 'settings' %>
+        </div>
+      </div>
+    </div>
 </div>
 
 <style>
