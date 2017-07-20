@@ -22,6 +22,10 @@
   <body>
   <script>
     $(document).ready(function(){
+      document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-info'>" +
+          "The wallet is currently being reviewed on the IOTA testnet. " +
+          "Please move your funds to a different wallet in the meantime</div>";
+
       if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
           document.getElementById('mainNotifiactionArea').innerHTML = "<div class='alert alert-info'>This site does not currently work with safari. It will be supported very soon.</div>";
       }
