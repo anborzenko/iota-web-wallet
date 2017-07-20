@@ -12,10 +12,10 @@
     <p><%= image_tag 'iota_logo.png', size: 100 %></p>
     <h1>IOTA web wallet</h1>
     <p>A secure and user friendly IOTA wallet</p>
-    <% if !session.key?('isLoggedIn') %>
+    <% unless current_user %>
         <div id="sign_in">
-          <%= link_to "Sign in", users_login_path, :class=>"btn btn-primary", :type=>"button" %>
-          <%= link_to "New user", users_login_path, :class=>"btn btn-default", :type=>"button" %>
+          <%= link_to "Sign in", new_user_session_path, :class=>"btn btn-primary", :type=>"button" %>
+          <%= link_to "New user", new_user_registration_path, :class=>"btn btn-default", :type=>"button" %>
         </div>
     <% else %>
       <div id="open_wallet">

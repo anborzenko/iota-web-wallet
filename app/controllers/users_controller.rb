@@ -48,7 +48,7 @@ class UsersController < ApplicationController
     return unless validate_required_params(['otp_key', 'username', 'password_hash'])
 
     @user = User.find_by_username(params[:username]) if @user.nil?
-    if @user.password_hash != params[:password_hash]
+    if @user.password != params[:password_hash]
       return render json: {success: false, message: 'Invalid password'}
     end
 
@@ -98,14 +98,10 @@ class UsersController < ApplicationController
 
   private
 
-  def authenticate_user
-    authenticate_session && authenticate_2fa
-  end
-
   def create_user(user_params)
     @user = User.new(username: user_params[:username],
-                            has2fa: user_params[:has2fa],
-                            password_hash: user_params[:password_hash])
+                            has2fa: user_params[:has2fa])
+    @user.password = user_params[:password_hash]
 
     if @user.errors.none?
       @user.create_wallet(encrypted_seed: user_params[:encrypted_seed])
@@ -118,40 +114,6 @@ class UsersController < ApplicationController
 
   def get_qr
     RQRCode::QRCode.new(@user.provisioning_uri(@user.username, issuer: 'IOTAWallet'),size: 10, level: :h)
-  end
-
-  def authenticate_login_credentials
-    unless params.key?('password_hash')
-      render json: { success: false, message: 'Failed to provide password hash' }
-      return false
-    end
-
-    if !@user.password_hash.nil? && @user.password_hash == params[:password_hash]
-      true
-    else
-      render json: { success: false, message: 'Wrong password' }
-      false
-    end
-  end
-
-  def authenticate_session
-    @user = User.find_by_username(session[:username]) if @user.nil?
-
-    if !@user.nil? && @user.password_hash == session[:password_hash] && @user.username == session[:username] &&
-        (!@user.has2fa || (@user.has2fa && @user.has_confirmed_2fa))
-      true
-    else
-      redirect_to users_login_path
-      false
-    end
-  end
-
-  def save_session(parameters)
-    session[:isLoggedIn] = true
-
-    [:username, :password_hash].each do |key|
-      session[key] = parameters[key] if parameters.key?(key)
-    end
   end
 
   def authenticate_2fa

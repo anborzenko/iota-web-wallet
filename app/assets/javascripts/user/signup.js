@@ -30,7 +30,7 @@ function signup(btn) {
             'password_hash': hashPassword(password)
         },
 
-        dataType: "JSON",
+    dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();
             if (response.success){

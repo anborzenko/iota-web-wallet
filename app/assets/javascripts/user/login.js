@@ -64,12 +64,6 @@ function login (btn, require_first_time_proof) {
         validateUserInput(username, password);
 
         var data = {'username': username, 'password_hash': hashPassword(password)};
-        if (require_first_time_proof) {
-            // This is only required once. The password is never stored. See the
-            // wallet controller for an in depth description about this.
-            data['password'] = password;
-        }
-
         var l = Ladda.create(btn);
         l.start();
     }catch(err){
