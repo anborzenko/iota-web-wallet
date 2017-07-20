@@ -10,7 +10,12 @@ function getPasswordHash(){
 }
 
 function hashPassword(pass){
-    return sjcl.hash.sha256.hash(pass).join('');
+    var rounds = 10;
+
+    var hash = md5(getUsername() + 'iota-wallet.org');
+    var salt = '$2a$' + rounds + '$' + hash;
+
+    return dcodeIO.bcrypt.hashSync(pass, salt);
 }
 
 function getUsername(){

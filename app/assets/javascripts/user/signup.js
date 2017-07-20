@@ -27,7 +27,7 @@ function signup(btn) {
         data: {'username': username,
             'encrypted_seed': encryptedSeed,
             'has2fa': enable_2fa,
-            'password_hash': sjcl.hash.sha256.hash(password).join('')
+            'password_hash': hashPassword(password)
         },
 
         dataType: "JSON",

@@ -63,7 +63,7 @@ function login (btn, require_first_time_proof) {
         var password = $('#wallet_password').val();
         validateUserInput(username, password);
 
-        var data = {'username': username, 'password_hash': sjcl.hash.sha256.hash(password).join('')};
+        var data = {'username': username, 'password_hash': hashPassword(password)};
         if (require_first_time_proof) {
             // This is only required once. The password is never stored. See the
             // wallet controller for an in depth description about this.
@@ -116,7 +116,7 @@ function on2faLoginClick(btn){
     var password = $('#wallet_password').val();
     var otp_key = $('#otp_key_login').val();
 
-    var data = {'username': username, 'password_hash': sjcl.hash.sha256.hash(password).join(''), otp_key: otp_key};
+    var data = {'username': username, 'password_hash': hashPassword(password), otp_key: otp_key};
 
     var l = Ladda.create(btn);
     l.start();

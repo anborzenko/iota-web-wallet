@@ -27,17 +27,20 @@
   <script>
     $(document).ready(function(){
       if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
-          renderInfoAlert('mainNotifiactionArea', 'This site does not currently work with safari. It will be supported very soon.');
+          renderInfoAlert('mainNotifiactionArea',
+              'This site does not currently work with safari. It will be supported very soon.');
       }
       try{curl}catch(err){
-          renderInfoAlert('mainNotifiactionArea', 'Your browser do not support WebGL2. Please enable it to use all our services');
+          renderInfoAlert('mainNotifiactionArea',
+              'Your browser do not support WebGL2. Please enable it to use all our services');
       }
 
       try {
           loadGlobal();
           loadPolyfills();
       }catch (err){
-          renderDangerAlert('mainNotifiactionArea', 'Something went wrong. Please contact support if the problem persists. ' + err);
+          renderDangerAlert('mainNotifiactionArea',
+              'Something went wrong. Please contact support if the problem persists. ' + err);
       }
     });
 
