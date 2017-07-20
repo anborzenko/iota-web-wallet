@@ -36,12 +36,12 @@ function openSignupConfirmation(btn){
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();
-            if (!response.exists){
+            if (response.exists) {
+                renderDangerAlert('notifications', 'The username is already taken');
+            }else{
                 $('#loginTab').hide();
                 $('#signUpTab').show();
                 $('#confirm2fa').hide();
-            }else{
-                renderDangerAlert('notifications', 'The username is already taken');
             }
         },
         error: function(error){
@@ -161,37 +161,4 @@ function isValidPassword(password){
 
 function isValidUsername(username){
     return username.length !== 0;
-}
-
-function onDisapproveOneTimeProof(btn){
-    var username = $('#wallet_username').val();
-    var password = $('#wallet_password').val();
-
-    var l = Ladda.create(btn);
-    l.start();
-
-    $.ajax({
-        type: "GET",
-        url: 'login_without_proof',
-        data: { 'username': username },
-        dataType: "JSON",
-        success: function (response) {
-            Ladda.stopAll();
-            if (response.success){
-                try{
-                    var seed = decrypt(password, response.encrypted_seed);
-                    saveLogin(seed, password, username);
-                    redirect_to('/wallets/show');
-                }catch(err){
-                    renderDangerAlert('oneTimeProofNotifications', 'Invalid password');
-                }
-            }else{
-                renderDangerAlert('oneTimeProofNotifications', response.message);
-            }
-        },
-        error: function(error){
-            Ladda.stopAll();
-            renderAjaxError('oneTimeProofNotifications', error);
-        }
-    });
 }
