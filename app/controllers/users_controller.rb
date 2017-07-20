@@ -22,24 +22,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def login_without_proof
-    # See authenticate_login_credentials() for some background
-
-    @user = User.find_by_username(params[:username])
-    if @user.nil?
-      return render json: { success: false, message: 'Username not found' }
-    end
-
-    if @user.password_hash.nil?
-      # Only allow users that have refused to do the proof.
-      # For everyone else it is safer to require the password as well
-      session[:isLoggedIn] = true
-      render json: { success: true, encrypted_seed: @user.wallet.encrypted_seed }
-    else
-      render json: { success: false, message: 'No access' }
-    end
-  end
-
   def signup
     @user = User.find_by_username(params[:username])
     unless @user.nil?
@@ -139,34 +121,12 @@ class UsersController < ApplicationController
   end
 
   def authenticate_login_credentials
-=begin
-    This method contains a lot of legacy patching. The server did not store
-    the hashed password from the beginning, so if we don't have it, we need
-    to request the real password from the user and use it to decrypt the seed.
-    This has to be done server side to ensure that the identity is real. The
-    seed or the password is of course never stored during this process,
-    and is discarded immediately after the identity has been proved.
-    Users that do have provided the password hash never need to provide the
-    password again, it's only a one time job to ensure that we know the
-    identity of the user
-=end
-
     unless params.key?('password_hash')
       render json: { success: false, message: 'Failed to provide password hash' }
       return false
     end
 
-    if @user.password_hash.nil? && !params.key?('password')
-      render json: { success: false, require_first_time_proof: true }
-      return false
-    end
-
     if !@user.password_hash.nil? && @user.password_hash == params[:password_hash]
-      true
-    elsif @user.password_hash.nil? && is_valid_password?(params[:password], @user.wallet.encrypted_seed)
-      # Save the hashed password for later so we don't need to do this again
-      @user.password_hash = params[:password_hash]
-      @user.save
       true
     else
       render json: { success: false, message: 'Wrong password' }
@@ -209,30 +169,6 @@ class UsersController < ApplicationController
 
     render json: { success: false, require_2fa: true }
     false
-  end
-
-  def is_valid_password?(pass, enc_seed)
-=begin
-    First of all: I'm really sorry about this code. There is really no excuse
-    for doing this, but let me try to explain:
-    The idea is simple. Validate the user identity by testing if the password
-    is able to decrypt the seed or not. This really backfired when I tried
-    to decrypt a sjcl ciphertext in ruby. Apparently no ruby library known
-    to man are able to handle the ciphertexts from sjcl, even if they say they
-    are.
-
-    So I give you the ugliest hack imaginable: Inject the sjcl lib into ruby
-    and execute it using ExecJS. Enjoy
-=end
-
-    source = File.open(File.join(File.dirname(__FILE__), '../assets/javascripts/vendor/sjcl.js')).read
-    context = ExecJS.compile(source)
-
-    begin
-      !context.call("sjcl.decrypt", pass, enc_seed, bare: true).nil?
-    rescue
-      false
-    end
   end
 
   def validate_required_params(keys)

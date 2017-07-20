@@ -1,9 +1,7 @@
 Rails.application.routes.draw do
   get 'users/show'
   post 'users/update'
-  post 'users/delete'
   get 'users/login'
-  get 'users/login_without_proof'
   get 'users/seed_login'
   get 'users/logout'
   get 'users/exists'
@@ -22,7 +20,6 @@ Rails.application.routes.draw do
 
   get 'wallets/show'
   get 'wallets/seed_checker'
-  get 'wallets/custom_send'
   get 'wallets/details'
   get 'wallets/get_next_pending_transaction'
   get 'wallets/delete_pending_transaction'

@@ -12,6 +12,7 @@ function getPasswordHash(){
 function hashPassword(pass){
     var rounds = 10;
 
+    // MD5 it to get the appropriate salt length
     var hash = md5(getUsername() + 'iota-wallet.org');
     var salt = '$2a$' + rounds + '$' + hash;
 

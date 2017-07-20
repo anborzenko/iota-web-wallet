@@ -98,9 +98,6 @@ function login (btn, require_first_time_proof) {
                 $('#loginTab').hide();
                 $('#confirm2fa').show();
                 document.getElementById('qr').innerHTML = response.qr;
-            }else if (response.require_first_time_proof){
-                $('#loginModal').modal('hide');
-                $('#requireOneTimeProofModal').modal('show');
             }else{
                 renderDangerAlert('notifications', response.message);
             }
