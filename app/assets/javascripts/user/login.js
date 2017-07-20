@@ -57,13 +57,13 @@ function resetForm(){
     $('#login2faTab').hide();
 }
 
-function login (btn, require_first_time_proof) {
+function login (btn) {
     try {
         var username = $('#wallet_username').val();
         var password = $('#wallet_password').val();
         validateUserInput(username, password);
 
-        var data = {'username': username, 'password_hash': hashPassword(password)};
+        var data = {'username': username, 'password': hashPassword(password, username)};
         var l = Ladda.create(btn);
         l.start();
     }catch(err){
@@ -107,7 +107,7 @@ function on2faLoginClick(btn){
     var password = $('#wallet_password').val();
     var otp_key = $('#otp_key_login').val();
 
-    var data = {'username': username, 'password_hash': hashPassword(password), otp_key: otp_key};
+    var data = {'username': username, 'password': hashPassword(password, username), otp_key: otp_key};
 
     var l = Ladda.create(btn);
     l.start();

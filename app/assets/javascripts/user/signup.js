@@ -27,7 +27,7 @@ function signup(btn) {
         data: {'username': username,
             'encrypted_seed': encryptedSeed,
             'has2fa': enable_2fa,
-            'password_hash': hashPassword(password)
+            'password': hashPassword(password, username)
         },
 
     dataType: "JSON",
@@ -69,7 +69,7 @@ function onConfirm2faClick(btn){
     $.ajax({
         type: "GET",
         url: 'confirm2fa',
-        data: { 'otp_key': otp_key, 'username': username, 'password_hash': hashPassword(password) },
+        data: { 'otp_key': otp_key, 'username': username, 'password': hashPassword(password, username) },
         dataType: "JSON",
         success: function (response) {
             Ladda.stopAll();

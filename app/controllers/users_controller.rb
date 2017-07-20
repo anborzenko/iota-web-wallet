@@ -45,10 +45,10 @@ class UsersController < ApplicationController
   end
 
   def confirm2fa
-    return unless validate_required_params(['otp_key', 'username', 'password_hash'])
+    return unless validate_required_params(['otp_key', 'username', 'password'])
 
     @user = User.find_by_username(params[:username]) if @user.nil?
-    if @user.password != params[:password_hash]
+    if @user.authenticate(params[:password])
       return render json: {success: false, message: 'Invalid password'}
     end
 
@@ -98,10 +98,41 @@ class UsersController < ApplicationController
 
   private
 
+  def authenticate_login_credentials
+    if @user.authenticate(params[:password])
+      true
+    else
+      render json: { success: false, message: 'Wrong password' }
+      false
+    end
+  end
+
+  def authenticate_user
+    authenticate_session && authenticate_2fa
+  end
+
+  def save_session(parameters)
+    session[:isLoggedIn] = true
+
+    [:username, :password].each do |key|
+      session[key] = parameters[key] if parameters.key?(key)
+    end
+  end
+
+  def authenticate_session
+    @user = User.find_by_username(session[:username]) if @user.nil?
+
+    if !@user.nil? && @user.authenticate(session[:password]) &&
+        @user.username == session[:username] && (!@user.has2fa || @user.has_confirmed_2fa)
+      true
+    else
+      render json: { success: false, message: 'Invalid session' }
+      false
+    end
+  end
+
   def create_user(user_params)
-    @user = User.new(username: user_params[:username],
-                            has2fa: user_params[:has2fa])
-    @user.password = user_params[:password_hash]
+    @user = User.new(username: user_params[:username], has2fa: user_params[:has2fa], password: user_params[:password])
 
     if @user.errors.none?
       @user.create_wallet(encrypted_seed: user_params[:encrypted_seed])

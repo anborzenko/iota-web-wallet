@@ -33,7 +33,6 @@ class AdminController < ApplicationController
 
     everything[:num_wallets] = Wallet.count
     everything[:num_admins] = Admin.count
-    everything[:num_users_without_password_hash] = User.where(password_hash: nil).count
     everything[:num_wallets_created_last_day] = Wallet.where(created_at: 24.hours.ago..Time.now).count
     everything
   end

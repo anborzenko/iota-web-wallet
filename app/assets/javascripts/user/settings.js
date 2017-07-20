@@ -62,7 +62,7 @@ function renderFailureNotification(response){
 }
 
 function validateConfirmationPassword (pwd_confirmation){
-    if (!pwd_confirmation || hashPassword(pwd_confirmation) !== getPasswordHash()) {
+    if (!pwd_confirmation || hashPassword(pwd_confirmation, getUsername()) !== getPasswordHash()) {
         renderDangerAlert('user_show_notification', 'Invalid password');
         throw 'Invalid password';
     }

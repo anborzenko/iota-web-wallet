@@ -5,15 +5,15 @@
 function getPasswordHash(){
     var pass = sessionStorage.getItem('unnamed');
     if (pass){
-        return hashPassword(pass);
+        return hashPassword(pass, getUsername());
     }
 }
 
-function hashPassword(pass){
+function hashPassword(pass, username){
     var rounds = 10;
 
     // MD5 it to get the appropriate salt length
-    var hash = md5(getUsername() + 'iota-wallet.org');
+    var hash = md5(username + 'iota-wallet.org');
     var salt = '$2a$' + rounds + '$' + hash;
 
     return dcodeIO.bcrypt.hashSync(pass, salt);

@@ -38,7 +38,7 @@ class WalletsController < ApplicationController
     username = session[:username]
 
     @wallet = User.find_by_username(username).wallet
-    if @wallet.user.password_hash != session[:password_hash]
+    unless @wallet.user.authenticate(session[:password])
       return render file: 'public/401.html', status: :unauthorized
     end
 

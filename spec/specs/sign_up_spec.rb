@@ -45,7 +45,7 @@ feature 'Sign up', js: true do
   scenario 'should fail with existing username' do
     # The password hash translates from 12345678
     user = User.new(username: 'test',
-                    password_hash: '-27725094341839359516875540131564445814587500700104682284-916693289-1466390961')
+                    password: '-27725094341839359516875540131564445814587500700104682284-916693289-1466390961')
     user.wallet = Wallet.new(encrypted_seed: "{\"iv\":\"xiwlFacOQ7UYy7ysrmoiwg==\",\"v\":1,\"iter\":10000,\"ks\":128,\"ts\":64,\"mode\":\"ccm\",\"adata\":\"\",\"cipher\":\"aes\",\"salt\":\"z0M5cFaD1/U=\",\"ct\":\"Lhoo6HSd4dv0QsHlP4L5bpFQDIa0uuPdWyHNdlbgmwME3XO/+So8hdTpLm83CYfjJ50BrAUaTsidjb9tjosDl3q/3xHr5Ww6iLexVgl4pG/Y9Vis8lm1CJU=\"}")
     user.save!
 

@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
-  devise_for :users
   get 'users/show'
   post 'users/update'
   get 'users/login'
   get 'users/seed_login'
   get 'users/logout'
+  get 'users/exists'
   get 'users/confirm2fa'
   get 'users/signup'
 
