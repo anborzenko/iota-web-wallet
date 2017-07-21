@@ -1,9 +1,6 @@
 class WalletsController < ApplicationController
   before_action :authenticate_session, only: [:add_addresses, :show]
 
-  def show
-  end
-
   def get_next_pending_transaction
     max_allowed_replays = 10
 

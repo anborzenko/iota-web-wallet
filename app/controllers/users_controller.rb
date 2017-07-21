@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   end
 
   def confirm2fa
-    @user = User.find_by_username(params[:username]) if @user.nil?
+    @user = User.find_by_username(params[:username])
     return unless authenticate_login_credentials(@user)
 
     if @user.authenticate_otp(params[:otp_key])
@@ -66,9 +66,6 @@ class UsersController < ApplicationController
   def exists
     user = User.find_by_username(params[:username])
     render json: { exists: !user.nil? }
-  end
-
-  def show
   end
 
   def update
