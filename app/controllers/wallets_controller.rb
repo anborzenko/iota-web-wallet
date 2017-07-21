@@ -1,7 +1,9 @@
-require 'execjs'
-require 'json'
-
 class WalletsController < ApplicationController
+  before_action :authenticate_session, only: [:add_addresses, :show]
+
+  def show
+  end
+
   def get_next_pending_transaction
     max_allowed_replays = 10
 
@@ -35,22 +37,26 @@ class WalletsController < ApplicationController
 
   def add_addresses
     addresses = params[:addresses]
-    username = session[:username]
 
-    @wallet = User.find_by_username(username).wallet
-    unless @wallet.user.authenticate(session[:password])
-      return render file: 'public/401.html', status: :unauthorized
-    end
+    wallet = current_user.wallet
 
     # Make sure we only have n addresses
     n = 10
     addresses = addresses.split(',')[0..n].join(',')
 
-    @wallet.receive_addresses = addresses
-    @wallet.save
+    wallet.receive_addresses = addresses
+    wallet.save
   end
 
   def receive_addresses
     render json: { addresses: User.find_by_username(params[:username]).wallet.receive_addresses }
+  end
+
+  private
+
+  def authenticate_session
+    unless logged_in?
+      render json: { success: false, message: 'Invalid session' }
+    end
   end
 end

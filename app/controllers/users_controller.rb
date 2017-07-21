@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :authenticate_session, only: :show
 
   def seed_login
     # Used for UI related stuff
@@ -68,7 +69,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    authenticate_session
   end
 
   def update
@@ -111,11 +111,8 @@ class UsersController < ApplicationController
   end
 
   def authenticate_session
-    if logged_in?
-      true
-    else
+    unless logged_in?
       render json: { success: false, message: 'Invalid session' }
-      false
     end
   end
 
