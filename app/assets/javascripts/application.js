@@ -23,6 +23,7 @@
 //= stub "vendor/iota.min"
 //= stub "vendor/curl.min"
 //= stub "vendor/sjcl"
+//= stub "vendor/md5.min"
 
 
 function loadGlobal(){

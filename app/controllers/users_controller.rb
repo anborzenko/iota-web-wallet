@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate_session, only: :show
+  before_action :authenticate_session, only: [:show, :update]
 
   def seed_login
     # Used for UI related stuff
@@ -69,7 +69,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    return unless authenticate_user(current_user)
+    return unless authenticate_2fa(current_user)
 
     attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
 
@@ -80,7 +80,7 @@ class UsersController < ApplicationController
     if current_user.update(attribs)
       render json: { success: true }
     else
-      render json: { success: false, message: @user.errors.full_messages.to_sentence }
+      render json: { success: false, message: current_user.errors.full_messages.to_sentence }
     end
   end
 
@@ -101,10 +101,6 @@ class UsersController < ApplicationController
       render json: { success: false, message: 'Invalid password' }
       false
     end
-  end
-
-  def authenticate_user(user)
-    authenticate_session && authenticate_2fa(user)
   end
 
   def authenticate_session

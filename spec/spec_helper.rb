@@ -18,7 +18,7 @@ require 'capybara/rspec'
 require 'support/wait_for_ajax'
 
 RSpec.configure do |config|
-  Capybara.default_max_wait_time = 20
+  Capybara.default_max_wait_time = 30
 
   config.before(:suite) do
     DatabaseCleaner.clean_with :truncation
