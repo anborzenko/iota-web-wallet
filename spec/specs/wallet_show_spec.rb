@@ -15,11 +15,10 @@ feature 'Show wallet', js: true do
 
   scenario 'should see wallet' do
     expect(page).to have_content 'Your wallet'
-    expect(page).to have_content 'Balance: 0'
   end
 
   scenario 'should see transaction panel' do
-    expect(page).to have_content 'Transactions'
+    expect(page).to have_content 'History'
   end
 
   private
