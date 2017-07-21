@@ -36,7 +36,7 @@ class UsersController < ApplicationController
 
       if @user.has2fa
         render json: { success: true,
-                       qr: get_qr.as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5)}
+                       qr: get_qr(@user).as_svg(offset: 0, color: '000', shape_rendering: 'crispEdges', module_size: 5)}
       else
         render json: { success: true }
       end

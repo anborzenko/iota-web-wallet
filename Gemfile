@@ -44,6 +44,7 @@ group :development, :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'database_cleaner'
+  gem 'brakeman'
 end
 group :production do
   gem 'pg'
