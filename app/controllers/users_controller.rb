@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_session, only: [:show, :update]
+  before_action :authenticate_2fa, only: [:update]
 
   def seed_login
     # Used for UI related stuff
@@ -69,13 +70,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    return unless authenticate_2fa(current_user)
-
     attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
-
-    attribs.each do |key, value|
-      current_user.user_change_logs.create(old_value: current_user[key], new_value: value, column_name: key)
-    end
 
     if current_user.update(attribs)
       render json: { success: true }
