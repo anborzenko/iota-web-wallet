@@ -15,15 +15,15 @@ function validateAddress(address){
     return window.iota.valid.isAddress(address);
 }
 
-function loadWalletData(callback, onFinishedCallback){
+function loadWalletData(liveCallback, onFinishedCallback){
     generateNewAddress(function(e, res){
         if (e){
-            return callback(e);
+            return onFinishedCallback(e);
         }
 
         var lastKnownAddressIndex = getLastKnownAddressIndex();
         getAccountData(getSeed(), {start: lastKnownAddressIndex - window.defaultNumAddessesToLoad,
-            end: lastKnownAddressIndex}, callback, onFinishedCallback);
+            end: lastKnownAddressIndex}, liveCallback, onFinishedCallback);
     });
 }
 

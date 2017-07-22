@@ -137,8 +137,8 @@
         <label class="control-label string required" for="wallet_seed"><abbr title="required">*</abbr>Seed</label>
         <input class="form-control overflow-elipsis string required" required="required" aria-required="true" type="text" name="wallet[seed]" id="wallet_seed" />
       </div>
-      <button class="btn btn-primary btn" id="openWithSeed" onclick="openWithSeed()">
-        <span>Open</span>
+      <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="openWithSeed" onclick="openWithSeed(this)">
+        <span class="ladda-label">Open</span>
       </button>
       <button class="btn btn-default btn" id="generateSeed" onclick="onGenerateSeedClick()">
         <span>Generate a new seed</span>

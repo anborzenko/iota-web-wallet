@@ -2,7 +2,7 @@
  * Created by Daniel on 04.06.2017.
  */
 
-function openWithSeed() {
+function openWithSeed(btn) {
     var seed = $('#wallet_seed').val();
     if (seed.length !== 81){
         return renderDangerAlert('notifications',
@@ -12,12 +12,18 @@ function openWithSeed() {
             'Error: Invalid seed. It can only contain capital letters A to Z and the number 9');
     }
 
+    var l = Ladda.create(btn);
+    l.start();
+
     saveLogin(seed, generateRandomSeed());
     $.ajax({
         type: "GET",
         url: 'seed_login',
         success: function (response) {
             redirect_to('/wallets/show');
+        }, error(e){
+            renderAjaxError('notifications', error);
+            l.stop();
         }
     });
 }
@@ -35,7 +41,7 @@ function openSignupConfirmation(btn){
         data: {'username': username},
         dataType: "JSON",
         success: function (response) {
-            Ladda.stopAll();
+            l.stop();
             if (response.exists) {
                 renderDangerAlert('notifications', 'The username is already taken');
             }else{
@@ -45,6 +51,7 @@ function openSignupConfirmation(btn){
             }
         },
         error: function(error){
+            l.stop();
             renderAjaxError('notifications', error);
         }
     });

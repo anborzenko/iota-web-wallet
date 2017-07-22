@@ -66,7 +66,7 @@
             <li role="presentation" class=<%= 'active' if current_page?(page_help_path) %>><%= link_to "Help", page_help_url %></li>
             <li role="presentation" class=<%= 'active' if current_page?(page_about_path) %>><%= link_to "About", page_about_url %></li>
             <% if logged_in? || session.key?('isLoggedIn') %>
-              <li id="sign_out" role='presentation' ><a href='javascript:logOut();' ><span class='glyphicon glyphicon-log-out'></span></a></li>
+              <li id="sign_out" role='presentation' ><a data-turbolinks="false" href='javascript:logOut();' ><span class='glyphicon glyphicon-log-out'></span></a></li>
             <% end %>
           </ul>
         </nav>

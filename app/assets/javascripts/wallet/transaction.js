@@ -7,6 +7,8 @@ function populateTransactions(data){
         if (data.transfers.length === 0){
             return;
         }
+
+        // Apply a direction on each transfer
         var cTransfers = categorizeTransactions(data.transfers);
         var tflat = [];
         for (var i = 0; i < cTransfers.sent.length; i++){
@@ -21,14 +23,12 @@ function populateTransactions(data){
             tflat.push(cTransfers.received[i]);
         }
 
+        // Sort by most recent
         tflat.sort(function (x, y){
            return y[0].timestamp - x[0].timestamp;
         });
 
-        transactionsToHtmlTable((document).getElementById('transaction_list'), tflat);
-        $(".clickable-row").off().click(function() {
-            openTransactionWindow($(this).attr("bundle_id"));
-        });
+        populateTxTable((document).getElementById('transaction_list'), tflat);
 
         addPager();
     }catch (err){
@@ -36,7 +36,7 @@ function populateTransactions(data){
     }
 }
 
-function transactionsToHtmlTable(table, transactions){
+function populateTxTable(table, transactions){
     for (var i = 0; i < transactions.length; i++){
         var tail = transactions[i][0];
 
@@ -78,6 +78,10 @@ function transactionsToHtmlTable(table, transactions){
         value.innerHTML = convertIotaValuesToHtml(Math.abs(findTxAmount(transactions[i])));
         status.innerHTML = persistence ? 'Completed' : 'Pending';
     }
+
+    $(".clickable-row").off().click(function() {
+        openTransactionWindow($(this).attr("bundle_id"));
+    });
 
     checkForDoubleSpends(transactions);
 }
@@ -251,13 +255,6 @@ function onTxLoadingFinishedFirstTime(){
 
     $('#tx_loading_notification').hide();
     $('#loadAllTransactionsDiv').show();
-
-    // Pre fill the send form if everything needed is supplied in the url
-    if (window.location.href.indexOf('recipient') !== -1){
-        try {
-            openSendWindowAndPrefill();
-        }catch(err){}
-    }
 
     uploadUnspentAddresses(window.numAddressesToSaveOnServer)
 }

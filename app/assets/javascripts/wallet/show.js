@@ -10,7 +10,6 @@ function onGetWalletData(e, accountData, progress) {
 
     if (spinner.is(':visible')){
         spinner.spin(false);
-        $(document).find('#loading').hide();
         onFirstLoadFinished();
     }
 
@@ -29,11 +28,13 @@ function onGetWalletData(e, accountData, progress) {
 }
 
 function populateWallet(data){
+    var seedBalance = getSeedBalance();
+
     $("#seed_box").val(getSeed());
     document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(getSeedBalance());
-    document.getElementById("wallet_balance").innerHTML = '<b>' + getSeedBalance() + '</b> IOTAs';
+    document.getElementById("wallet_balance").innerHTML = '<b>' + seedBalance + '</b> IOTAs';
     $('#address_box').val(addChecksum(data.latestAddress));
-    document.getElementById('send_balance').innerHTML = 'Limit: ' + getSeedBalance() + ' IOTAs';
+    document.getElementById('send_balance').innerHTML = 'Limit: ' + seedBalance + ' IOTAs';
 }
 
 function addPendingToBalance(amount){
@@ -112,7 +113,7 @@ function resetAddressGenerationInput(){
 }
 
 function onFirstLoadFinished(){
-
+    $(document).find('#loading').hide();
 }
 
 // Responsible for taking all new wallet data, and updating the existing wallet data with the new information.

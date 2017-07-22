@@ -23,23 +23,6 @@ function getSeedBalance(){
     return balance;
 }
 
-// Returns true of the seed has a balance != 0, false if it is 0
-function seedHaveFunds(callback){
-    var hasBalance = false;
-
-    loadWalletData(
-        function(error, data){
-            if (data.inputs.length !== 0) {
-                // If we have a input then the balance is positive
-                hasBalance = true;
-                throw('Has balance. Stop load');
-            }
-        }, function() {
-            callback(hasBalance);
-        }
-    );
-}
-
 function generateAddress(seed, index){
     // First see if anything is cached.
     var cacheKey = 'rai' + getStringHash(getEncryptedSeed());
@@ -121,13 +104,34 @@ function convertToIotas(value, unit){
 
 function findTxAmount(bundle){
     var amount = 0;
-    var tx_ids = [];
 
-    for (var i = 0; i < bundle.length; i++) {
+    // Used to only add distinct txs (because of potential reattachments)
+    var tx_ids = [];
+    var i;
+
+    if (bundle[0].direction === 'out'){
+        // Because all addresses may not be loaded by this time and this is a out tx, we can only assume that the
+        // remainder address is loaded. Any negative txs are from this account.
+        for (i = 0; i < bundle.length; i++) {
+            if (bundle[i].value < 0 ||
+                (Math.abs(bundle[i].value) > 0 &&
+                isInArray(window.walletData.addresses, bundle[i].address, plainComparer))) {
+                    if (!isInArray(tx_ids, bundle[i].currentIndex, plainComparer)) {
+                        amount += bundle[i].value;
+                        tx_ids.push(bundle[i].currentIndex);
+                    }
+            }
+        }
+
+        return -amount;
+    }
+
+    // If the direction is in we can assume that the receive address is loaded.
+    for (i = 0; i < bundle.length; i++) {
         if (Math.abs(bundle[i].value) > 0 && isInArray(window.walletData.addresses, bundle[i].address, plainComparer)) {
-            if (!isInArray(tx_ids, bundle[i].bundle + bundle[i].currentIndex.toString(), plainComparer)){
+            if (!isInArray(tx_ids, bundle[i].currentIndex, plainComparer)){
                 amount += bundle[i].value;
-                tx_ids.push(bundle[i].bundle + bundle[i].currentIndex.toString());
+                tx_ids.push(bundle[i].currentIndex);
             }
         }
     }

@@ -19,23 +19,15 @@ function loadAddresses(load_all){
 
         var addresses = [];
         for (var i = last_address_index; i >= 0 && i >= end; i--){
-            addresses.push(generateAddress(seed, i));
+            addresses.push(addChecksum(generateAddress(seed, i)));
         }
         window.iota.api.getBalances(addresses, 100, function (e, res){
-            onGetBalancesCustomCallback(e, res, addresses, i+1);
+            populateAddressTable(e, res, addresses, i+1);
         });
     });
 }
 
-function onEncryptedDownloadBackupClick(){
-    download("{'seed': '" + getSeed() + "'}", 'iota.json');
-}
-
-function onDecryptedDownloadBackupClick(){
-    download(getEncryptedSeed(), 'iota.json');
-}
-
-function onGetBalancesCustomCallback(e, res, addresses, start_index){
+function populateAddressTable(e, res, addresses, start_index){
     $("#loading").spin(false);
     $(document).find('#loading').hide();
     $(document).find('#addresses_div').show();
@@ -59,16 +51,11 @@ function onGetBalancesCustomCallback(e, res, addresses, start_index){
         balance.innerHTML = b;
     }
 }
-/*
-function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
+function onEncryptedDownloadBackupClick(){
+    download("{'seed': '" + getSeed() + "'}", 'iota.json');
+}
 
-    element.click();
-
-    document.body.removeChild(element);
-}*/
+function onDecryptedDownloadBackupClick(){
+    download(getEncryptedSeed(), 'iota.json');
+}

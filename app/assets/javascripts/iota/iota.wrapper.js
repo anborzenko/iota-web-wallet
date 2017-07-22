@@ -7,17 +7,21 @@ function sendTransferWrapper(seed, transfer, options, callback, status_callback)
         status_callback(0, "Preparing transfers");
     }catch(err){}
 
+    if (!options['address']){
+        options['address'] = generateAddress(seed, getLastKnownAddressIndex());
+    }
+
     window.iota.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
 
         if (error) {
             return callback(error)
         }
 
-        sendTrytesWrapper(trytes, window.depth, window.minWeightMagnitude, callback, status_callback);
+        sendTrytesWrapper(trytes, callback, status_callback);
     })
 }
 
-function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_callback){
+function sendTrytesWrapper(trytes, callback, status_callback){
     try{
         status_callback(0, "Finding transactions to approve");
     }catch(err){}
@@ -33,7 +37,7 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
             data: {
                 'trunk': toApprove.trunkTransaction,
                 'branch': toApprove.branchTransaction,
-                'min_weight_magnitude': minWeightMagnitude,
+                'min_weight_magnitude': window.minWeightMagnitude,
                 'tx_trytes': trytes.join(',')
             },
             dataType: "JSON",
@@ -64,7 +68,8 @@ function sendTrytesWrapper(trytes, depth, minWeightMagnitude, callback, status_c
             }
         });
 */
-        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction, minWeightMagnitude, trytes, status_callback,
+        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction,
+            window.minWeightMagnitude, trytes, status_callback,
             function(error, attached) {
                 if (error) {
                     return callback(error)
