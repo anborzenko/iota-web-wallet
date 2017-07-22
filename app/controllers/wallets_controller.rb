@@ -34,6 +34,7 @@ class WalletsController < ApplicationController
 
   def add_addresses
     addresses = params[:addresses]
+    return unless addresses
 
     wallet = current_user.wallet
 

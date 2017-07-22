@@ -2,8 +2,11 @@ require 'rails_helper.rb'
 require 'capybara/rspec'
 
 feature 'Send from wallet', js: true do
+  before { skip("Awaiting a fix in the gem") }
+
   before :each do
     # This spec assumes the seed balance to be 1 i or more and less than 1 Mi
+    visit '/users/login'
     establish_session('seed')# TODO: Some seed with the correct balance
     wait_for_ajax
   end

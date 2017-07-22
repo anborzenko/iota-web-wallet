@@ -14,6 +14,7 @@ gem 'ladda-rails'
 gem 'font-awesome-sass'
 gem 'rqrcode'
 gem 'uglifier'
+# https://github.com/codahale/bcrypt-ruby/issues/139 for windows problems
 gem 'bcrypt'
 gem 'authie'
 gem 'active_model_otp'
@@ -33,6 +34,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 group :development, :test do
   gem 'sqlite3'
   gem 'rspec-rails'
+  gem 'rspec'
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'database_cleaner'
