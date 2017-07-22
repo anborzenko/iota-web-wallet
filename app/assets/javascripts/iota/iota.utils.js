@@ -123,10 +123,11 @@ function findTxAmount(bundle){
             }
         }
 
-        return -amount;
+        return amount;
     }
 
-    // If the direction is in we can assume that the receive address is loaded.
+    // If the direction is in we can assume that the receive address is loaded
+    // (given only one receive address for this seed)
     for (i = 0; i < bundle.length; i++) {
         if (Math.abs(bundle[i].value) > 0 && isInArray(window.walletData.addresses, bundle[i].address, plainComparer)) {
             if (!isInArray(tx_ids, bundle[i].currentIndex, plainComparer)){

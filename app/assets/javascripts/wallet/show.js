@@ -42,12 +42,12 @@ function addPendingToBalance(amount){
 
     var summary = document.getElementById("wallet_balance_pending_amount");
     var existingAmount = parseInt(summary.innerHTML);
+    summary.innerHTML = existingAmount + amount;
 
     if (existingAmount + amount === 0){
         dom.hide();
     }else{
         dom.show();
-        summary.innerHTML = existingAmount + amount;
     }
 }
 
@@ -138,6 +138,16 @@ function addWalletData(data) {
         }
     }
 
+    // Remove any inputs that are now used in a confirmed send
+    var walletIToRemove = [];
+    var confirmedOut = getConfirmedOut();
+    for (i = 0; i < window.walletData.inputs.length; i++) {
+        if (isInArray(confirmedOut, window.walletData.inputs[i], senderInputAddressComparer)){
+            walletIToRemove.push(i);
+        }
+    }
+    window.walletData.inputs = removeIndexes(window.walletData.inputs, walletIToRemove);
+
     // Update inputs
     var iToRemove = [];
     for (i = 0; i < data.inputs.length; i++) {
@@ -150,16 +160,6 @@ function addWalletData(data) {
         }
     }
 
-    // Remove any inputs that are now used in a confirmed send
-    var walletIToRemove = [];
-    var confirmedOut = getConfirmedOut();
-    for (i = 0; i < window.walletData.inputs.length; i++) {
-        if (isInArray(confirmedOut, window.walletData.inputs[i], senderInputAddressComparer)){
-            walletIToRemove.push(i);
-        }
-    }
-
-    window.walletData.inputs = removeIndexes(window.walletData.inputs, walletIToRemove);
     window.walletData.transfers = removeIndexes(window.walletData.transfers, walletTToRemove);
     data.transfers = removeIndexes(data.transfers, tToRemove);
     data.inputs = removeIndexes(data.inputs, iToRemove);

@@ -68,8 +68,8 @@ function populateTxTable(table, transactions){
         var status = row.cells[3];
 
         direction.innerHTML = tail.direction === 'in' ?
-            "<i class='fa fa-angle-right' style='color:#008000' aria-hidden='true' title='Incoming'></i>" :
-            "<i class='fa fa-angle-left' style='color:#FF0000' aria-hidden='true' title='Outgoing'></i>";
+            "<i class='fa fa-angle-right' style='color:#008000' title='Incoming'></i>" :
+            "<i class='fa fa-angle-left' style='color:#FF0000' title='Outgoing'></i>";
 
         var d = new Date(tail.timestamp*1000);
         var today = new Date().toDateString();
@@ -83,10 +83,11 @@ function populateTxTable(table, transactions){
         openTransactionWindow($(this).attr("bundle_id"));
     });
 
-    checkForDoubleSpends(transactions);
+    managePendingTxs(transactions);
 }
 
-function checkForDoubleSpends(transactions){
+// Checks for double spends, and updates the pending balance.
+function managePendingTxs(transactions){
     var sendAddresses = [];
     var txs = [];
     var tails = [];
@@ -116,8 +117,8 @@ function checkForDoubleSpends(transactions){
                 var status = row.cells[3];
                 status.innerHTML = 'Failed';
                 direction.innerHTML = tail.direction === 'in' ?
-                    "<i class='fa fa-angle-double-right' style='color:#008000' aria-hidden='true' title='Incoming double spend'></i>" :
-                    "<i class='fa fa-angle-double-left' style='color:#FF0000' aria-hidden='true' title='Outgoing double spend'></i>";
+                    "<i class='fa fa-angle-double-right' style='color:#008000' title='Incoming double spend'></i>" :
+                    "<i class='fa fa-angle-double-left' style='color:#FF0000' title='Outgoing double spend'></i>";
             }else{
                 // Not double spend. Add the tx to the balance if it has not been added before
                 var bIndex = getArrayIndex(transactions, tx, txInBundleComparer);
@@ -264,7 +265,7 @@ function onTxLoadingFinished(){
         window.loadingTimeout *= 1.05;   // Update less and lass frequently as the user becomes inactive
         window.walletDataLoader = setTimeout(function () {
             loadWalletData(function(e, res, progress){
-                onGetWalletData(e, res);//Don't want to show progress for live loads
+                onGetWalletData(e, res);//Don't want to show progress for live loads except the first ime
             }, onTxLoadingFinished);
         }, Math.floor(window.loadingTimeout));
 }
