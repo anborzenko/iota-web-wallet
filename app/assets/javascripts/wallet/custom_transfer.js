@@ -4,7 +4,7 @@
 
 function onCustomTransferClick(btn){
     var seed = getSeed();
-    var addressFrom = $("#address_from_input").val();
+    var addressFrom = removeChecksum($("#address_from_input").val());
     var index = parseInt($("#index_input").val());
     var secLev = parseInt($("#sec_level").val());
     var addressTo = $("#address_to_input").val();

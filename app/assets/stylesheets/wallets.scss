@@ -44,7 +44,9 @@ table
 }
 
 .modal-wide {
-  width: 90vh;
+  width: 60vh;
+  min-width: 40%;
+  max-width: 100%;
 }
 
 .glyphicon-refresh-animate {

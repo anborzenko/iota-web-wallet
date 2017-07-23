@@ -14,7 +14,7 @@ function loadAddresses(load_all){
     var seed = getSeed();
 
     generateNewAddress(function(e, last_address){
-        var last_address_index = getLastKnownAddressIndex();
+        var last_address_index = getLastSpentAddressIndex();
         var end = load_all ? 0 : last_address_index - window.defaultNumAddessesToLoad;
 
         var addresses = [];

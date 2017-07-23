@@ -34,14 +34,14 @@ function loadGlobal(){
     window.minPasswordLength = 8;
 
     window.iota = new window.IOTA({
-        'provider': 'https://d3j4w674fijhi2.cloudfront.net'
+        //'provider': 'https://d3j4w674fijhi2.cloudfront.net' // Mainnet
+        'provider': 'https://d3c5drf0y7sksv.cloudfront.net/'   // Testnet
     });
 
     window.depth = 4;
     window.minWeightMagnitude = 15;
     window.nodeInfo = null;
     window.walletData = {
-        'latestAddress'         : '',
         'addresses'             : [],
         'transfers'             : [],
         'inputs'                : [],

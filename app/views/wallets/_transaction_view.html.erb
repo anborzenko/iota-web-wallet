@@ -13,7 +13,9 @@
   <button id="replay" hidden="hidden" class="ladda-button btn btn-success btn" data-style="expand-right" onclick="replaySelectedTransfer(this)">
     <span class="ladda-label" data-disable-with="Re-attach">Re-attach</span>
   </button>
-  <div id="double_spend_info" class="alert-danger" hidden="hidden">This is a double spend and will never be completed. The transfer should be done over again</div>
+  <div id="double_spend_info" class="alert-danger" hidden="hidden">
+    This is a double spend and will never be completed. The transfer should be done over again
+  </div>
 </p>
 
 <h2>Message</h2>
@@ -22,12 +24,12 @@
 <br>
 
 <div class="panel panel-default">
-  <div class="panel-heading"><h2>Bundles</h2></div>
+  <div class="panel-heading"><h2>Transactions</h2></div>
   <div class="panel-body">
-    <table class="table fixed-table"  >
+    <table class="table fixed-table" >
       <thead>
       <tr>
-        <th>Value</th>
+        <th style="width: 10em">Value</th>
         <th>Address</th>
         <th>Hash</th>
       </tr>

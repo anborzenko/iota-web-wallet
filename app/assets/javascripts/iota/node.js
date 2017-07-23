@@ -45,3 +45,20 @@ function onGetNodeStatusFinished(e, res){
     // Periodically update the state
     setTimeout(function(){ onGetNodeStatusFinished(); }, 10000);
 }
+
+function loadNodeInfoCached(callback){
+    if (!window.nodeInfo){
+        loadNodeInfo(callback);
+    }else{
+        callback(null, window.nodeInfo);
+    }
+}
+
+function loadNodeInfo(callback){
+    window.iota.api.getNodeInfo(function (e, res) {
+        if (!e) {
+            window.nodeInfo = res;
+        }
+        callback(e, res);
+    });
+}

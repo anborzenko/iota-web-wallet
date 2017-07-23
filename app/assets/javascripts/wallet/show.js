@@ -23,17 +23,18 @@ function onGetWalletData(e, accountData, progress) {
     if (progress) {
         document.getElementById('transactionLoadStatus').innerHTML = (progress ? progress : 0) + '%';
     }
-    populateWallet(window.walletData);
+
+    populateWallet();
     populateTransactions(accountData);
 }
 
-function populateWallet(data){
+function populateWallet(){
     var seedBalance = getSeedBalance();
 
     $("#seed_box").val(getSeed());
     document.getElementById("wallet_balance_summary").innerHTML = convertIotaValuesToHtml(getSeedBalance());
     document.getElementById("wallet_balance").innerHTML = '<b>' + seedBalance + '</b> IOTAs';
-    $('#address_box').val(addChecksum(data.latestAddress));
+    $('#address_box').val(addChecksum(getNextUnspentAddress()));
     document.getElementById('send_balance').innerHTML = 'Limit: ' + seedBalance + ' IOTAs';
 }
 
@@ -77,7 +78,7 @@ function onGenerateAddressClick(){
     var status = document.getElementById('refresh_address');
     status.onclick = function() {};
     status.innerHTML = 'Attaching. Please wait..';
-    attachAddress(window.walletData.latestAddress, onAttachBeforeGenerateAddressCallback);
+    attachAddress(getNextUnspentAddress(), onAttachBeforeGenerateAddressCallback);
 }
 
 function onAttachBeforeGenerateAddressCallback(e, res){
@@ -87,7 +88,7 @@ function onAttachBeforeGenerateAddressCallback(e, res){
     }
 
     document.getElementById('refresh_address').innerHTML = 'Generating. Please wait..';
-    setLastKnownAddressIndex(getLastKnownAddressIndex() + 1);
+    setLastSpentAddressIndex(getLastSpentAddressIndex() + 1);
     generateNewAddress(onGenerateAddressCallback);
 }
 
@@ -100,7 +101,6 @@ function onGenerateAddressCallback(e, res){
 
     res = addChecksum(res);
     $('#address_box').val(res);
-    window.walletData.latestAddress = res;
     renderSuccessAlert('wallet_show_notifications', 'A new address was generated');
 }
 
@@ -129,10 +129,11 @@ function addWalletData(data) {
         } else {
             tToRemove.push(i);
         }
+
         // Remove transactions that have changed persistence
-        if (isInArray(window.walletData.transfers, data.transfers[i], transferChangedPersistenceComparer)) {
-            walletTToRemove.push(getArrayIndex(window.walletData.transfers, data.transfers[i],
-                transferChangedPersistenceComparer));
+        var index = getArrayIndex(window.walletData.transfers, data.transfers[i], transferChangedPersistenceComparer);
+        if (index !== -1) {
+            walletTToRemove.push(index);
             // Update the pending account balance
             addPendingToBalance(-findTxAmount(data.transfers[i]));
         }
@@ -149,7 +150,6 @@ function addWalletData(data) {
     window.walletData.inputs = removeIndexes(window.walletData.inputs, walletIToRemove);
 
     // Update inputs
-    var iToRemove = [];
     for (i = 0; i < data.inputs.length; i++) {
         if (isInArray(window.walletData.inputs, data.inputs[i], addressComparer)){
             // Update existing input
@@ -162,7 +162,6 @@ function addWalletData(data) {
 
     window.walletData.transfers = removeIndexes(window.walletData.transfers, walletTToRemove);
     data.transfers = removeIndexes(data.transfers, tToRemove);
-    data.inputs = removeIndexes(data.inputs, iToRemove);
 
     return data;
 }

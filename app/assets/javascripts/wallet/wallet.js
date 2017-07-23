@@ -7,6 +7,10 @@ function addChecksum(data){
     return window.iota.utils.addChecksum(data);
 }
 
+function removeChecksum(data){
+    return window.iota.utils.noChecksum(data);
+}
+
 function validateSeed(seed){
     return window.iota.valid.isTrytes(seed);
 }
@@ -21,7 +25,7 @@ function loadWalletData(liveCallback, onFinishedCallback){
             return onFinishedCallback(e);
         }
 
-        var lastKnownAddressIndex = getLastKnownAddressIndex();
+        var lastKnownAddressIndex = getLastSpentAddressIndex();
         getAccountData(getSeed(), {start: lastKnownAddressIndex - window.defaultNumAddessesToLoad,
             end: lastKnownAddressIndex}, liveCallback, onFinishedCallback);
     });
@@ -136,27 +140,26 @@ function decrypt(key, data){
 
 function generateNewAddress(callback){
     var seed = getSeed();
-    var lastKnownAddressIndex = getLastKnownAddressIndex();
+    var lastSpentAddressIndex = getLastSpentAddressIndex();
 
-    if (!lastKnownAddressIndex){
-        getMostRecentAddressIndex(seed, function (e, end) {
+    if (!lastSpentAddressIndex){
+        findLastSpentAddressIndex(seed, function (e, end) {
             if (e){
                 return callback(e);
             }
-            lastKnownAddressIndex = end+1;
-            setLastKnownAddressIndex(lastKnownAddressIndex);
-            window.walletData.latestAddress = generateAddress(seed, lastKnownAddressIndex);
-            callback(null, window.walletData.latestAddress);
+
+            setLastSpentAddressIndex(end);
+            callback(null, getNextUnspentAddress());
         });
     }else{
         // Make sure it really is the most recent
-        window.iota.api.getNewAddress(seed, {index: lastKnownAddressIndex, returnAll: true}, function (e, res) {
+        window.iota.api.getNewAddress(seed, {index: lastSpentAddressIndex+1, returnAll: true}, function (e, res) {
             if (e){
                 return callback(e);
             }
-            setLastKnownAddressIndex(lastKnownAddressIndex + res.length - 1);
-            window.walletData.latestAddress = res[res.length-1];
-            callback(null, window.walletData.latestAddress);
+
+            setLastSpentAddressIndex(lastSpentAddressIndex + res.length - 1);
+            callback(null, getNextUnspentAddress());
         });
     }
 }
@@ -192,23 +195,6 @@ function isDoubleSpend(transfer, callback){
         var b = sumList(balances.balances);
         var outgoingValues = Math.abs(values);
         return callback(null, b < outgoingValues);
-    });
-}
-
-function loadNodeInfoCached(callback){
-    if (!window.nodeInfo){
-        loadNodeInfo(callback);
-    }else{
-        callback(null, window.nodeInfo);
-    }
-}
-
-function loadNodeInfo(callback){
-    window.iota.api.getNodeInfo(function (e, res) {
-        if (!e) {
-            window.nodeInfo = res;
-        }
-        callback(e, res);
     });
 }
 
@@ -276,19 +262,23 @@ function notifyServerAboutNonReplayableTransaction(tail_hash){
     });
 }
 
-function getLastKnownAddressIndex(){
+function getLastSpentAddressIndex(){
     var seed = getEncryptedSeed();
     if (seed !== null){
         return parseInt(localStorage.getItem('lkai' + getStringHash(seed)));
     }
 }
 
-function setLastKnownAddressIndex(value){
+function setLastSpentAddressIndex(value){
     // Use the encrypted seed as key
     var seed = getEncryptedSeed();
     if (seed !== null){
         localStorage.setItem('lkai' + getStringHash(seed), value);
     }
+}
+
+function getNextUnspentAddress(){
+    return generateAddress(getSeed(), getLastSpentAddressIndex() + 1);
 }
 
 // Uploads a list of num unspent addresses to the server. This is executed async
@@ -302,7 +292,7 @@ function uploadUnspentAddresses(num){
     }
 
     setTimeout(function(){
-        var lastKnownAddressIndex = getLastKnownAddressIndex();
+        var lastKnownAddressIndex = getLastSpentAddressIndex();
         var seed = getSeed();
         var addresses = [];
         for (var i = lastKnownAddressIndex; i < lastKnownAddressIndex + num; i++) {

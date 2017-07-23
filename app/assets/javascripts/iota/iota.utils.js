@@ -73,7 +73,7 @@ function categorizeTransactions(transactions){
     }
 
     var seed = getSeed();
-    var minLoaded = getLastKnownAddressIndex();
+    var minLoaded = getLastSpentAddressIndex();
     for (i = minLoaded - 1; i >= 0 && unknownTx.length > 0; i--){
         generateAddress(seed, i);
         var c = window.iota.utils.categorizeTransfers(unknownTx, window.walletData.addresses);

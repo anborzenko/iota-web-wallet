@@ -193,7 +193,7 @@ function replaySelectedTransfer(btn){
     try {
         replayBundleWrapper(window.openTail.hash, onReplaySelectedTransferCallback);
     }catch(e){
-        alert(e);
+        renderDangerAlert('transaction-notifications', e);
     }
 }
 
@@ -233,7 +233,7 @@ function findTableRowIndex(tail, table){
 function loadAllTransactions(){
     window.isCurrentlyLoadingAll = true;
     showTxLoadUI();
-    loadWalletDataRange(0, getLastKnownAddressIndex() - window.defaultNumAddessesToLoad, onGetWalletData, function(e, res){
+    loadWalletDataRange(0, getLastSpentAddressIndex() - window.defaultNumAddessesToLoad, onGetWalletData, function(e, res){
         if (e){
             renderDangerAlert('wallet_show_notifications',
                 "Failed to load all. " + (e.hasOwnProperty('message') ? e.message : e));
@@ -252,22 +252,48 @@ function showTxLoadUI(){
 
 // Called the first time the txs has finished loading
 function onTxLoadingFinishedFirstTime(){
-    onTxLoadingFinished();
-
     $('#tx_loading_notification').hide();
     $('#loadAllTransactionsDiv').show();
 
-    uploadUnspentAddresses(window.numAddressesToSaveOnServer)
+    uploadUnspentAddresses(window.numAddressesToSaveOnServer);
+
+    // Only need to update enough addresses to include all inputs. Assuming all incoming
+    // txs are sent to a more recent address (as they should)
+    var minInputIndex;
+    for (var i = 0; i < window.walletData.inputs.length; i++){
+        if (!minInputIndex || window.walletData.inputs[i].keyIndex < minInputIndex){
+            minInputIndex = window.walletData.inputs[i].keyIndex;
+        }
+    }
+
+    var lastKnownIndex = getLastSpentAddressIndex();
+    if (!minInputIndex){
+        // No inputs. At least load the last one.
+        minInputIndex = lastKnownIndex;
+    }
+
+    // Only the first load benefits from dividing the loading into chunks.
+    // From now on everything will be loaded in one go
+    window.defaultNumAddessesToLoad = lastKnownIndex - minInputIndex;
+
+    onTxLoadingFinished();
 }
 
 // Called every time the txs has finished loading
 function onTxLoadingFinished(){
-        window.loadingTimeout *= 1.05;   // Update less and lass frequently as the user becomes inactive
-        window.walletDataLoader = setTimeout(function () {
-            loadWalletData(function(e, res, progress){
-                onGetWalletData(e, res);//Don't want to show progress for live loads except the first ime
-            }, onTxLoadingFinished);
-        }, Math.floor(window.loadingTimeout));
+    window.loadingTimeout *= 1.05;   // Update less and lass frequently as the user becomes inactive
+
+    // Wait for a new load to update the current info. Only load the necessary range.
+    window.walletDataLoader = setTimeout(function () {
+        var lastKnownIndex = getLastSpentAddressIndex();
+
+        loadWalletDataRange(lastKnownIndex - window.defaultNumAddessesToLoad, lastKnownIndex + 1,
+            function(e, res, progress){
+                // Use a custom callback as we don't want to show progress for live loads except the first time
+                onGetWalletData(e, res);
+            },
+            onTxLoadingFinished);
+    }, Math.floor(window.loadingTimeout));
 }
 
 function addPager(){

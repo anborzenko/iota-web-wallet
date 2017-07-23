@@ -2,15 +2,11 @@
  * Created by Daniel on 13.06.2017.
  */
 function transferComparer(a, b){
-    a = a[0];
-    b = b[0];
-    return a.timestamp === b.timestamp && a.bundle === b.bundle && a.persistence === b.persistence;
+    return a[0].bundle === b[0].bundle && getPersistence(a) === getPersistence(b);
 }
 
 function transferChangedPersistenceComparer(a, b){
-    a = a[0];
-    b = b[0];
-    return a.timestamp === b.timestamp && a.bundle === b.bundle && a.persistence !== b.persistence;
+    return a[0].bundle === b[0].bundle && getPersistence(a) !== getPersistence(b);
 }
 
 function inputComparer(a, b){

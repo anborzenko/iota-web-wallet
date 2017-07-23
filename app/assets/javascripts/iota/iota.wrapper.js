@@ -8,7 +8,7 @@ function sendTransferWrapper(seed, transfer, options, callback, status_callback)
     }catch(err){}
 
     if (!options['address']){
-        options['address'] = generateAddress(seed, getLastKnownAddressIndex());
+        options['address'] = getNextUnspentAddress();
     }
 
     window.iota.api.prepareTransfers(seed, transfer, options, function(error, trytes) {
@@ -203,7 +203,7 @@ function getAccountData (seed, options, liveCallback, onFinishedCallback) {
     loader(end - bulkSize, end);
 }
 
-function getMostRecentAddressIndex(seed, callback){
+function findLastSpentAddressIndex(seed, callback){
     var getLastAddressIndex = function(min_nohit, index){
         index = Math.floor(index);
         var address = generateAddress(seed, index);
@@ -211,7 +211,7 @@ function getMostRecentAddressIndex(seed, callback){
             if (err) return callback(err);
             try {
                 if (transactions.length !== 0 && min_nohit === index + 1 || index < 0) {
-                    return callback(null, index < 0 ? 0 : index);
+                    return callback(null, index < 0 ? -1 : index);
                 }
 
                 if (transactions.length > 0) {
@@ -238,7 +238,6 @@ function getMostRecentAddressIndex(seed, callback){
     var start = 100;
     getLastAddressIndex(start, start);
 }
-
 
 function bundlesFromAddresses (addresses, callback) {
     // call wrapper function to get txs associated with addresses
@@ -283,7 +282,7 @@ function bundlesFromAddresses (addresses, callback) {
     })
 }
 
-function replayBundleWrapper(tailHash, callback){
+function replayBundleWrapper(tailHash, callback, status_callback){
     if (!iota.valid.isHash(tailHash)) {
 
         return callback('Invalid tail');
@@ -299,6 +298,6 @@ function replayBundleWrapper(tailHash, callback){
             bundleTrytes.push(iota.utils.transactionTrytes(bundleTx));
         });
 
-        return sendTrytesWrapper(bundleTrytes.reverse(), window.depth, window.minWeightMagnitude, callback);
+        return sendTrytesWrapper(bundleTrytes.reverse(), callback, status_callback);
     })
 }
