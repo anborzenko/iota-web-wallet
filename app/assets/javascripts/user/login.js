@@ -21,7 +21,8 @@ function openWithSeed(btn) {
         url: 'seed_login',
         success: function (response) {
             redirect_to('/wallets/show');
-        }, error(e){
+        },
+        error: function (e){
             renderAjaxError('notifications', error);
             l.stop();
         }
