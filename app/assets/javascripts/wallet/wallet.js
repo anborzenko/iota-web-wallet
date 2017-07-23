@@ -158,7 +158,6 @@ function generateNewAddress(callback){
                 return callback(e);
             }
 
-            alert(res.length);
             setLastSpentAddressIndex(lastSpentAddressIndex + res.length - 1);
             callback(null, getNextUnspentAddress());
         });

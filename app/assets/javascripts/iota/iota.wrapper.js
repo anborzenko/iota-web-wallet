@@ -210,8 +210,8 @@ function findLastSpentAddressIndex(seed, callback){
         window.iota.api.findTransactions({addresses: [address]}, function (err, transactions) {
             if (err) return callback(err);
             try {
-                if (transactions.length !== 0 && min_nohit === index + 1 || index < 0) {
-                    return callback(null, index < 0 ? -1 : index);
+                if (transactions.length !== 0 && min_nohit === index + 1 || index === 0) {
+                    return callback(null, index === 0 && transactions.length === 0 ? -1 : index);
                 }
 
                 if (transactions.length > 0) {
