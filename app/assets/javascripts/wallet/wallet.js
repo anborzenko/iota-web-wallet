@@ -153,11 +153,12 @@ function generateNewAddress(callback){
         });
     }else{
         // Make sure it really is the most recent
-        window.iota.api.getNewAddress(seed, {index: lastSpentAddressIndex+1, returnAll: true}, function (e, res) {
+        window.iota.api.getNewAddress(seed, {index: lastSpentAddressIndex, returnAll: true}, function (e, res) {
             if (e){
                 return callback(e);
             }
 
+            alert(res.length);
             setLastSpentAddressIndex(lastSpentAddressIndex + res.length - 1);
             callback(null, getNextUnspentAddress());
         });

@@ -223,10 +223,8 @@ function findLastSpentAddressIndex(seed, callback){
                 } else {
                     if (index === min_nohit){
                         return getLastAddressIndex(min_nohit, index / 2);
-                    }else if (index <= min_nohit) {
-                        return getLastAddressIndex(index, index - (min_nohit - index) / 2);
                     } else {
-                        return getLastAddressIndex(min_nohit, (index + min_nohit) / 2);
+                        return getLastAddressIndex(index, index / 2);
                     }
                 }
             }catch(err){
