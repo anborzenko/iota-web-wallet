@@ -237,20 +237,19 @@ function findLastSpentAddressIndex(seed, callback){
     getLastAddressIndex(start, start);
 }
 
+
 function bundlesFromAddresses (addresses, callback) {
-    // call wrapper function to get txs associated with addresses
     window.iota.api.findTransactionObjects({'addresses': addresses}, function(error, transactionObjects) {
 
         if (error) return callback(error);
 
-        // set of tail transactions
+        // set of bundles
         var bundleHashes = new Set();
 
         transactionObjects.forEach(function(thisTransaction) {
             bundleHashes.add(thisTransaction.bundle)
         });
 
-        // Get tail transactions for each nonTail via the bundle hash
         window.iota.api.findTransactionObjects({'bundles': Array.from(bundleHashes)}, function(error, bundleObjects) {
             if (error) return callback(error);
 

@@ -53,7 +53,7 @@ function populateAddressTable(e, res, addresses, start_index){
 }
 
 function onEncryptedDownloadBackupClick(){
-    download("{'seed': '" + getSeed() + "'}", 'iota.json');
+    download(JSON.stringify({ 'seed': getSeed() }), 'iota.json');
 }
 
 function onDecryptedDownloadBackupClick(){
