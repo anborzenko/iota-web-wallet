@@ -13,6 +13,7 @@ feature 'Sign up', js: true do
     click_button 'Sign up'
     wait_for_ajax
 
+    # It is visible at this point, but capybara thinks it's hidden
     page.execute_script("$('#signUpTab').removeAttr('hidden');")
     fill_in 'Please confirm your password', with: '12345678'
 
@@ -55,7 +56,13 @@ feature 'Sign up', js: true do
     click_button 'Sign up'
     wait_for_ajax
 
-    expect(page).to have_content 'The username is already taken'
+    page.execute_script("$('#signUpTab').removeAttr('hidden');")
+    fill_in 'Please confirm your password', with: '12345678'
+
+    click_button 'Sign up'
+    wait_for_ajax
+
+    expect(page).to have_content 'The username is taken'
   end
 
   scenario 'should fail with wrong password confirmation' do
@@ -65,7 +72,6 @@ feature 'Sign up', js: true do
     click_button 'Sign up'
     wait_for_ajax
 
-    # It is visible at this point, but capybara thinks it's hidden
     page.execute_script("$('#signUpTab').removeAttr('hidden');")
     fill_in 'Please confirm your password', with: '123456789'
 

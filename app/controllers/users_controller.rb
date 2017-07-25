@@ -27,7 +27,7 @@ class UsersController < ApplicationController
   def signup
     @user = User.find_by_username(params[:username])
     unless @user.nil?
-      return render json: { success: false, message: 'Username is taken' }
+      return render json: { success: false, message: 'The username is taken' }
     end
 
     params[:has2fa] = params[:has2fa] == 'true'
