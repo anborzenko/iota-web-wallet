@@ -1,6 +1,17 @@
 /**
  * Created by dl6764 on 19.07.2017.
  */
+
+function openSignupConfirmation(btn){
+    var username = $('#wallet_username').val();
+    var password = $('#wallet_password').val();
+    validateUserInput(username, password);
+
+    $('#loginTab').hide();
+    $('#signUpTab').show();
+    $('#confirm2fa').hide();
+}
+
 function signup(btn) {
     var username = $('#wallet_username').val();
     var password = $('#wallet_password').val();

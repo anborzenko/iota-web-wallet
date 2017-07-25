@@ -4,7 +4,6 @@ Rails.application.routes.draw do
   get 'users/login'
   get 'users/seed_login'
   get 'users/logout'
-  get 'users/exists'
   get 'users/confirm2fa'
   get 'users/signup'
 

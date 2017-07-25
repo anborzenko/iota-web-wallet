@@ -10,7 +10,7 @@ class UsersController < ApplicationController
     if params.key?(:username)
       @user = User.find_by_username(params[:username])
       if @user.nil?
-        return render json: { success: false, message: 'Username not found' }
+        return render json: { success: false, message: 'Invalid username or password' }
       end
 
       return unless authenticate_login_credentials(@user)
@@ -63,11 +63,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def exists
-    user = User.find_by_username(params[:username])
-    render json: { exists: !user.nil? }
-  end
-
   def update
     return unless authenticate_2fa(current_user)
     attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
@@ -93,7 +88,7 @@ class UsersController < ApplicationController
     if user.authenticate(params[:password])
       true
     else
-      render json: { success: false, message: 'Invalid password' }
+      render json: { success: false, message: 'Invalid username or password' }
       false
     end
   end
