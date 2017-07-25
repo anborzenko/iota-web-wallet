@@ -33,7 +33,7 @@ function signup(btn) {
     }
 
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: 'signup',
         data: {'username': username,
             'encrypted_seed': encryptedSeed,
@@ -78,7 +78,7 @@ function onConfirm2faClick(btn){
     l.start();
 
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: 'confirm2fa',
         data: { 'otp_key': otp_key, 'username': username, 'password': hashPassword(password, username) },
         dataType: "JSON",

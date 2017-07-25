@@ -54,6 +54,7 @@ Rails.application.configure do
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.filter_parameters << :password
+  config.filter_parameters << :pk
 end
 
 Authie.config.session_inactivity_timeout = 20.minutes

@@ -201,7 +201,7 @@ function isDoubleSpend(transfer, callback){
 function savePendingTransaction(tail_hash){
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: 'add_pending_transaction',
             data: {tail_hash: tail_hash},
             dataType: "JSON",
@@ -250,7 +250,7 @@ function selflessReplay(tail_hash){
 
 function notifyServerAboutNonReplayableTransaction(tail_hash){
     $.ajax({
-        type: "GET",
+        type: "DELETE",
         url: 'delete_pending_transaction',
         data: {tail_hash: tail_hash},
         dataType: "JSON",
@@ -302,7 +302,7 @@ function uploadUnspentAddresses(num){
         }
 
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: 'add_addresses',
             data: { 'addresses': addresses },
             dataType: "JSON",

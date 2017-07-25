@@ -85,6 +85,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.filter_parameters << :password
+  config.filter_parameters << :pk
 end
 
 Authie.config.session_inactivity_timeout = 20.minutes
