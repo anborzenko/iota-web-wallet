@@ -1,5 +1,8 @@
 class UsersController < ApplicationController
   before_action :authenticate_session, only: [:show, :update]
+  before_action :start_countdown
+
+  after_action :delay_execution
 
   def seed_login
     # Used for UI related stuff
@@ -139,5 +142,18 @@ class UsersController < ApplicationController
     end
 
     true
+  end
+
+  def start_countdown
+    @start_time = Time.now
+  end
+
+  # Delays the execution of every action to take no less than 100 ms
+  def delay_execution
+    min_execution_time_secs = 0.1
+
+    delay_time = [min_execution_time_secs - (Time.now - @start_time) * 1000.0, 0].max
+
+    sleep delay_time
   end
 end
