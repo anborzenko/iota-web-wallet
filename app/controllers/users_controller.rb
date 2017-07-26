@@ -68,7 +68,7 @@ class UsersController < ApplicationController
 
   def update
     return unless authenticate_2fa(current_user)
-    attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
+    attribs = params.permit(:has2fa, :has_confirmed_2fa)
 
     if current_user.update(attribs)
       render json: { success: true }

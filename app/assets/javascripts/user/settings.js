@@ -6,14 +6,7 @@ function saveSettings(){
     var pwd_confirmation = $('#settings_pwd').val();
     validateConfirmationPassword(pwd_confirmation);
 
-    var new_username = $('#settings_username').val();
-
     var data = {};
-
-    if (new_username.length !== 0 && new_username !== getUsername()) {
-        // Is trying to change username
-        data['username'] = new_username;
-    }
 
     var tfaInput = document.getElementById('settings_2fa_toggle');
     if (tfaInput.defaultChecked !== tfaInput.checked){
