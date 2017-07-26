@@ -29,35 +29,6 @@ function openWithSeed(btn) {
     });
 }
 
-function openSignupConfirmation(btn){
-    var username = $('#wallet_username').val();
-    var password = $('#wallet_password').val();
-    validateUserInput(username, password);
-
-    var l = Ladda.create(btn);
-    l.start();
-    $.ajax({
-        type: "GET",
-        url: 'exists',
-        data: {'username': username},
-        dataType: "JSON",
-        success: function (response) {
-            l.stop();
-            if (response.exists) {
-                renderDangerAlert('notifications', 'The username is already taken');
-            }else{
-                $('#loginTab').hide();
-                $('#signUpTab').show();
-                $('#confirm2fa').hide();
-            }
-        },
-        error: function(error){
-            l.stop();
-            renderAjaxError('notifications', error);
-        }
-    });
-}
-
 function resetForm(){
     $('#loginTab').show();
     $('#signUpTab').hide();

@@ -1,5 +1,8 @@
 class UsersController < ApplicationController
   before_action :authenticate_session, only: [:show, :update]
+  before_action :start_countdown
+
+  after_action :delay_execution
 
   def seed_login
     # Used for UI related stuff
@@ -10,7 +13,7 @@ class UsersController < ApplicationController
     if params.key?(:username)
       @user = User.find_by_username(params[:username])
       if @user.nil?
-        return render json: { success: false, message: 'Username not found' }
+        return render json: { success: false, message: 'Invalid username or password' }
       end
 
       return unless authenticate_login_credentials(@user)
@@ -27,7 +30,7 @@ class UsersController < ApplicationController
   def signup
     @user = User.find_by_username(params[:username])
     unless @user.nil?
-      return render json: { success: false, message: 'Username is taken' }
+      return render json: { success: false, message: 'The username is taken' }
     end
 
     params[:has2fa] = params[:has2fa] == 'true'
@@ -63,11 +66,6 @@ class UsersController < ApplicationController
     end
   end
 
-  def exists
-    user = User.find_by_username(params[:username])
-    render json: { exists: !user.nil? }
-  end
-
   def update
     return unless authenticate_2fa(current_user)
     attribs = params.permit(:username, :has2fa, :has_confirmed_2fa)
@@ -93,7 +91,7 @@ class UsersController < ApplicationController
     if user.authenticate(params[:password])
       true
     else
-      render json: { success: false, message: 'Invalid password' }
+      render json: { success: false, message: 'Invalid username or password' }
       false
     end
   end
@@ -144,5 +142,18 @@ class UsersController < ApplicationController
     end
 
     true
+  end
+
+  def start_countdown
+    @start_time = Time.now
+  end
+
+  # Delays the execution of every action to take no less than 100 ms
+  def delay_execution
+    min_execution_time_secs = 0.1
+
+    delay_time = [min_execution_time_secs - (Time.now - @start_time) * 1000.0, 0].max
+
+    sleep delay_time
   end
 end

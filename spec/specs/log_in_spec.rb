@@ -28,7 +28,7 @@ feature 'Log in', js: true do
     click_button 'Open wallet'
     wait_for_ajax
 
-    expect(page).to have_content 'Invalid password'
+    expect(page).to have_content 'Invalid username or password'
   end
 
   scenario 'should fail with invalid username' do
@@ -38,7 +38,7 @@ feature 'Log in', js: true do
     click_button 'Open wallet'
     wait_for_ajax
 
-    expect(page).to have_content 'Username not found'
+    expect(page).to have_content 'Invalid username or password'
   end
 
   scenario 'should ask for 2fa if enabled' do

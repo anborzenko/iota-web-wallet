@@ -1,6 +1,17 @@
 /**
  * Created by dl6764 on 19.07.2017.
  */
+
+function openSignupConfirmation(btn){
+    var username = $('#wallet_username').val();
+    var password = $('#wallet_password').val();
+    validateUserInput(username, password);
+
+    $('#loginTab').hide();
+    $('#signUpTab').show();
+    $('#confirm2fa').hide();
+}
+
 function signup(btn) {
     var username = $('#wallet_username').val();
     var password = $('#wallet_password').val();
@@ -22,7 +33,7 @@ function signup(btn) {
     }
 
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: 'signup',
         data: {'username': username,
             'encrypted_seed': encryptedSeed,
@@ -67,7 +78,7 @@ function onConfirm2faClick(btn){
     l.start();
 
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: 'confirm2fa',
         data: { 'otp_key': otp_key, 'username': username, 'password': hashPassword(password, username) },
         dataType: "JSON",
