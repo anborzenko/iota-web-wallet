@@ -30,68 +30,105 @@ function sendTrytesWrapper(trytes, callback, status_callback){
         if (error) {
             return callback(error)
         }
-/*
-        $.ajax({
-            type: "GET",
-            url: 'http://127.0.0.1:5000/attach_to_tangle',
-            data: {
-                'trunk': toApprove.trunkTransaction,
-                'branch': toApprove.branchTransaction,
-                'tx_trytes': trytes.join(',')
-            },
-            dataType: "JSON",
-            success: function(response) {
-                var attached = response.result.split(',');
 
-                console.log('Server');
-                for (var i = 0; i < attached.length; i++){
-                    console.log(attached[i]);
-                }
+        // Start doing the pow both remotely and locally. The remote server have every right to reject it
+        // if it is too busy. If so, the local pow will just carry on. If not they race to finish
+        var ws = startRemotePowWorker(toApprove.trunkTransaction, toApprove.branchTransaction, trytes);
 
-                iota.api.storeAndBroadcast(attached, function(error, success) {
-                    if (error) {
-                        return callback(error);
-                    }
-
-                    var finalTxs = [];
-
-                    attached.forEach(function(trytes) {
-                        finalTxs.push(window.iota.utils.transactionObject(trytes));
-                    });
-
-                    return callback(null, finalTxs);
-                })
-            },
-            error: function(err) {
-                alert(err.message);
+        window.powIsDone = false;
+        startRemoteAttachToTangleListener(ws, trytes.length, status_callback, function(error, attached){
+            if (error || window.powIsDone) {
+                // Only the local pow is considered critical
+                return;
             }
-        });*/
 
-        attachToTangle(toApprove.trunkTransaction, toApprove.branchTransaction,
-            window.minWeightMagnitude, trytes, status_callback,
-            function(error, attached) {
-                if (error) {
-                    return callback(error)
+            finalizeTransfer(ws, attached, callback);
+        });
+
+        attachToTangleLocal(toApprove.trunkTransaction, toApprove.branchTransaction, trytes, status_callback,
+            function(error, attached){
+                if (window.powIsDone) {
+                    return;
                 }
 
-                iota.api.storeAndBroadcast(attached, function(error, success) {
-                    if (error) {
-                        return callback(error);
-                    }
+                if (error) {
+                    return callback(error);
+                }
 
-                    var finalTxs = [];
-
-                    attached.forEach(function(trytes) {
-                        finalTxs.push(window.iota.utils.transactionObject(trytes));
-                    });
-
-                    return callback(null, finalTxs);
-                });
-        });
+                finalizeTransfer(ws, attached, callback);
+            });
     })
 }
 
-function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes_in, status_callback, callback){
+function startRemotePowWorker(trunkTransaction, branchTransaction, trytes){
+    var ws = new WebSocket('ws://localhost:8765/pow');
+
+    ws.onopen = function(){
+        ws.send(JSON.stringify({
+            'trunk': trunkTransaction,
+            'branch': branchTransaction,
+            'tx_trytes': trytes,
+            'type': 'POW'
+        }));
+    };
+
+    ws.onclose = function(event){
+        console.log('Closed: ' + event.reason);
+    };
+
+    return ws;
+}
+
+function finalizeTransfer(ws, attached, callback){
+    window.powIsDone = true;
+
+    iota.api.storeAndBroadcast(attached, function(error, success) {
+        if (error) {
+            return callback(error);
+        }
+
+        var finalTxs = [];
+
+        attached.forEach(function(trytes) {
+            finalTxs.push(window.iota.utils.transactionObject(trytes));
+        });
+
+        // Let the server survey the bundle, and replay it if needed (unless it is a address generation)
+        if (attached.length > 1) {
+            ws.send(JSON.stringify({
+                'type': 'survey_bundle',
+                'bundle_hash': window.iota.utils.transactionObject(attached[0]).bundle
+            }));
+        }
+
+        return callback(null, finalTxs);
+    });
+}
+
+function startRemoteAttachToTangleListener(ws, count, status_callback, callback){
+    var attached = [];
+
+    ws.onmessage = function(event){
+        if (window.powIsDone){
+            return;
+        }
+
+        var message = JSON.parse(event.data);
+
+        attached.push(message['trytes']);
+
+        try{
+            status_callback(attached.length / count,
+                "Doing proof of work: " + attached.length + " of " + count + " are complete");
+        }catch(err){}
+
+        if (attached.length === count){
+            callback(null, attached.reverse());
+        }
+    };
+}
+
+function attachToTangleLocal(trunkTransaction, branchTransaction, trytes_in, status_callback, callback){
     try{curl}catch(err){
         return callback({message: 'Your browser do not support webgl2'}, null);
     }
@@ -110,7 +147,7 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
         }catch(err){}
 
         try {
-            if (i >= trytes_in.length) {
+            if (i >= trytes_in.length || window.powIsDone) {
                 return callback(null, res.reverse());
             }
 
@@ -122,7 +159,7 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
 
             var transactionTrytes = trytes(transactionTrits);
 
-            curl.pow(transactionTrytes, minWeightMagnitude
+            curl.pow(transactionTrytes, window.minWeightMagnitude
             ).then(function (hash) {
                 prevTransaction = trits(window.iota.utils.transactionObject(hash).hash);
                 res.push(hash);

@@ -96,9 +96,14 @@ function onSendClick(btn){
             return onSendFinished(e);
         }
 
+        // The local machine and a server will race to do the pow. Keep track on which one is ahead.
+        var maxProgress = 0;
         sendIotas(to_address, amount, message, onSendFinished, function (progress, text) {
-            l.setProgress(progress);
-            document.getElementById('progress_text').innerHTML = text;
+            if (progress >= maxProgress) {
+                l.setProgress(progress);
+                maxProgress = progress;
+                document.getElementById('progress_text').innerHTML = text;
+            }
         });
     });
 }
