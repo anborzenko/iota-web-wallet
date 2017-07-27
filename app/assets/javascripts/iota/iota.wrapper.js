@@ -122,46 +122,14 @@ function attachToTangle(trunkTransaction, branchTransaction, minWeightMagnitude,
 
             var transactionTrytes = trytes(transactionTrits);
 
-            /*
-            if (typeof(Worker) !== "undefined") {
-                // Web workers supported
-                var worker = new Worker('/webworkers/pow.js');
-
-                worker.onmessage = function(event) {
-                    var result = event.data;
-                    alert('Got result');
-                    if (!result.success) {
-                        return callback(result.error);
-                    }
-
-                    var hash = result.hash;
-                    prevTransaction = trits(window.iota.utils.transactionObject(hash).hash);
-                    res.push(hash);
-
-                    worker.terminate();
-                    return rec_pow(res, i + 1);
-                };
-
-                worker.onerror = function(e){
-                    alert(e.message);
-                    return callback([
-                        'ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message
-                    ].join(''));
-                };
-
-                worker.postMessage({'transactionTrytes': transactionTrytes, 'minWeightMagnitude': minWeightMagnitude });
-            }else{
-                // Web workers not supported
-                */
-                curl.pow(transactionTrytes, minWeightMagnitude
-                ).then(function (hash) {
-                    prevTransaction = trits(window.iota.utils.transactionObject(hash).hash);
-                    res.push(hash);
-                    return rec_pow(res, i + 1);
-                }).catch(function (err) {
-                    return callback(err);
-                });
-            //}
+            curl.pow(transactionTrytes, minWeightMagnitude
+            ).then(function (hash) {
+                prevTransaction = trits(window.iota.utils.transactionObject(hash).hash);
+                res.push(hash);
+                return rec_pow(res, i + 1);
+            }).catch(function (err) {
+                return callback(err);
+            });
         }catch(err){
             callback(err);
         }
