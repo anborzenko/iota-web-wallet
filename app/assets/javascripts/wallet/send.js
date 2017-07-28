@@ -83,7 +83,7 @@ function onSendClick(btn){
     var amount = convertToIotas(inputAmount, unit);
     var message = $('#message').val();
 
-    var l = Ladda.create(document.querySelector( '#confirm_button' ));
+    var l = Ladda.create(btn);
     $("#double_spend_confirmation_box").hide();
     $("#send_confirmation_message").hide();
     $("#cancel").hide();
@@ -134,13 +134,11 @@ function onSendFinished(e, response){
         var message = $('#send_address').val() === window.iotaDonationAddress ? 'Thank you :)' : 'Transfer succeeded';
         renderSuccessAlert('send-notifications', message);
         loadWalletData(onGetWalletData);
-        savePendingTransaction(response[0].hash);
     }
 
     restoreSendForm();
 
     uploadUnspentAddresses(window.numAddressesToSaveOnServer);
-    getAndReplayPendingTransaction();
 }
 
 function onChooseUnit(btn){

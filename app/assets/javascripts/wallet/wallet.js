@@ -126,8 +126,6 @@ function generateRandomSeed(){
     } else {
         throw("Your browser do not support secure seed generation. Try upgrading your browser");
     }
-
-    return result;
 }
 
 function encrypt(key, seed){
@@ -168,10 +166,6 @@ function attachAddress(addr, callback){
     sendIotas(addr, 0, 'Attached address', callback);
 }
 
-function shouldReplay(address, callback){
-    window.iota.api.isReattachable(address, callback);
-}
-
 function isDoubleSpend(transfer, callback){
     if (getPersistence(transfer)){
         return callback(null, false);
@@ -195,70 +189,6 @@ function isDoubleSpend(transfer, callback){
         var b = sumList(balances.balances);
         var outgoingValues = Math.abs(values);
         return callback(null, b < outgoingValues);
-    });
-}
-
-function savePendingTransaction(tail_hash){
-    try {
-        $.ajax({
-            type: "POST",
-            url: 'add_pending_transaction',
-            data: {tail_hash: tail_hash},
-            dataType: "JSON",
-            success: function(response) {},
-            error: function(err) {}
-        });
-    }catch(err){}
-}
-
-// Retrieves a previous transaction and replays it
-function getAndReplayPendingTransaction(){
-    $.ajax({
-        type: "GET",
-        url: 'get_next_pending_transaction',
-        dataType: "JSON",
-        success: function (response) {
-            selflessReplay(response.tail_hash);
-        },
-        error: function(err){}
-    });
-}
-
-function selflessReplay(tail_hash){
-    // First check if the transaction is done, or is a double spend. If so, tell the server to delete it.
-    window.iota.api.getTransactionsObjects([tail_hash], function(e, bundle){
-        var tail = bundle[0];
-        if (e){
-            return notifyServerAboutNonReplayableTransaction(tail_hash);
-        }
-
-        shouldReplay(tail.address, function (e, res){
-            if (e ||!res){
-                // Possibly double spend
-                return notifyServerAboutNonReplayableTransaction(tail_hash);
-            }
-
-            replayBundleWrapper(tail_hash, function(e, res){
-                if (e){
-                    return notifyServerAboutNonReplayableTransaction(tail_hash);
-                }
-            });
-        })
-
-    })
-}
-
-function notifyServerAboutNonReplayableTransaction(tail_hash){
-    $.ajax({
-        type: "DELETE",
-        url: 'delete_pending_transaction',
-        data: {tail_hash: tail_hash},
-        dataType: "JSON",
-        success: function(response) {
-            // Try the next transaction instead.
-            getAndReplayPendingTransaction();
-        },
-        error: function(err){}
     });
 }
 

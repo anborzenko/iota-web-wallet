@@ -93,7 +93,7 @@ function finalizeTransfer(ws, attached, callback){
             finalTxs.push(window.iota.utils.transactionObject(trytes));
         });
 
-        // Let the server survey the bundle, and replay it if needed (unless it is a address generation)
+        // Let the server survey the bundle, and replay it as needed, unless it is a address generation
         if (attached.length > 1) {
             ws.send(JSON.stringify({
                 'type': 'survey_bundle',
@@ -317,7 +317,6 @@ function bundlesFromAddresses (addresses, callback) {
 
 function replayBundleWrapper(tailHash, callback, status_callback){
     if (!iota.valid.isHash(tailHash)) {
-
         return callback('Invalid tail');
     }
 
