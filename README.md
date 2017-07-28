@@ -5,7 +5,7 @@ A web wallet for the blockless distributed ledger IOTA. See iotatoken.com for mo
 The wallet runs on top of Ruby on Rails.
 
 ## Prerequisites:
-1) Ruby 3.2
+1) Ruby 2.3
 2) Rails 5.1.1
 
 Other versions may work, but have not been tested.
