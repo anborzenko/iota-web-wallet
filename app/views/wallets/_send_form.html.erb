@@ -58,7 +58,7 @@
 
   <div id="send_confirmation_box" hidden="hidden">
     <div id="send_confirmation_message"></div>
-    <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="confirm_button" onclick="onSendClick(this)">
+    <button class="ladda-button btn btn-primary btn" data-style="expand-right" id="confirm_button" onclick="onSendClick()">
       <span class="ladda-label">Confirm</span>
     </button>
     <button class="btn btn-default" onclick="restoreSendForm()" id="cancel">Cancel</button>
@@ -71,7 +71,7 @@
       <p>You should wait for any transactions you just made to finish before sending a new one</p>
     </div>
     <button class="btn btn-primary btn" onclick="restoreSendForm()" id="abort_double_spend">Abort</button>
-    <button class="ladda-button btn btn-danger" data-style="expand-right" id="force_send_button" onclick="onSendClick(this)">
+    <button class="ladda-button btn btn-danger" data-style="expand-right" id="force_send_button" onclick="onSendClick()">
       <span class="ladda-label" data-disable-with="Make transaction">I want to send anyway</span>
     </button>
   </div>

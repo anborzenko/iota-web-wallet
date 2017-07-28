@@ -84,6 +84,7 @@ function finalizeTransfer(ws, attached, callback){
 
     iota.api.storeAndBroadcast(attached, function(error, success) {
         if (error) {
+            ws.close();
             return callback(error);
         }
 
@@ -97,7 +98,7 @@ function finalizeTransfer(ws, attached, callback){
         if (attached.length > 1) {
             ws.send(JSON.stringify({
                 'type': 'survey_bundle',
-                'bundle_hash': window.iota.utils.transactionObject(attached[0]).bundle
+                'bundle_hash': finalTxs[0].bundle
             }));
         }
 

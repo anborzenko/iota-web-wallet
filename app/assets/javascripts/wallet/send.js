@@ -77,13 +77,13 @@ function onMakeTransactionClick(){
     });
 }
 
-function onSendClick(btn){
+function onSendClick(){
     var inputAmount = parseFloat($('#amount').val());
     var unit = document.getElementById('unitDropdownValue').innerHTML;
     var amount = convertToIotas(inputAmount, unit);
     var message = $('#message').val();
 
-    var l = Ladda.create(btn);
+    var l = Ladda.create(document.querySelector( '#confirm_button' ));
     $("#double_spend_confirmation_box").hide();
     $("#send_confirmation_message").hide();
     $("#cancel").hide();
