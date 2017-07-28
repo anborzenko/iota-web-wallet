@@ -19,17 +19,7 @@ class AdminController < ApplicationController
   private
 
   def get_stats
-    current_time = DateTime.current.to_i
-    pending = PendingTransaction.all
-
     everything = {}
-    everything[:num_pending] = pending.count
-
-    if everything[:num_pending] > 0
-      everything[:pending_avg_time] = pending.map {
-          |x| (current_time - x.last_replay.to_i) / 60.0 }.compact.inject(0, :+
-      ) / everything[:num_pending]
-    end
 
     everything[:num_wallets] = Wallet.count
     everything[:num_admins] = Admin.count

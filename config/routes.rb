@@ -20,9 +20,6 @@ Rails.application.routes.draw do
   get 'wallets/show'
   get 'wallets/seed_checker'
   get 'wallets/details'
-  get 'wallets/get_next_pending_transaction'
-  delete 'wallets/delete_pending_transaction'
-  post 'wallets/add_pending_transaction'
   post 'wallets/add_addresses'
   get 'wallets/receive_addresses'
 
