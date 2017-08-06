@@ -97,9 +97,9 @@ function onSendClick(){
         }
 
         // The local machine and a server will race to do the pow. Keep track on which one is ahead.
-        var maxProgress = 0;
+        var maxProgress = -1;
         sendIotas(to_address, amount, message, onSendFinished, function (progress, text) {
-            if (progress >= maxProgress) {
+            if (progress > maxProgress) {
                 l.setProgress(progress);
                 maxProgress = progress;
                 document.getElementById('progress_text').innerHTML = text;

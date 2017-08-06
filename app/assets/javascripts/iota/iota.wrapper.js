@@ -23,7 +23,7 @@ function sendTransferWrapper(seed, transfer, options, callback, status_callback)
 
 function sendTrytesWrapper(trytes, callback, status_callback){
     try{
-        status_callback(0, "Finding transactions to approve");
+        status_callback(0.01, "Finding transactions to approve");
     }catch(err){}
 
     window.iota.api.getTransactionsToApprove(window.depth, function(error, toApprove) {
@@ -31,19 +31,18 @@ function sendTrytesWrapper(trytes, callback, status_callback){
             return callback(error)
         }
 
+        window.powIsDone = false;
         // Start doing the pow both remotely and locally. The remote server have every right to reject it
         // if it is too busy. If so, the local pow will just carry on. If not they race to finish
-        var ws = startRemotePowWorker(toApprove.trunkTransaction, toApprove.branchTransaction, trytes);
+        var ws = startRemotePowWorker(toApprove.trunkTransaction, toApprove.branchTransaction, trytes,
+            status_callback, function(error, attached){
+                if (error || window.powIsDone) {
+                    // Only the local pow is considered critical
+                    return;
+                }
 
-        window.powIsDone = false;
-        startRemoteAttachToTangleListener(ws, trytes.length, status_callback, function(error, attached){
-            if (error || window.powIsDone) {
-                // Only the local pow is considered critical
-                return;
-            }
-
-            finalizeTransfer(ws, attached, callback);
-        });
+                finalizeTransfer(ws, attached, callback);
+            });
 
         attachToTangleLocal(toApprove.trunkTransaction, toApprove.branchTransaction, trytes, status_callback,
             function(error, attached){
@@ -60,10 +59,34 @@ function sendTrytesWrapper(trytes, callback, status_callback){
     })
 }
 
-function startRemotePowWorker(trunkTransaction, branchTransaction, trytes){
+function startRemotePowWorker(trunkTransaction, branchTransaction, trytes, status_callback, callback){
     var ws = new WebSocket('ws://localhost:8765/pow');
+    return ws;
 
+    var attached = [];
     ws.onopen = function(){
+        // Set progress to min 0.02 as this is the 3'rd step, to ensure a UI update
+        status_callback(0.02, "Doing proof of work: " + attached.length + " of " + trytes.length + " are complete");
+
+        ws.onmessage = function(event){
+            if (window.powIsDone){
+                return;
+            }
+
+            var message = JSON.parse(event.data);
+
+            attached.push(message['trytes']);
+
+            try{
+                status_callback(attached.length / trytes.length,
+                    "Doing proof of work: " + attached.length + " of " + trytes.length + " are complete");
+            }catch(err){}
+
+            if (attached.length === trytes.length){
+                callback(null, attached.reverse());
+            }
+        };
+
         ws.send(JSON.stringify({
             'trunk': trunkTransaction,
             'branch': branchTransaction,
@@ -106,29 +129,6 @@ function finalizeTransfer(ws, attached, callback){
     });
 }
 
-function startRemoteAttachToTangleListener(ws, count, status_callback, callback){
-    var attached = [];
-
-    ws.onmessage = function(event){
-        if (window.powIsDone){
-            return;
-        }
-
-        var message = JSON.parse(event.data);
-
-        attached.push(message['trytes']);
-
-        try{
-            status_callback(attached.length / count,
-                "Doing proof of work: " + attached.length + " of " + count + " are complete");
-        }catch(err){}
-
-        if (attached.length === count){
-            callback(null, attached.reverse());
-        }
-    };
-}
-
 function attachToTangleLocal(trunkTransaction, branchTransaction, trytes_in, status_callback, callback){
     try{curl}catch(err){
         return callback({message: 'Your browser do not support webgl2'}, null);
@@ -144,7 +144,8 @@ function attachToTangleLocal(trunkTransaction, branchTransaction, trytes_in, sta
     var prevTransaction = null;
     var rec_pow = function (res, i) {
         try{
-            status_callback(i / trytes_in.length, "Doing proof of work: " + i + " of " + trytes_in.length + " are complete");
+            status_callback(Math.max(0.02, i / trytes_in.length),
+                "Doing proof of work: " + i + " of " + trytes_in.length + " are complete");
         }catch(err){}
 
         try {
@@ -160,10 +161,15 @@ function attachToTangleLocal(trunkTransaction, branchTransaction, trytes_in, sta
 
             var transactionTrytes = trytes(transactionTrits);
 
-            curl.pow(transactionTrytes, window.minWeightMagnitude
-            ).then(function (hash) {
-                prevTransaction = trits(window.iota.utils.transactionObject(hash).hash);
-                res.push(hash);
+            curl.pow({trytes: transactionTrytes, minWeight: window.minWeightMagnitude},
+            ).then(function (nounce) {
+                try {
+                    transactionTrytes = transactionTrytes.substr(0, 2673-81).concat(nounce);
+
+                    prevTransaction = trits(window.iota.utils.transactionObject(transactionTrytes).hash);
+                    res.push(transactionTrytes);
+                }catch(err){alert(err);}
+
                 return rec_pow(res, i + 1);
             }).catch(function (err) {
                 return callback(err);

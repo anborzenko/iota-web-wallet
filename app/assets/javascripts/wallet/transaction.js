@@ -95,6 +95,7 @@ function managePendingTxs(transactions){
     for (var i = 0; i < transactions.length; i++){
         for (var j = 0; j < transactions[i].length; j++){
             var tx = transactions[i][j];
+
             if (tx.value < 0 && !getPersistence(transactions[i])){
                 sendAddresses.push(tx.address);
                 txs.push(tx);
@@ -110,15 +111,20 @@ function managePendingTxs(transactions){
         for (var i = 0; i < balances.balances.length; i++){
             var tx = txs[i];
             var tail = tails[i];
+
             if (Math.abs(tx.value) > parseInt(balances.balances[i])){
                 // Double spend
-                var row = table.rows[getArrayIndex(table.rows, tx, compareTableRowAndTx)];
-                var direction = row.cells[0];
-                var status = row.cells[3];
-                status.innerHTML = 'Failed';
-                direction.innerHTML = tail.direction === 'in' ?
-                    "<i class='fa fa-angle-double-right' style='color:#008000' title='Incoming double spend'></i>" :
-                    "<i class='fa fa-angle-double-left' style='color:#FF0000' title='Outgoing double spend'></i>";
+                var tableIndex = getArrayIndex(table.rows, tx, compareTableRowAndTx);
+
+                if (tableIndex !== -1) {
+                    var row = table.rows[tableIndex];
+                    var direction = row.cells[0];
+                    var status = row.cells[3];
+                    status.innerHTML = 'Failed';
+                    direction.innerHTML = tail.direction === 'in' ?
+                        "<i class='fa fa-angle-double-right' style='color:#008000' title='Incoming double spend'></i>" :
+                        "<i class='fa fa-angle-double-left' style='color:#FF0000' title='Outgoing double spend'></i>";
+                }
             }else{
                 // Not double spend. Add the tx to the balance if it has not been added before
                 var bIndex = getArrayIndex(transactions, tx, txInBundleComparer);

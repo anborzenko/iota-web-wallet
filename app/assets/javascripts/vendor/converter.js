@@ -124,10 +124,3 @@ var fromValue= function(value) {
     }
     return destination;
 };
-
-module.exports = {
-    trits       : trits,
-    trytes      : trytes,
-    toValue       : toValue,
-    fromValue   : fromValue,
-};
