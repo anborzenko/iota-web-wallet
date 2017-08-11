@@ -61,7 +61,6 @@ function sendTrytesWrapper(trytes, callback, status_callback){
 
 function startRemotePowWorker(trunkTransaction, branchTransaction, trytes, status_callback, callback){
     var ws = new WebSocket('ws://localhost:8765/pow');
-    return ws;
 
     var attached = [];
     ws.onopen = function(){

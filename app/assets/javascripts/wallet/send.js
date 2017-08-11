@@ -146,7 +146,9 @@ function onChooseUnit(btn){
 }
 
 function getToAddress(input, callback){
-    if(validateAddress(input)){
+    if (!window.iota.utils.isValidChecksum(input)){
+        callback('Address must contain a checksum');
+    }else if(window.iota.valid.isAddress(input)){
         callback(null, input);
     }else if (input === getUsername()){
         callback(null, window.walletData['latestAddress']);

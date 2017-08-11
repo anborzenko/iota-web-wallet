@@ -15,10 +15,6 @@ function validateSeed(seed){
     return window.iota.valid.isTrytes(seed);
 }
 
-function validateAddress(address){
-    return window.iota.valid.isAddress(address);
-}
-
 function loadWalletData(liveCallback, onFinishedCallback){
     generateNewAddress(function(e, res){
         if (e){
@@ -106,7 +102,7 @@ function sendIotas(to_address, amount, message, callback, status_callback){
     var transfer = [{
         'address': to_address,
         'value': amount,
-        'message': window.iota.utils.toTrytes(message)
+        'message': window.iota.utils.toTrytes(JSON.stringify({ 'message': message }))
     }];
     sendTransferWrapper(getSeed(), transfer, {'inputs': findInputs(amount)}, callback, status_callback);
 }

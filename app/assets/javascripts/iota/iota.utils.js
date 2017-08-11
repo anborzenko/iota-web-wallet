@@ -53,7 +53,14 @@ function getIndexOfAddress(address){
 }
 
 function getMessage(transaction){
-    var m = window.iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
+    var m = window.iota.utils.extractJson(transaction.signatureMessageFragment);
+
+    if (m === null){
+        m = window.iota.utils.fromTrytes(transaction.signatureMessageFragment.replace('9', ''));
+    }else{
+        m = m['message'];
+    }
+
     return '"' + m + '"';
 }
 
